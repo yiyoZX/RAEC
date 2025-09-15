@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Text, LargeBinary
 
 metadata = MetaData()
 
@@ -26,4 +26,19 @@ profesores = Table(
 	Column("password_hash", String, nullable=False),
 	Column("id_instituto", Integer, ForeignKey("Institutos.id_instituto")),
 	Column("id_rol", Integer, ForeignKey("Rol.id_rol"))
+)
+
+formularios = Table(
+    "formularios",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("nombres", String(100), nullable=False),
+    Column("apellidos", String(100), nullable=False),
+    Column("rut", String(20), nullable=False),
+    Column("email", String(100), nullable=False),
+    Column("academica", String(10), nullable=False),  # "si" o "no"
+    Column("actividad", String(50), nullable=False),
+    Column("about", Text, nullable=True),
+    Column("archivo_nombre", String(255), nullable=True),
+    Column("archivo_data", LargeBinary, nullable=True)
 )

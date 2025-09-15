@@ -1,6 +1,5 @@
 from core.database import database
 from core.models import profesores
-#from utils.auth import verify_password
 import bcrypt
 
 async def autenticar_profesor(prof):

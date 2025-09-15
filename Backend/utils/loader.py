@@ -1,4 +1,4 @@
-import bcrypt
+from passlib.hash import bcrypt
 import psycopg2
 from dotenv import load_dotenv
 import os
@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 # Abrir archivo de profesores
-with open('Lista.txt', 'r', encoding='utf-8') as fichero:
+with open(os.path.join(os.path.dirname(__file__), 'Lista.txt'), 'r', encoding='utf-8') as fichero:
     lineas = fichero.readlines()
 
 # Conexión a PostgreSQL
@@ -30,14 +30,14 @@ for linea in lineas:
     id_instituto = datos[4]
     id_rol = datos[5]
 
-    # Hash con salt automático
-    password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    # Hash con salt automático usando passlib
+    password_hash = bcrypt.hash(password)
 
     # Insertar en la tabla
     cur.execute("""
         INSERT INTO Profesores (nombres, apellidos, correo, password_hash, id_instituto, id_rol)
         VALUES (%s, %s, %s, %s, %s, %s)
-    """, (nombre, apellido, correo, password_hash.decode('utf-8'), id_instituto, id_rol))
+    """, (nombre, apellido, correo, password_hash, id_instituto, id_rol))
 
 # Confirmar transacciones y cerrar
 conn.commit()

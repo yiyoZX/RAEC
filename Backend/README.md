@@ -26,7 +26,7 @@ Este directorio contiene el código fuente del backend para el proyecto RAEC.
 Para iniciar el backend:
 
 ```bash
-python main_backend.py
+py -m uvicorn main_backend:app --reload
 ```
 
 ## Descripción general

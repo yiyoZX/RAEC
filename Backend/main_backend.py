@@ -1,11 +1,12 @@
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from core.database import database, metadata, DATABASE_URL
 from sqlalchemy import create_engine
 from routes.profesores import router as profesores_router
+from routes.formulario import router as formulario_router
 
-app = FastAPI()
 
 # Crear base de datos y conectar
 engine = create_engine(DATABASE_URL)
@@ -18,5 +19,21 @@ async def lifespan(app: FastAPI):
     await database.disconnect()
 
 app = FastAPI(lifespan=lifespan)
+
+# Configurar CORS para permitir solo el frontend
+origins = [
+    "http://localhost:5173",  # Vite por defecto
+    "http://127.0.0.1:5173"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(profesores_router)
+app.include_router(formulario_router)
 

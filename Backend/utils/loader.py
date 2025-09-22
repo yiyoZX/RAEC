@@ -35,9 +35,9 @@ for linea in lineas:
 
     # Insertar en la tabla
     cur.execute("""
-        INSERT INTO Profesores (nombres, apellidos, correo, password_hash, id_instituto, id_rol)
+        INSERT INTO Profesor (nombres, apellidos, correo, id_instituto, id_rol, password_hash)
         VALUES (%s, %s, %s, %s, %s, %s)
-    """, (nombre, apellido, correo, password_hash, id_instituto, id_rol))
+    """, (nombre, apellido, correo, id_instituto, id_rol, password_hash))
 
 # Confirmar transacciones y cerrar
 conn.commit()

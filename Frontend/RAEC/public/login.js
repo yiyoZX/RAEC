@@ -13,8 +13,18 @@ document.querySelector("form").addEventListener("submit", async function(e) {
 
     const data = await response.json();
 
-    if (response.ok && !data.detail) {
-      window.location.href = "index.html";
+    if (response.ok && data.access_token) {
+      // Guardar tanto el token JWT como el flag de autenticación
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('user_data', JSON.stringify({
+        id_profesor: data.id_profesor,
+        rol: data.rol,
+        instituto: data.instituto,
+        message: data.message
+      }));
+      localStorage.setItem('isAuthenticated', 'true');
+      
+      window.location.href = "dashboard.html";
     } else {
       alert("❌ Usuario o contraseña incorrectos");
     }

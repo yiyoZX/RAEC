@@ -8,6 +8,33 @@
 </head>
 <script src="main.js"></script>
 <body class="bg-white-100 min-h-screen flex flex-col">
+  <!-- Barra superior -->
+  <header class="shadow-md py-6 rounded-full" style="background-color: #e3d3e6;">
+    <div class="flex justify-between items-center px-8">
+      <h1 class="text-black text-2xl font-bold">RAEC</h1>
+      <div class="flex items-center gap-4">
+        <span id="user-welcome" class="text-black text-sm"></span>
+        <button id="btn-logout" class="bg-red-300 text-black px-4 py-2 rounded-full hover:bg-red-400 transition font-bold">
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="flex-grow flex items-center">
+    <div class="flex flex-col space-y-4">
+      <button id="btn-registrar" class="bg-purple-300 text-black px-12 py-6 rounded-r-full shadow hover:bg-purple-400 transition border border-black font-bold">
+        ✔️ Registrar
+      </button>
+      <button id="btn-solicitudes" class="bg-purple-300 text-black px-12 py-6 rounded-r-full shadow hover:bg-purple-400 transition border border-black font-bold">
+        ✔️ Solicitudes
+      </button>
+      <button id="btn-reportes" class="bg-purple-300 text-black px-12 py-6 rounded-r-full shadow hover:bg-purple-400 transition border border-black font-bold">
+        ✔️ Reportes
+      </button>
+    </div>
+  </main>
 
   <script>
     // Verificar autenticación
@@ -39,32 +66,5 @@
       window.location.href = 'http://localhost:5173/registrar';
     });
   </script>
-  <!-- Barra superior -->
-  <header class="shadow-md py-6 rounded-full" style="background-color: #e3d3e6;">
-    <div class="flex justify-between items-center px-8">
-      <h1 class="text-black text-2xl font-bold">RAEC</h1>
-      <div class="flex items-center gap-4">
-        <span id="user-welcome" class="text-black text-sm"></span>
-        <button id="btn-logout" class="bg-red-300 text-black px-4 py-2 rounded-full hover:bg-red-400 transition font-bold">
-          Cerrar Sesión
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Contenido principal -->
-  <main class="flex-grow flex items-center">
-    <div class="flex flex-col space-y-4">
-      <button id="btn-registrar" class="bg-purple-300 text-black px-12 py-6 rounded-r-full shadow hover:bg-purple-400 transition border border-black font-bold">
-        ✔️ Registrar
-      </button>
-      <button id="btn-solicitudes" class="bg-purple-300 text-black px-12 py-6 rounded-r-full shadow hover:bg-purple-400 transition border border-black font-bold">
-        ✔️ Solicitudes
-      </button>
-      <button id="btn-reportes" class="bg-purple-300 text-black px-12 py-6 rounded-r-full shadow hover:bg-purple-400 transition border border-black font-bold">
-        ✔️ Reportes
-      </button>
-    </div>
-  </main>
 </body>
 </html>

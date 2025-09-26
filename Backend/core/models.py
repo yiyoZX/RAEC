@@ -47,6 +47,7 @@ alumno = Table(
     Column("correo", String(30), nullable=False),
     Column("ano_egreso", Integer, nullable=False),
     Column("id_carrera", Integer, nullable=False),
+    Column("password_hash", String, nullable=False)
 
 )
 
@@ -62,7 +63,10 @@ registro = Table(
     Column("fecha_emision", DateTime(timezone=True), nullable=True, default=lambda: datetime.now(timezone.utc)),
     Column("archivo_nombre", String(255), nullable=True),
     Column("archivo_data", LargeBinary, nullable=True),
-    Column("comentario", Text, nullable=True)
+    Column("comentario", Text, nullable=True),
+    Column("fecha_inicio_actividad", DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)),
+    Column("fecha_termino_actividad", DateTime(timezone=True), nullable=True, default=lambda: datetime.now(timezone.utc)),
+    Column("horas_totales", Integer, nullable=True)
 )
 
 registro = Table("registro", metadata, autoload_with=engine)

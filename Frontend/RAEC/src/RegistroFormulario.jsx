@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { authenticatedFetchFormData } from "./utils/api";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function RegistroFormulario() {
   const { user, logout } = useAuth();
   const [values, setValues] = useState({
-    nombres: "",
-    apellidos: "",
     rut: "",
-    email: "",
     academica: "", // "si" o "no"
     actividad: "", // select
+    fecha_inicio: new Date(), // Fecha de inicio de la actividad
+    fecha_termino: new Date(), // Fecha de término de la actividad
+    horas_totales: "", // campo numérico para horas totales
     archivos: null, // file input
     about: "", // textarea
   });
@@ -35,19 +37,47 @@ function RegistroFormulario() {
         }
         setValues({ ...values, [name]: file });
       }
+    } else if (name === "horas_totales") {
+      // Validar que las horas totales sean un número positivo
+      const numValue = parseInt(value);
+      if (value !== "" && (isNaN(numValue) || numValue <= 0)) {
+        alert("Las horas totales deben ser un número positivo");
+        return;
+      }
+      setValues({ ...values, [name]: value });
     } else {
       setValues({ ...values, [name]: value });
     }
   };
 
+  // Funciones separadas para manejar cambios de fecha
+  const handleFechaInicioChange = (date) => {
+    setValues({ ...values, fecha_inicio: date });
+  };
+
+  const handleFechaTerminoChange = (date) => {
+    setValues({ ...values, fecha_termino: date });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validar horas totales antes del envío
+    if (!values.horas_totales || parseInt(values.horas_totales) <= 0) {
+      alert("Por favor, ingrese un número válido de horas totales");
+      return;
+    }
 
     // Construir formData
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
       if (value) {
-        formData.append(key, value);
+        if ((key === 'fecha_inicio' || key === 'fecha_termino') && value instanceof Date) {
+          // Convertir fecha a formato ISO string
+          formData.append(key, value.toISOString().split('T')[0]);
+        } else {
+          formData.append(key, value);
+        }
       }
     });
 
@@ -75,12 +105,12 @@ function RegistroFormulario() {
 
   const ResetFun = () => {
     setValues({
-      nombres: "",
-      apellidos: "",
       rut: "",
-      email: "",
       academica: "",
       actividad: "",
+      fecha_inicio: new Date(),
+      fecha_termino: new Date(),
+      horas_totales: "",
       archivos: null,
       about: "",
     });
@@ -118,28 +148,6 @@ function RegistroFormulario() {
       </div>
       
       <form onSubmit={handleSubmit}>
-        <label htmlFor="nombres">Nombres</label>
-        <input
-          type="text"
-          id="nombres"
-          placeholder="Ingrese nombres"
-          name="nombres"
-          value={values.nombres}
-          onChange={handleChanges}
-          required
-        />
-
-        <label htmlFor="apellidos">Apellidos</label>
-        <input
-          type="text"
-          id="apellidos"
-          placeholder="Ingrese apellidos"
-          name="apellidos"
-          value={values.apellidos}
-          onChange={handleChanges}
-          required
-        />
-
         <label htmlFor="rut">Rut</label>
         <input
           type="text"
@@ -147,17 +155,6 @@ function RegistroFormulario() {
           placeholder="Ingrese rut"
           name="rut"
           value={values.rut}
-          onChange={handleChanges}
-          required
-        />
-
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          placeholder="Ingrese correo electrónico"
-          name="email"
-          value={values.email}
           onChange={handleChanges}
           required
         />
@@ -204,6 +201,48 @@ function RegistroFormulario() {
             )
           )}
         </select>
+
+        <label htmlFor="fecha_inicio">Fecha de Inicio de la Actividad</label>
+        <DatePicker
+          selected={values.fecha_inicio}
+          onChange={handleFechaInicioChange}
+          dateFormat="dd/MM/yyyy"
+          placeholderText="Seleccione una fecha"
+          maxDate={new Date()}
+          showYearDropdown
+          showMonthDropdown
+          dropdownMode="select"
+          className="date-picker-input"
+          required
+        />
+
+        <label htmlFor="fecha_termino">Fecha de Término de la Actividad</label>
+        <DatePicker
+          selected={values.fecha_termino}
+          onChange={handleFechaTerminoChange}
+          dateFormat="dd/MM/yyyy"
+          placeholderText="Seleccione una fecha"
+          maxDate={new Date()}
+          minDate={values.fecha_inicio} // La fecha de término debe ser posterior a la de inicio
+          showYearDropdown
+          showMonthDropdown
+          dropdownMode="select"
+          className="date-picker-input"
+          required
+        />
+
+        <label htmlFor="horas_totales">Horas Totales</label>
+        <input
+          type="number"
+          id="horas_totales"
+          placeholder="Ingrese el número total de horas"
+          name="horas_totales"
+          value={values.horas_totales}
+          onChange={handleChanges}
+          min="1"
+          max="9999"
+          required
+        />
 
         <label htmlFor="archivos">Archivos</label>
         <input

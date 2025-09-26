@@ -18,12 +18,12 @@ def numeroRegistro(db: Session, id_registro: int):
     return result + 1
 
 async def guardar_formulario(
-    nombres: str,
-    apellidos: str,
     rut: str,
-    email: str,
     academica: int,
     actividad: int,
+    fecha_inicio: datetime,
+    fecha_termino: datetime,
+    horas_totales: int,
     about: str,
     archivos: UploadFile,
     db: Session,
@@ -34,15 +34,20 @@ async def guardar_formulario(
     if archivos:
         archivo_nombre = archivos.filename
         archivo_data = await archivos.read()
-    #verificarDatos(db, rut, 1, actividad)
+    
+    # Verificar datos (opcional, descomentado para validaciones)
+    # verificarDatos(db, rut, id_profesor, actividad)
 
-    #Insertar registro
+    # Insertar registro con los nuevos campos
     nuevo = registro.insert().values(
         id_alumno = rut,
         id_profesor = id_profesor,  # Usar el ID del profesor autenticado
         id_actividad = actividad,
         id_estado = 1,
         fecha_creacion = datetime.now(timezone.utc),
+        fecha_inicio_actividad = fecha_inicio,
+        fecha_termino_actividad = fecha_termino,
+        horas_totales = horas_totales,
         comentario = about,
         archivo_nombre = archivo_nombre,
         archivo_data = archivo_data
@@ -51,4 +56,4 @@ async def guardar_formulario(
     db.commit()
 
     inserted_id = result.inserted_primary_key[0] if result.inserted_primary_key else None
-    return {"message": "Formulario guardado", "id": inserted_id}
+    return {"message": "Formulario guardado exitosamente", "id": inserted_id, "horas_totales": horas_totales}

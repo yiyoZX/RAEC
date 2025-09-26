@@ -12,7 +12,7 @@ RUN npm install
 # Copiar el código fuente
 COPY . /app
 
-EXPOSE 5173
+EXPOSE 3001
 
 # Ejecutar en modo desarrollo con host 0.0.0.0 para Docker
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

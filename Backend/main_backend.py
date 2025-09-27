@@ -22,6 +22,8 @@ app = FastAPI(lifespan=lifespan)
 
 # Configurar CORS para permitir solo el frontend
 origins = [
+    "http://localhost:3001",  # Frontend actual
+    "http://127.0.0.1:3001",
     "http://localhost:5173",  # Vite por defecto
     "http://127.0.0.1:5173"
 ]

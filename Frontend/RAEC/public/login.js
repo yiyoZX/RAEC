@@ -5,7 +5,7 @@ document.querySelector("form").addEventListener("submit", async function(e) {
   const password = document.getElementById("password").value;
 
   try {
-    const response = await fetch("http://localhost:8000/login", { // puerto del backend
+    const response = await fetch("http://localhost:4001/login", { // puerto del backend
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ correo, password }) // usa 'correo'

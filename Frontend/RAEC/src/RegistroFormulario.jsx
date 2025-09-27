@@ -82,7 +82,7 @@ function RegistroFormulario() {
     });
 
     try {
-      const res = await authenticatedFetchFormData("http://127.0.0.1:8000/submit/", formData);
+      const res = await authenticatedFetchFormData("http://localhost:4001/submit/", formData);
 
       if (!res) {
         // La función ya manejó el error 401 y redirección

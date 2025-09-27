@@ -37,7 +37,7 @@ CREATE TABLE public.actividad (
 );
 
 
-ALTER TABLE public.actividad OWNER TO postgres;
+
 
 --
 -- TOC entry 218 (class 1259 OID 16468)
@@ -53,7 +53,7 @@ CREATE SEQUENCE public.actividad_id_actividad_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.actividad_id_actividad_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4919 (class 0 OID 0)
@@ -78,7 +78,7 @@ CREATE SEQUENCE public.actividad_id_subcategoria_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.actividad_id_subcategoria_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4920 (class 0 OID 0)
@@ -105,7 +105,7 @@ CREATE TABLE public.alumno (
 );
 
 
-ALTER TABLE public.alumno OWNER TO postgres;
+
 
 --
 -- TOC entry 4921 (class 0 OID 0)
@@ -130,7 +130,7 @@ CREATE SEQUENCE public.alumno_id_carrera_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.alumno_id_carrera_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4922 (class 0 OID 0)
@@ -155,7 +155,7 @@ CREATE SEQUENCE public.alumno_rut_alumno_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.alumno_rut_alumno_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4923 (class 0 OID 0)
@@ -177,7 +177,7 @@ CREATE TABLE public.carrera (
 );
 
 
-ALTER TABLE public.carrera OWNER TO postgres;
+
 
 --
 -- TOC entry 224 (class 1259 OID 16482)
@@ -193,7 +193,7 @@ CREATE SEQUENCE public.carrera_id_carrera_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.carrera_id_carrera_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4924 (class 0 OID 0)
@@ -215,7 +215,7 @@ CREATE TABLE public.categoria (
 );
 
 
-ALTER TABLE public.categoria OWNER TO postgres;
+
 
 --
 -- TOC entry 226 (class 1259 OID 16486)
@@ -231,7 +231,7 @@ CREATE SEQUENCE public.categoria_id_categoria_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.categoria_id_categoria_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4925 (class 0 OID 0)
@@ -253,7 +253,7 @@ CREATE TABLE public.estado (
 );
 
 
-ALTER TABLE public.estado OWNER TO postgres;
+
 
 --
 -- TOC entry 228 (class 1259 OID 16490)
@@ -269,7 +269,7 @@ CREATE SEQUENCE public.estado_id_estado_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.estado_id_estado_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4926 (class 0 OID 0)
@@ -291,7 +291,7 @@ CREATE TABLE public.instituto (
 );
 
 
-ALTER TABLE public.instituto OWNER TO postgres;
+
 
 --
 -- TOC entry 230 (class 1259 OID 16496)
@@ -307,7 +307,7 @@ CREATE SEQUENCE public.instituto_id_instituto_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.instituto_id_instituto_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4927 (class 0 OID 0)
@@ -334,7 +334,7 @@ CREATE TABLE public.profesor (
 );
 
 
-ALTER TABLE public.profesor OWNER TO postgres;
+
 
 --
 -- TOC entry 232 (class 1259 OID 16500)
@@ -350,7 +350,7 @@ CREATE SEQUENCE public.profesor_id_instituto_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.profesor_id_instituto_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4928 (class 0 OID 0)
@@ -375,7 +375,7 @@ CREATE SEQUENCE public.profesor_id_profesor_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.profesor_id_profesor_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4929 (class 0 OID 0)
@@ -400,7 +400,7 @@ CREATE SEQUENCE public.profesor_id_rol_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.profesor_id_rol_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4930 (class 0 OID 0)
@@ -433,7 +433,7 @@ CREATE TABLE public.registro (
 );
 
 
-ALTER TABLE public.registro OWNER TO postgres;
+
 
 --
 -- TOC entry 236 (class 1259 OID 16508)
@@ -449,7 +449,7 @@ CREATE SEQUENCE public.registro_id_actividad_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.registro_id_actividad_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4931 (class 0 OID 0)
@@ -474,7 +474,7 @@ CREATE SEQUENCE public.registro_id_alumno_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.registro_id_alumno_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4932 (class 0 OID 0)
@@ -499,7 +499,7 @@ CREATE SEQUENCE public.registro_id_profesor_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.registro_id_profesor_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4933 (class 0 OID 0)
@@ -524,7 +524,7 @@ CREATE SEQUENCE public.registro_id_registro_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.registro_id_registro_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4934 (class 0 OID 0)
@@ -546,7 +546,7 @@ CREATE TABLE public.rol (
 );
 
 
-ALTER TABLE public.rol OWNER TO postgres;
+
 
 --
 -- TOC entry 241 (class 1259 OID 16517)
@@ -562,7 +562,7 @@ CREATE SEQUENCE public.rol_id_rol_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.rol_id_rol_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4935 (class 0 OID 0)
@@ -585,7 +585,7 @@ CREATE TABLE public.subcategoria (
 );
 
 
-ALTER TABLE public.subcategoria OWNER TO postgres;
+
 
 --
 -- TOC entry 243 (class 1259 OID 16521)
@@ -601,7 +601,7 @@ CREATE SEQUENCE public.subcategoria_id_categoria_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.subcategoria_id_categoria_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4936 (class 0 OID 0)
@@ -626,7 +626,7 @@ CREATE SEQUENCE public.subcategoria_id_subcategoria_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.subcategoria_id_subcategoria_seq OWNER TO postgres;
+
 
 --
 -- TOC entry 4937 (class 0 OID 0)

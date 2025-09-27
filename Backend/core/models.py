@@ -29,7 +29,7 @@ actividad = Table(
 profesor = Table(
 	"profesor",
 	metadata,
-	Column("id_profesor", Integer, primary_key=True),
+	Column("id_profesor", String(10), primary_key=True),
 	Column("nombres", String(50), unique=True, nullable=False),
 	Column("apellidos", String(50), unique=True, nullable=False),
 	Column("correo", String(50), unique=True, nullable=False),
@@ -44,7 +44,7 @@ alumno = Table(
 	Column("rut_alumno", String(10), primary_key=True),
     Column("nombres", String(50), nullable=False),
     Column("apellidos", String(50), nullable=False),
-    Column("correo", String(30), nullable=False),
+    Column("correo", String(50), nullable=False),
     Column("ano_egreso", Integer, nullable=False),
     Column("id_carrera", Integer, nullable=False),
     Column("password_hash", String, nullable=False)

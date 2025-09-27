@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict kScpQXmSLmwAzbdm4l2e4Ib8hoob8bksphIBY8G0v9YTmtTgVQofl1TkJfE1Zb5
+\restrict UVhMapEh2jClROgdfotRsxkoxpuJ5ARi4LTXJcBgQx3BjWWqz5vSuQDnJVYkYzM
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
 
--- Started on 2025-09-27 17:46:16
+-- Started on 2025-09-26 15:53:51
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -324,10 +324,10 @@ ALTER SEQUENCE public.instituto_id_instituto_seq OWNED BY public.instituto.id_in
 --
 
 CREATE TABLE public.profesor (
-    id_profesor character varying(10) NOT NULL,
+    id_profesor integer NOT NULL,
     nombres character varying(50) NOT NULL,
     apellidos character varying(50) NOT NULL,
-    correo character varying(50) NOT NULL,
+    correo character varying(30) NOT NULL,
     id_instituto integer NOT NULL,
     id_rol integer NOT NULL,
     password_hash text
@@ -423,7 +423,7 @@ CREATE TABLE public.registro (
     comentario character varying(400),
     id_registro integer NOT NULL,
     id_estado integer,
-    id_profesor character varying(10) NOT NULL,
+    id_profesor integer NOT NULL,
     id_actividad integer NOT NULL,
     id_alumno character varying(10) NOT NULL,
     archivo_nombre character varying(255),
@@ -702,7 +702,7 @@ ALTER TABLE ONLY public.instituto ALTER COLUMN id_instituto SET DEFAULT nextval(
 
 
 --
--- TOC entry 4702 (class 2604 OID 16664)
+-- TOC entry 4702 (class 2604 OID 16531)
 -- Name: profesor id_profesor; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -734,7 +734,7 @@ ALTER TABLE ONLY public.registro ALTER COLUMN id_registro SET DEFAULT nextval('p
 
 
 --
--- TOC entry 4706 (class 2604 OID 16657)
+-- TOC entry 4706 (class 2604 OID 16535)
 -- Name: registro id_profesor; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -805,26 +805,6 @@ COPY public.actividad (id_actividad, nombre_actividad, id_subcategoria) FROM std
 
 COPY public.alumno (rut_alumno, nombres, apellidos, correo, ano_egreso, id_carrera, password_hash) FROM stdin;
 12345678-9	Juan P	Smith A	juansmith@alumnos.uach.cl	2024	1	\N
-21111111-1	Nicolás	Muñoz	nicolas.munoz@mail.com	2023	1	$2b$12$A5ec0285W.WxF7xspD0KOuBvmjXlpfiM6ZitQodZOe/yj3soWdz1K
-22222222-2	Camila	Castillo	camila.castillo@mail.com	2024	2	$2b$12$o9i.aIk8QuUF6OcFXxsAG.XSZpbNkFDpVOV0Loh0QV8CgdwmLDdW.
-23333333-3	Matías	Sepúlveda	matias.sepulveda@mail.com	2025	3	$2b$12$yQj8bIE4Za/yCyd0lvMvZuiYQ8Vij5MN5k8pyR3j8Vd1qIeluQ2KG
-24444444-4	Valentina	Figueroa	valentina.figueroa@mail.com	2023	4	$2b$12$lkD/30FONq.TaQzr5cw9oe/0Ud53sZp0/WiZHsArfpHd29CpSaDam
-25555555-5	Ignacio	Araya	ignacio.araya@mail.com	2024	5	$2b$12$07o6QTWqGTc5oPxNg98w/.r15dDpiS6OCGqQsiPijiQfVmhymEt66
-26666666-6	Josefa	Aguilar	josefa.aguilar@mail.com	2025	6	$2b$12$MJCYWanTBUvxppK7VCQ4EuPRxhHHBKA7xxjECKb87RDZRcMgF0aWS
-27777777-7	Martín	Meza	martin.meza@mail.com	2023	7	$2b$12$o/CoA6ygrvq6vjihjHhQM.uVmvSOBPmbs1Wp6W7/Q1mVYwgLcPecS
-28888888-8	Constanza	Sáez	constanza.saez@mail.com	2024	1	$2b$12$eTZiC4PnyWiPTyu2ZpWd0eZ2ujx3T5K2FxV11dIS8nP3uyZ6rQ6QW
-29999999-9	Diego	Peña	diego.pena@mail.com	2025	2	$2b$12$SKuZuy1S3.mcWJsS0oRz2e1MiGFNheeJ7tcJP7pRdtq3TCFKRmk9W
-30101010-0	Antonia	Leiva	antonia.leiva@mail.com	2023	3	$2b$12$0Rc65jpBbl4KA7ZDFF.nfe/Zyg3/bOcacnMF4REc5G.Yh3Z/7qs4u
-31111111-1	Francisco	Bravo	francisco.bravo@mail.com	2024	4	$2b$12$/QPFO43x1pLDA8D0tkSDxun0GyJtE0K1AA5v/Ygzr830i2TcwcRkO
-32222222-2	Sofía	Palma	sofia.palma@mail.com	2025	5	$2b$12$Qj6a9zP9DhAEbunhVc91BO4WHun.E2AacE4Mi3QjbMtbfv1B.acPi
-33333333-3	Benjamín	Campos	benjamin.campos@mail.com	2023	6	$2b$12$JPy946Ejy5n0l64izoB9XueQJWFTnJL1zvv2Pka7BbPcVGvQ3wZ.S
-34444444-4	Catalina	Vega	catalina.vega@mail.com	2024	7	$2b$12$.lDjH8ObLGbRo03ZCsw5fuRy/SHanxFcsAdt4gHYV7Pl3K/rntBie
-35555555-5	Tomás	Acosta	tomas.acosta@mail.com	2025	1	$2b$12$iMx/z.HHKLSbZ7fTS3E3mudKW8lWl3IbTKySftoomt6ngf0mk1dMK
-36666666-6	Isidora	Pizarro	isidora.pizarro@mail.com	2023	2	$2b$12$wYTLrcgomt1RBDYa7EAVSOWVoOAemvWmskEom6NA153QEvXwmbcg2
-37777777-7	Emilio	Salazar	emilio.salazar@mail.com	2024	3	$2b$12$ZVtZHWZ2YHi/DyEgOxXfuOIMtaxgZMtR7392Zbw3YGaSasB500Nrm
-38888888-8	Florencia	Mendoza	florencia.mendoza@mail.com	2025	4	$2b$12$sz3d2G/DiKK8hllDbo5jxupYZkDtfBtVlHX6N5Rnlpq0V/o9KmUMi
-39999999-9	Samuel	Bustamante	samuel.bustamante@mail.com	2023	5	$2b$12$MsD5U8yadjkB/KQ.wqvLj.Y2I5ynwtuZBG0RLk1SXbvESNQZ/..Ia
-40101010-0	Josefina	Valdés	josefina.valdes@mail.com	2024	6	$2b$12$147YCUsyS3miB0b4.cy4sOrriTsG.BRs1DZjohLH..tn4DMg4XI8q
 \.
 
 
@@ -893,26 +873,6 @@ COPY public.instituto (id_instituto, nombre_instituto) FROM stdin;
 
 COPY public.profesor (id_profesor, nombres, apellidos, correo, id_instituto, id_rol, password_hash) FROM stdin;
 1	Luis	Veas	lveas@example.com	1	1	$2b$12$UTt1hNZDukYMzFbq2O8L0OMbLATqO7SyN8kU9KKZA92zbKiMHVQRO
-11111111-1	Carlos	Pérez	carlos.perez@instituto1.cl	1	1	$2b$12$jlt2uRgLE0MzDMY753N86ucpwkL.ddALF20Yv5dvqEcYE6Rj.2rAi
-12222222-2	Marta	González	marta.gonzalez@instituto2.cl	2	1	$2b$12$1hPTu1W5O2PgDmSWcqyN3uiPuvBGr9HqhvBh0GDE2OMidEbHpZQiy
-13333333-3	Juan	Ramírez	juan.ramirez@instituto3.cl	3	1	$2b$12$pIPWvC4tbCDyjw7XSg8GV.hPfEhkuXrg3vO10FgxlrhioD9DDoCZG
-14444444-4	Ana	Fernández	ana.fernandez@instituto4.cl	4	1	$2b$12$16w73NBOsWBiMl0gHGn6I.7FG6EoxlXNnXGaVFqhOJdihUNE1yvcO
-15555555-5	Luis	Torres	luis.torres@instituto5.cl	5	1	$2b$12$/YrE.Lpy92Qi783MMNA9NezwxA2vKWOzf5BGoVMFSyhszP15K5ARq
-16666666-6	Claudia	Vargas	claudia.vargas@instituto6.cl	6	1	$2b$12$8WN1fHDDTrx5Q/mmbwxKHur13XSvBCMYc0qqPeSNhBwS4f.3PZwuC
-17777777-7	Pedro	Morales	pedro.morales@instituto7.cl	7	1	$2b$12$K8Kn9DbICTHDgXyni1sRsOQMhoH3D5UYl4WViQICXR8.EaZS6/ytO
-18888888-8	María	Rojas	maria.rojas@instituto1.cl	1	1	$2b$12$lRHhWuMTq8gEotFxG8zQU.ZUUANjme9xOJaxT2ttT4GfMKXa9fjkC
-19999999-9	Ricardo	Castro	ricardo.castro@instituto2.cl	2	1	$2b$12$G0/36HguJP4exVHIaavm3ewiIPlBk/zQv9Df/TK6gtrsBAgTDbWjm
-20101010-0	Verónica	Silva	veronica.silva@instituto3.cl	3	1	$2b$12$NN1mVCh99KFAu6F/M34LjO/OV783X4mjUDlTie6gsVkTeURUVidFi
-21111111-1	Sebastián	López	sebastian.lopez@instituto4.cl	4	1	$2b$12$h04zyTyhzhDvDbzB2GGZe.3G3erEm2YulgApPtfZazEMlkFPl2L8S
-22222222-2	Patricia	Martínez	patricia.martinez@instituto5.cl	5	1	$2b$12$iAlZXqajafODNNJFvq.XCOtcYRJ6.4fvHSrayGQJB9aBwZwFAY/NG
-23333333-3	Andrés	Contreras	andres.contreras@instituto6.cl	6	1	$2b$12$qTE7vSysdGhcXYRsOyQLIuDswxtdrdCdVN12vixiFI.smHn9fuQ7q
-24444444-4	Daniela	Gutiérrez	daniela.gutierrez@instituto7.cl	7	1	$2b$12$W5IgFBqlaVHKB9lZudxXD.vHREMDV9iJTyc5G9AimiVPnF7DbVczy
-25555555-5	Diego	Fuentes	diego.fuentes@instituto1.cl	1	1	$2b$12$saYyW8hlfVbf/ghmbhp3YuH2ga43RNKiel/FHy.6HVOtWHo2kCCW6
-26666666-6	Francisca	Herrera	francisca.herrera@instituto2.cl	2	1	$2b$12$0ZAGb5q8RqGRzx5bcrTkEejovmNQhz/KMRogd7oWKqnA1xhTHgSQq
-27777777-7	Tomás	Reyes	tomas.reyes@instituto3.cl	3	1	$2b$12$gN91Jg3WwZ5LW09vFviAOeO44MTnbM7zqLGGWkw.RXh6ZGSxhj9E.
-28888888-8	Javiera	Navarro	javiera.navarro@instituto4.cl	4	1	$2b$12$KDSSzL/aWeOrQhx6JKF1b.XwC8PFKq2h3KFX3RTSEcPDzLd9dHP2u
-29999999-9	José	Ortega	jose.ortega@instituto5.cl	5	1	$2b$12$ZBKo9ItfGDDPgD2ARrt0v.273O6/WozRLHoDm8CFsys.gsfLocwJK
-30101010-0	Carolina	Sánchez	carolina.sanchez@instituto6.cl	6	1	$2b$12$6yMP7vjTa0rEQk6dDWt.Vu1MWe2YL2PxBZHJ/w9AHdqCzfqXJlXFi
 \.
 
 
@@ -1162,7 +1122,7 @@ ALTER TABLE ONLY public.instituto
 
 
 --
--- TOC entry 4725 (class 2606 OID 16666)
+-- TOC entry 4725 (class 2606 OID 16552)
 -- Name: profesor id_profesor; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1261,7 +1221,7 @@ ALTER TABLE ONLY public.profesor
 
 
 --
--- TOC entry 4739 (class 2606 OID 16673)
+-- TOC entry 4739 (class 2606 OID 16591)
 -- Name: registro fkey_profesor; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1287,11 +1247,11 @@ ALTER TABLE ONLY public.actividad
     ADD CONSTRAINT fkey_subcategoria FOREIGN KEY (id_subcategoria) REFERENCES public.subcategoria(id_subcategoria);
 
 
--- Completed on 2025-09-27 17:46:16
+-- Completed on 2025-09-26 15:53:51
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict kScpQXmSLmwAzbdm4l2e4Ib8hoob8bksphIBY8G0v9YTmtTgVQofl1TkJfE1Zb5
+\unrestrict UVhMapEh2jClROgdfotRsxkoxpuJ5ARi4LTXJcBgQx3BjWWqz5vSuQDnJVYkYzM
 

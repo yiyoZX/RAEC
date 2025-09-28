@@ -37,11 +37,6 @@ services:
       - backend
       - db
     restart: unless-stopped
-    networks:
-      - red_taller_software
 
 volumes:
   postgres_data:
-networks:
-  red_taller_software:
-    external: true 

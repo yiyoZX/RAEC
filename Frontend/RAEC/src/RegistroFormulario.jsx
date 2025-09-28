@@ -123,15 +123,21 @@ function RegistroFormulario() {
   };
 
   const opcionesAcademica = [
-    { value: "1", label: "Docencia" },
-    { value: "2", label: "Investigación" },
-    { value: "3", label: "Extensión" },
+    { value: "1", label: "Curso optativo completo" },
+    { value: "2", label: "Curso optativo parcial" },
+    { value: "3", label: "Trabajo en proyecto investigacion" },
+    { value: "4", label: "Trabajo en proyecto de I+D" },
+    { value: "5", label: "Asistencia a congresos" },
+    { value: "6", label: "Publicaciones" },
   ];
 
   const opcionesNoAcademica = [
-    { value: "4", label: "Dirigencias" },
-    { value: "5", label: "Deportivos" },
-    { value: "6", label: "Social" },
+    { value: "7", label: "Dirigencias" },
+    { value: "8", label: "Deportivo destacado" },
+    { value: "9", label: "Artístico destacado" },
+    { value: "10", label: "Trabajo social destacado" },
+    { value: "11", label: "Compromiso ambiental" },
+    { value: "12", label: "Inclusion" },
   ];
 
   return (

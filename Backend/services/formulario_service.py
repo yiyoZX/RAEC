@@ -5,11 +5,9 @@ from fastapi import HTTPException
 from sqlalchemy import func, select
 from core.models import alumno, profesor, actividad, registro
 
-def verificarDatos(db: Session, rut_alumno: str, id_profesor: int, id_actividad: int):
+def verificarDatos(db: Session, rut_alumno: str, id_actividad: int):
     if not db.execute(select(alumno).where(alumno.c.rut_alumno == rut_alumno)).first():
         raise HTTPException(status_code=400, detail="Alumno no existe")
-    if not db.execute(select(profesor).where(profesor.c.id_profesor == id_profesor)).first():
-        raise HTTPException(status_code=400, detail="Profesor no existe")
     if not db.execute(select(actividad).where(actividad.c.id_actividad == id_actividad)).first():
         raise HTTPException(status_code=400, detail="Actividad no existe")
     
@@ -39,6 +37,7 @@ async def guardar_formulario(
     # verificarDatos(db, rut, id_profesor, actividad)
 
     # Insertar registro con los nuevos campos
+    verificarDatos(db, rut, actividad)
     nuevo = registro.insert().values(
         id_alumno = rut,
         id_profesor = id_profesor,  # Usar el ID del profesor autenticado

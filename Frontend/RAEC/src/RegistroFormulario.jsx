@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { authenticatedFetchFormData } from "./utils/api";
 import DatePicker from "react-datepicker";
@@ -16,6 +16,14 @@ function RegistroFormulario() {
     archivos: null, // file input
     about: "", // textarea
   });
+
+  // Efecto para forzar selección académica si el usuario no es director
+  useEffect(() => {
+    if (user && user.rol !== 2 && values.academica === "2") {
+      // Si no es director y tiene seleccionado "No" (actividades no académicas), resetear
+      setValues(prev => ({ ...prev, academica: "", actividad: "" }));
+    }
+  }, [user, values.academica]);
 
   const handleChanges = (e) => {
     const { name, value, type, files } = e.target;
@@ -177,17 +185,35 @@ function RegistroFormulario() {
             required
           />
           <label htmlFor="academica-si">Sí</label>
-          <input
-            type="radio"
-            id="academica-no"
-            name="academica"
-            value="2"
-            checked={values.academica === "2"}
-            onChange={handleChanges}
-            required
-          />
-          <label htmlFor="academica-no">No</label>
+          {/* Solo mostrar opción "No" (actividades no académicas) si el usuario es director (rol = 2) */}
+          {user?.rol === 2 && (
+            <>
+              <input
+                type="radio"
+                id="academica-no"
+                name="academica"
+                value="2"
+                checked={values.academica === "2"}
+                onChange={handleChanges}
+              />
+              <label htmlFor="academica-no">No</label>
+            </>
+          )}
         </div>
+        {/* Mensaje informativo para profesores */}
+        {user?.rol === 1 && (
+          <div style={{ 
+            marginTop: '5px', 
+            padding: '8px 12px', 
+            backgroundColor: '#e8f4f8', 
+            border: '1px solid #bee5eb',
+            borderRadius: '4px',
+            fontSize: '0.9em',
+            color: '#0c5460'
+          }}>
+            ℹ️ Solo los directores pueden registrar actividades no académicas.
+          </div>
+        )}
 
         <label htmlFor="actividad">Actividad</label>
         <select

@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from routes.profesores import router as profesores_router
 from routes.formulario import router as formulario_router
 from routes.reportes import router as reportes_router
+from fastapi.staticfiles import StaticFiles
 
 
 # Crear base de datos y conectar
@@ -20,6 +21,7 @@ async def lifespan(app: FastAPI):
     await database.disconnect()
 
 app = FastAPI(lifespan=lifespan)
+app.mount("/exports", StaticFiles(directory="exports"), name="exports")
 
 # Configurar CORS para permitir solo el frontend
 origins = [

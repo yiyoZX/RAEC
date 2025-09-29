@@ -91,13 +91,9 @@ btnConsultar.addEventListener("click", async () => {
     url += "/alumno";
     params.rut = rut;
   } else if (selReporte.value === "actividad") {
-    // Mientras backend solo devuelve general, ignoramos filtros concretos
-    const tipo = selTipo.value;
-    if (!tipo) { setPlaceholder("Seleccione tipo de actividad."); return; }
     if (!selActividad.value) { setPlaceholder("Seleccione una actividad."); return; }
     url += "/actividad";
-    params.tipo = tipo;          // actualmente backend puede ignorarlo
-    params.actividad_id = selActividad.value; // futuro
+    params.actividad_id = selActividad.value;
   } else if (selReporte.value === "general") {
     url += "/general";
   } else {
@@ -122,8 +118,24 @@ btnConsultar.addEventListener("click", async () => {
     if (response.status === 403) { setPlaceholder("Acceso denegado."); return; }
     if (!response.ok) { setPlaceholder("Error HTTP " + response.status); return; }
 
-    const data = await response.json();
-    renderList(Array.isArray(data) ? data : []);
+    const json = await response.json();
+    const items = Array.isArray(json) ? json : (json.data || []);
+    renderList(items);
+
+    // Mostrar info del CSV generado
+ if (json.csv_url) {
+      const wrap = document.createElement("div");
+      wrap.className = "mt-3 text-sm";
+      const nombre = json.csv_url.split("/").pop();
+      const a = document.createElement("a");
+      a.href = "http://localhost:4001" + json.csv_url;
+      a.textContent = "Descargar CSV (" + nombre + ")";
+      a.className = "text-purple-700 underline hover:text-purple-900";
+      a.download = nombre; // hint
+      wrap.appendChild(a);
+      preview.prepend(wrap);
+    }
+
   } catch (e) {
     console.error(e);
     setPlaceholder("Error de conexión.");

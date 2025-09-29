@@ -1,4 +1,3 @@
-# ...existing code...
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, desc
@@ -82,4 +81,3 @@ def obtener_reporte_por_actividad(db: Session, actividad_id: Optional[int], limi
     )
     result = db.execute(stmt).mappings().all()
     return [_serialize_row(r) for r in result]
-# ...existing code...

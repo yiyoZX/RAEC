@@ -5,8 +5,10 @@ from core.auth import get_current_user
 from services.reportes_service import (
     obtener_reporte_alumno,
     obtener_reporte_general,
-    obtener_reporte_por_actividad   # <-- nombre correcto
+    obtener_reporte_por_actividad
 )
+from services.exportador_csv import guardar_csv
+import os
 
 router = APIRouter(prefix="/reportes", tags=["Reportes"])
 
@@ -16,7 +18,15 @@ def reporte_por_alumno(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    return obtener_reporte_alumno(db, rut)
+    rows = obtener_reporte_alumno(db, rut)
+    csv_path = guardar_csv(f"reporte_alumno_{rut}", rows)
+    filename = os.path.basename(csv_path)
+    return {
+        "total": len(rows),
+        "csv_file": csv_path,
+        "csv_url": f"/exports/{filename}",
+        "data": rows
+    }
 
 @router.get("/actividad")
 def reporte_por_actividad(
@@ -25,7 +35,15 @@ def reporte_por_actividad(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    return obtener_reporte_por_actividad(db, actividad_id, limite)
+    rows = obtener_reporte_por_actividad(db, actividad_id, limite)
+    csv_path = guardar_csv(f"reporte_actividad_{actividad_id}", rows)
+    filename = os.path.basename(csv_path)
+    return {
+        "total": len(rows),
+        "csv_file": csv_path,
+        "csv_url": f"/exports/{filename}",
+        "data": rows
+    }
 
 @router.get("/general")
 def reporte_general(
@@ -33,4 +51,12 @@ def reporte_general(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    return obtener_reporte_general(db, limite)
+    rows = obtener_reporte_general(db, limite)
+    csv_path = guardar_csv("reporte_general", rows)
+    filename = os.path.basename(csv_path)
+    return {
+        "total": len(rows),
+        "csv_file": csv_path,
+        "csv_url": f"/exports/{filename}",
+        "data": rows
+    }

@@ -24,6 +24,8 @@ services:
       - JWT_ACCESS_TOKEN_EXPIRE_MINUTES=${JWT_ACCESS_TOKEN_EXPIRE_MINUTES}
     ports:
       - "4001:4001"
+    volumes:
+      - ./Backend/exports:/app/exports
     depends_on:
       - db
     restart: unless-stopped

@@ -44,6 +44,11 @@ async def submit_form(
             from fastapi import HTTPException
             raise HTTPException(status_code=422, detail="Las horas totales deben ser un número positivo")
         
+                # Validar que solo los directores (id_rol = 2) puedan registrar actividades no académicas (academica = 2)
+        if academica_int == 2 and current_user["id_rol"] != 2:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=403, detail="Solo los directores pueden registrar actividades no académicas")
+
         # Convertir fechas de string a datetime
         fecha_inicio_dt = datetime.strptime(fecha_inicio, "%Y-%m-%d")
         fecha_termino_dt = datetime.strptime(fecha_termino, "%Y-%m-%d")

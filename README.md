@@ -2,68 +2,195 @@
 
 RAEC es un sistema web para gestionar y registrar actividades extracurriculares de estudiantes en instituciones educativas. Permite a docentes registrar, validar y generar reportes de actividades realizadas por los alumnos.
 
-## 1. Instalación / Requisitos
+## 1. Requisitos Previos
 
-Requisitos generales:
+### Para Despliegue con Docker (Recomendado)
 - Git
-- Python 3.12
-- Node y vite
-- PostgreSQL:17
-- Opcional: Docker Desktop (para ejecución con contenedores)
+- Docker Desktop
+- Archivo `.env` (proporcionado por el equipo)
 
+### Para Desarrollo Local
+- Git
+- Python 3.12+
+- Node.js y npm
+- PostgreSQL 17
+- Archivo `.env` (proporcionado por el equipo)
 
-Pasos:
-1) Clonar el repositorio 
-   - Terminal (PowerShell):
-     - git clone https://https://github.com/yiyoZX/RAEC/tree/main.git
-     - cd RAEC
-   - Se pueden usar otros metodos como github desktop
+## 2. Instalación
 
-2) Variables de entorno
-   - Crear un archivo .env en la raíz del proyecto con las variables necesarias.
-   - No publiques ni subas el .env al repositorio.
-   - Los Datos del .env seran proporcionados
+### Paso 1: Clonar el repositorio
+```bash
+git clone https://github.com/yiyoZX/RAEC.git
+cd RAEC
+```
 
-3) Instalar dependencias
-   - Node.js:
-     - npm install
-   - Python (ejemplo):
-     - py -m venv .venv
-     - .\.venv\Scripts\Activate.ps1
-     - pip install -r requirements.txt
-
-4) Base de datos
-    - Importar la base de datos con el dumb.
-
-Docker: si se ocupa docker se puede usar:
-- Docker-compose build
-- Docker-compose up
-Con esto el proyecto deberia estar levantado
+### Paso 2: Configurar variables de entorno
+- Crear un archivo `.env` en la raíz del proyecto con las variables necesarias
+- **IMPORTANTE**: No publiques ni subas el `.env` al repositorio
+- Los datos del `.env` serán proporcionados por el equipo
    
 
-## 3. Uso
+## 3. Despliegue
 
-Entorno de desarrollo:
-Para inicializar:
-- Node.js:
-  - npm run dev
-- Python:
-    En windows:
-  - python -m uvicorn main_backend:app --reload
-    En linux:
-  - uvicorn main_backend:app --reload
+### Opción A: Docker (Recomendado) 🐳
 
-Accede a la URL que muestre la terminal (por ejemplo, http://localhost:3000 o similar).
+**Ventajas:**
+- Configuración automática de base de datos
+- Ambiente consistente entre desarrolladores
+- No requiere instalación manual de dependencias
 
-## 4. Despliegue
+**Pasos:**
+```bash
+# Construir las imágenes
+docker-compose build
 
-Opciones comunes:
-  Docker: si se ocupa docker se puede usar:
-    - Docker-compose build
-    - Docker-compose up
-con esto el proyecto deberia estar levantado
+# Levantar todos los servicios
+docker-compose up
 
-## 5. Contribución
+# O en modo detached (segundo plano)
+docker-compose up -d
+```
+
+**Acceso:**
+- Frontend: http://localhost:3001
+- Backend API: http://localhost:4001
+- Base de datos: localhost:5001
+
+**Comandos útiles:**
+```bash
+# Ver logs
+docker-compose logs backend
+docker-compose logs frontend
+
+# Reiniciar un servicio específico
+docker-compose restart backend
+
+# Detener todos los servicios
+docker-compose down
+```
+
+### Opción B: Desarrollo Local
+
+**Requisitos adicionales:**
+- Haber instalado PostgreSQL 17 localmente
+- Node.js y Python configurados
+
+**Paso 1: Instalar dependencias**
+```bash
+# Frontend (desde ./Frontend/RAEC)
+cd Frontend/RAEC
+npm install
+
+# Backend (desde ./Backend)
+cd ../../Backend
+pip install -r requirements.txt
+```
+
+**Paso 2: Configurar base de datos**
+```bash
+# Crear usuario y base de datos
+psql -U postgres
+CREATE USER raecuser WITH PASSWORD 'tu_password';
+CREATE DATABASE raecdb OWNER raecuser;
+\q
+
+# Importar datos
+psql -U raecuser -d raecdb -f Dbase/init-complete.sql
+```
+
+**Paso 3: Configurar .env para desarrollo local**
+```env
+DATABASE_URL=postgresql://raecuser:tu_password@localhost:5432/raecdb
+JWT_SECRET_KEY=tu_secret_key
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+**Paso 4: Ejecutar servicios**
+```bash
+# Terminal 1: Backend
+cd Backend
+python -m uvicorn main_backend:app --reload --port 4001
+
+# Terminal 2: Frontend  
+cd Frontend/RAEC
+npm run dev
+```
+
+**Acceso:**
+- Frontend: http://localhost:3001
+- Backend API: http://localhost:4001
+
+## 4. Uso
+
+### Acceso al Sistema
+1. Abrir el navegador en http://localhost:3001
+2. Iniciar sesión con las credenciales proporcionadas
+3. Navegar por las diferentes secciones:
+   - **Dashboard**: Vista principal del sistema
+   - **Registro de Actividades**: Formulario para registrar nuevas actividades
+   - **Reportes**: Generar reportes por alumno, actividad o general
+
+### Funcionalidades Principales
+- **Gestión de Usuarios**: Administración de profesores y alumnos
+- **Registro de Actividades**: Documentar actividades extracurriculares
+- **Generación de Reportes**: Reportes detallados y exportación CSV
+- **Autenticación JWT**: Sistema seguro de login
+
+## 5. Desarrollo
+
+### Estructura del Proyecto
+```
+RAEC/
+├── Backend/           # API FastAPI
+├── Frontend/RAEC/     # Aplicación web con Vite
+├── Dbase/            # Scripts SQL y dumps
+├── docker-compose.yml # Configuración Docker
+└── README.md         # Este archivo
+```
+
+### Base de Datos
+El archivo `Dbase/init-complete.sql` contiene:
+- Estructura completa de tablas
+- Datos de prueba para desarrollo
+- Configuraciones iniciales
+
+**Tablas principales:**
+- `alumno`: Información de estudiantes
+- `profesor`: Información de docentes  
+- `actividad`: Catálogo de actividades extracurriculares
+- `registro`: Registros de actividades realizadas
+- `rol`: Roles del sistema
+- `instituto`: Institutos o facultades
+
+### Comandos Útiles
+
+**Docker:**
+```bash
+# Reconstruir imágenes
+docker-compose build --no-cache
+
+# Ver logs específicos
+docker-compose logs -f backend
+
+# Acceder a la base de datos
+docker exec -it raec-db psql -U raecuser -d raecdb
+
+# Limpiar Docker si hay problemas
+docker system prune -f
+docker-compose down -v
+```
+
+**Base de datos:**
+```bash
+# Backup
+docker exec -t raec-db pg_dump -U raecuser raecdb > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Restaurar
+docker exec -i raec-db psql -U raecuser -d raecdb < backup_file.sql
+```
+
+## 6. Contribución
 
 - Sigue convenciones de commit (por ejemplo, Conventional Commits).
 - Abre un Pull Request describiendo:

@@ -1,0 +1,104 @@
+/* App.css */
+
+/* Estilo general */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
+
+  /* Centrado con flex */
+  display: flex;
+  justify-content: center;  /* centra horizontal */
+  align-items: center;      /* centra vertical */
+  min-height: 100vh;        /* ocupa toda la altura de la ventana */
+}
+
+
+/* Contenedor principal */
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Formulario */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Etiquetas */
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+/* Inputs, select y textarea */
+input[type="text"],
+input[type="email"],
+input[type="file"],
+select,
+textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  transition: border 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+select:focus,
+textarea:focus {
+  border: 1px solid #4a90e2;
+}
+
+/* Radios */
+input[type="radio"] {
+  margin-right: 5px;
+}
+
+/* Botones */
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+/* Botón reset */
+button:first-of-type {
+  background: #ccc;
+  color: #333;
+}
+
+button:first-of-type:hover {
+  background: #b3b3b3;
+}
+
+/* Botón submit */
+button[type="submit"] {
+  background: #4a90e2;
+  color: white;
+}
+
+button[type="submit"]:hover {
+  background: #357abd;
+}

@@ -108,10 +108,8 @@ psql -U raecuser -d raecdb -f Dbase/init-complete.sql
 **Paso 3: Configurar .env para desarrollo local**
 ```env
 DATABASE_URL=postgresql://raecuser:tu_password@localhost:5432/raecdb
-JWT_SECRET_KEY=tu_secret_key
-JWT_ALGORITHM=HS256
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
+pregunta el resto del .env al equipo
 
 **Paso 4: Ejecutar servicios**
 ```bash

@@ -53,8 +53,11 @@ docker-compose up -d
 
 **Acceso:**
 servidor:
+
 - https://raec.inf.uach.cl/login.html
+
 Local:
+
 - Frontend: http://localhost:3001
 - Backend API: http://localhost:4001
 - Base de datos: localhost:5001

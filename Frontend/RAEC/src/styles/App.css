@@ -1,0 +1,41 @@
+/* Estilos específicos del formulario (migrado desde App.css original) */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.container h1 { text-align:center; margin-bottom:20px; color:#333; }
+
+form { display:flex; flex-direction:column; gap:15px; }
+
+label { font-weight:bold; margin-bottom:5px; color:#444; }
+
+input[type="text"], input[type="email"], input[type="file"], select, textarea, input[type="number"] {
+  padding:10px; border:1px solid #ccc; border-radius:8px; outline:none; font-size:14px; transition:border .3s;
+}
+
+input:focus, select:focus, textarea:focus { border:1px solid #4a90e2; }
+
+input[type="radio"] { margin-right:5px; }
+
+button { padding:12px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; transition:background .3s; }
+
+button:first-of-type { background:#ccc; color:#333; }
+button:first-of-type:hover { background:#b3b3b3; }
+button[type="submit"], button:not(:first-of-type) { background:#4a90e2; color:#fff; }
+button[type="submit"]:hover, button:not(:first-of-type):hover { background:#357abd; }

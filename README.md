@@ -104,7 +104,7 @@ DATABASE_URL=postgresql://raecuser:tu_password@localhost:5432/raecdb
 JWT_SECRET_KEY=tu_secret_key
 JWT_ALGORITHM=HS256
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
-```
+``` 
 
 **Paso 4: Ejecutar servicios**
 ```bash

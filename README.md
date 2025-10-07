@@ -204,18 +204,3 @@ docker exec -t raec-db pg_dump -U raecuser raecdb > backup_$(date +%Y%m%d_%H%M%S
 # Restaurar
 docker exec -i raec-db psql -U raecuser -d raecdb < backup_file.sql
 ```
-
-## 6. Contribución
-
-- Sigue convenciones de commit (por ejemplo, Conventional Commits).
-- Abre un Pull Request describiendo:
-  - Qué problema resuelve
-  - Consideraciones de seguridad y de migración
-  - Pasos de prueba manual
-## 6. Contribución
-
-- Sigue convenciones de commit (por ejemplo, Conventional Commits).
-- Abre un Pull Request describiendo:
-  - Qué problema resuelve
-  - Consideraciones de seguridad y de migración
-  - Pasos de prueba manual

@@ -32,12 +32,27 @@ cd RAEC
 
 ## 3. Despliegue
 
+Con el .env proporcionado este debe ser colocado en los siguientes lugares:
+
+```
+RAEC/
+├── Backend/           <-igualmente coloca el .env en la carpeta backend.
+├── Frontend/RAEC/     
+├── Dbase/           
+├── docker-compose.yml
+├── README.md 
+└── .env               <-carpeta raiz del proyecto.
+```
+
 ### Opción A: Docker (Recomendado) 🐳
 
 **Ventajas:**
 - Configuración automática de base de datos
 - Ambiente consistente entre desarrolladores
 - No requiere instalación manual de dependencias
+
+**Error comun**
+revisa si la end line sequence del archivo wait-for-postgres.sh esta en crlf o lf. si esta en crlf cambialo a lf.
 
 **Pasos:**
 ```bash
@@ -52,13 +67,6 @@ docker-compose up -d
 ```
 
 **Acceso:**
-
-servidor:
-
-- https://raec.inf.uach.cl/login.html
-
-Local:
-
 - Frontend: http://localhost:3001
 - Backend API: http://localhost:4001
 - Base de datos: localhost:5001
@@ -108,8 +116,10 @@ psql -U raecuser -d raecdb -f Dbase/init-complete.sql
 **Paso 3: Configurar .env para desarrollo local**
 ```env
 DATABASE_URL=postgresql://raecuser:tu_password@localhost:5432/raecdb
-```
-pregunta el resto del .env al equipo
+JWT_SECRET_KEY=tu_secret_key
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+``` 
 
 **Paso 4: Ejecutar servicios**
 ```bash
@@ -195,6 +205,13 @@ docker exec -t raec-db pg_dump -U raecuser raecdb > backup_$(date +%Y%m%d_%H%M%S
 docker exec -i raec-db psql -U raecuser -d raecdb < backup_file.sql
 ```
 
+## 6. Contribución
+
+- Sigue convenciones de commit (por ejemplo, Conventional Commits).
+- Abre un Pull Request describiendo:
+  - Qué problema resuelve
+  - Consideraciones de seguridad y de migración
+  - Pasos de prueba manual
 ## 6. Contribución
 
 - Sigue convenciones de commit (por ejemplo, Conventional Commits).

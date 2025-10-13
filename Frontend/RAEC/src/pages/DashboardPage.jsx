@@ -1,15 +1,39 @@
+// ...existing code...
 import { useNavigate } from 'react-router-dom';
 import HeaderLayout from '../layouts/HeaderLayout';
 import Button from '../components/Button';
+// ...existing code...
 
 const DashboardPage = () => {
   const navigate = useNavigate();
+
+  const actions = [
+    { label: 'Registrar', to: '/registrar', icon: '✔️' },
+    { label: 'Solicitudes', to: '/Solicitudes', icon: '👥' },
+    { label: 'Reportes', to: '/reportes', icon: '📊' },
+  ];
+
   return (
-    <HeaderLayout>
-      <div className="flex items-center justify-start px-10 py-10">
-        <div className="flex flex-col space-y-4">
-          <Button variant="pill" onClick={() => navigate('/registrar')}>✔️ Registrar</Button>
-          <Button variant="pill" onClick={() => navigate('/reportes')}>✔️ Reportes</Button>
+    <HeaderLayout fullScreen>
+      {/* Contenedor centrado */}
+      <div className="w-full max-w-6xl mx-auto px-8 py-12">
+        <div className="mb-12 text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Bienvenido!</h1>
+          <p className="text-gray-600 text-lg">Por favor selecciona una opción:</p>
+        </div>
+
+        {/* Botones como cuadros grandes horizontales */}
+        <div className="flex flex-col gap-6">
+          {actions.map((action) => (
+            <button
+              key={action.to}
+              onClick={() => navigate(action.to)}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 flex items-center justify-center gap-4 min-h-[120px] text-3xl font-semibold"
+            >
+              <span className="text-5xl">{action.icon}</span>
+              <span>{action.label}</span>
+            </button>
+          ))}
         </div>
       </div>
     </HeaderLayout>
@@ -17,3 +41,4 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+// ...existing code...

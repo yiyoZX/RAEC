@@ -84,56 +84,191 @@ function RegistroFormulario() {
 
   return (
     <HeaderLayout showBack backTo="/dashboard" title="RAEC - Registro de Actividades">
-      <div className="container">
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="rut">Rut</label>
-        <input type="text" id="rut" name="rut" placeholder="Ingrese rut" value={values.rut} onChange={handleChanges} required />
+      {/* Contenedor sin margen superior y con ancho completo */}
+      <div className="w-full max-w-7xl mx-auto px-6 py-8">
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Registrar Nueva Actividad</h2>
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Fila 1: RUT y Tipo de Actividad */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="rut" className="block text-sm font-semibold text-gray-700 mb-2">
+                  RUT
+                </label>
+                <input
+                  type="text"
+                  id="rut"
+                  name="rut"
+                  placeholder="Ej: 12345678-9"
+                  value={values.rut}
+                  onChange={handleChanges}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  required
+                />
+              </div>
 
-        <label>Académica</label>
-        <div>
-          <input type="radio" id="academica-si" name="academica" value="1" checked={values.academica === '1'} onChange={handleChanges} required />
-          <label htmlFor="academica-si">Sí</label>
-          {user?.rol === 2 && (
-            <>
-              <input type="radio" id="academica-no" name="academica" value="2" checked={values.academica === '2'} onChange={handleChanges} />
-              <label htmlFor="academica-no">No</label>
-            </>
-          )}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Tipo de Actividad
+                </label>
+                <div className="flex items-center gap-6 h-12">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      id="academica-si"
+                      name="academica"
+                      value="1"
+                      checked={values.academica === '1'}
+                      onChange={handleChanges}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                      required
+                    />
+                    <span className="ml-2 text-gray-700">Académica</span>
+                  </label>
+                  {user?.rol === 2 && (
+                    <label className="inline-flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        id="academica-no"
+                        name="academica"
+                        value="2"
+                        checked={values.academica === '2'}
+                        onChange={handleChanges}
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-gray-700">No Académica</span>
+                    </label>
+                  )}
+                </div>
+                {user?.rol === 1 && (
+                  <div className="mt-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                    ℹ️ Solo los directores pueden registrar actividades no académicas.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Fila 2: Actividad y Horas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="actividad" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Actividad
+                </label>
+                <select
+                  id="actividad"
+                  name="actividad"
+                  value={values.actividad}
+                  onChange={handleChanges}
+                  disabled={!values.academica}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  required
+                >
+                  <option value="">Seleccione una actividad</option>
+                  {(values.academica === '1' ? opcionesAcademica : values.academica === '2' ? opcionesNoAcademica : []).map(op => (
+                    <option key={op.value} value={op.value}>{op.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="horas_totales" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Horas Totales
+                </label>
+                <input
+                  type="number"
+                  id="horas_totales"
+                  name="horas_totales"
+                  placeholder="Ej: 10"
+                  value={values.horas_totales}
+                  onChange={handleChanges}
+                  min="1"
+                  max="9999"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Fila 3: Fechas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Fecha de Inicio
+                </label>
+                <DatePicker
+                  selected={values.fecha_inicio}
+                  onChange={handleFechaInicioChange}
+                  dateFormat="dd/MM/yyyy"
+                  maxDate={new Date()}
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Fecha de Término
+                </label>
+                <DatePicker
+                  selected={values.fecha_termino}
+                  onChange={handleFechaTerminoChange}
+                  dateFormat="dd/MM/yyyy"
+                  maxDate={new Date()}
+                  minDate={values.fecha_inicio}
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Fila 4: Archivo */}
+            <div>
+              <label htmlFor="archivos" className="block text-sm font-semibold text-gray-700 mb-2">
+                Archivo Adjunto (PDF, PNG, JPG - Máx 5MB)
+              </label>
+              <input
+                type="file"
+                name="archivos"
+                onChange={handleChanges}
+                accept=".pdf,image/png,image/jpeg"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+            </div>
+
+            {/* Fila 5: Descripción */}
+            <div>
+              <label htmlFor="about" className="block text-sm font-semibold text-gray-700 mb-2">
+                Descripción de la Actividad
+              </label>
+              <textarea
+                id="about"
+                name="about"
+                rows="6"
+                placeholder="Describa brevemente la actividad realizada..."
+                value={values.about}
+                onChange={handleChanges}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+              />
+            </div>
+
+            {/* Botones */}
+            <div className="flex gap-4 pt-4">
+              <Button type="button" variant="secondary" className="flex-1" onClick={ResetFun}>
+                Limpiar Formulario
+              </Button>
+              <Button type="submit" variant="primary" className="flex-1">
+                Enviar Registro
+              </Button>
+            </div>
+          </form>
         </div>
-        {user?.rol === 1 && (
-          <div style={{ marginTop:'5px', padding:'8px 12px', backgroundColor:'#e8f4f8', border:'1px solid #bee5eb', borderRadius:'4px', fontSize:'0.9em', color:'#0c5460' }}>
-            ℹ️ Solo los directores pueden registrar actividades no académicas.
-          </div>
-        )}
-
-        <label htmlFor="actividad">Actividad</label>
-        <select id="actividad" name="actividad" value={values.actividad} onChange={handleChanges} disabled={!values.academica} required>
-          <option value="">Seleccione una actividad</option>
-          {(values.academica === '1' ? opcionesAcademica : values.academica === '2' ? opcionesNoAcademica : []).map(op => (
-            <option key={op.value} value={op.value}>{op.label}</option>
-          ))}
-        </select>
-
-        <label>Fecha de Inicio de la Actividad</label>
-        <DatePicker selected={values.fecha_inicio} onChange={handleFechaInicioChange} dateFormat="dd/MM/yyyy" maxDate={new Date()} showYearDropdown showMonthDropdown dropdownMode="select" className="date-picker-input" required />
-
-        <label>Fecha de Término de la Actividad</label>
-        <DatePicker selected={values.fecha_termino} onChange={handleFechaTerminoChange} dateFormat="dd/MM/yyyy" maxDate={new Date()} minDate={values.fecha_inicio} showYearDropdown showMonthDropdown dropdownMode="select" className="date-picker-input" required />
-
-        <label htmlFor="horas_totales">Horas Totales</label>
-        <input type="number" id="horas_totales" name="horas_totales" placeholder="Ingrese el número total de horas" value={values.horas_totales} onChange={handleChanges} min="1" max="9999" required />
-
-        <label htmlFor="archivos">Archivos</label>
-        <input type="file" name="archivos" onChange={handleChanges} accept=".pdf,image/png,image/jpeg" />
-
-        <label htmlFor="about">Descripción</label>
-        <textarea id="about" name="about" rows="6" placeholder="Descripción de la actividad" value={values.about} onChange={handleChanges} />
-
-        <div className="flex gap-3">
-          <Button type="button" variant="secondary" onClick={ResetFun}>Limpiar</Button>
-          <Button type="submit" variant="primary">Enviar</Button>
-        </div>
-      </form>
       </div>
     </HeaderLayout>
   );

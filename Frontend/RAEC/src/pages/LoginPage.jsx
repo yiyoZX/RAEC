@@ -42,6 +42,14 @@ const LoginPage = () => {
           <Button type="submit" isLoading={loading} className="w-full" variant="primary">
             {loading ? 'Ingresando...' : 'Ingresar'}
           </Button>
+          <button
+            type="button"
+            onClick={() => navigate('/loginStudent')}
+            className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+            disabled={loading}
+          >
+            Ingresar como Estudiante
+          </button>
         </form>
       </div>
     </div>

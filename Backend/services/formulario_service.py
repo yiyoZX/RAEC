@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from sqlalchemy import func, select
 from core.models import alumno, profesor, actividad, registro
+from services.mailsend_service import idData, formularioMail
 
 def verificarDatos(db: Session, rut_alumno: str, id_actividad: int):
     if not db.execute(select(alumno).where(alumno.c.rut_alumno == rut_alumno)).first():
@@ -55,4 +56,12 @@ async def guardar_formulario(
     db.commit()
 
     inserted_id = result.inserted_primary_key[0] if result.inserted_primary_key else None
+
+    mailData = idData(
+        rut_alumno = rut,
+        id_profesor = id_profesor,
+        id_registro = inserted_id
+    )
+    await formularioMail(mailData, db)
+
     return {"message": "Formulario guardado exitosamente", "id": inserted_id, "horas_totales": horas_totales}

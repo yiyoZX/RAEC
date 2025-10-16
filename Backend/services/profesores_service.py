@@ -8,6 +8,6 @@ async def autenticar_profesor(prof: ProfesorLogin):
         credenciales={'correo': prof.correo, 'password': prof.password},
         campo_busqueda='correo',
         campo_id='id_profesor',
-        tipo_usuario='profesor',
+        tipo_usuario='academico',
         campos_extras=['id_rol', 'id_instituto']
     )

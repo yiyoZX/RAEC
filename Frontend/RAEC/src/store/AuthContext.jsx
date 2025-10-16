@@ -41,15 +41,15 @@ export const AuthProvider = ({ children }) => {
       });
       const data = await response.json();
       if (response.ok && data.access_token) {
-        const userPayload = {
+          const userPayload = {
           id_profesor: data.id_profesor,
-          rol: data.rol,
+          rol_id: data.id_rol || null,
           instituto: data.instituto,
           message: data.message,
         };
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('user_data', JSON.stringify(userPayload));
-        localStorage.setItem('user_type', 'profesor');
+        localStorage.setItem('user_type', data.rol === 1 ? (data.rol === 1 ? 'profesor' : 'director') : 'academico');
         localStorage.setItem('isAuthenticated', 'true');
         setToken(data.access_token);
         setUser(userPayload);
@@ -81,6 +81,7 @@ export const AuthProvider = ({ children }) => {
           rut: data.rut ?? null,
           carrera: data.carrera ?? null,
           message: data.message,
+          rol: data.rol || null
         };
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('user_data', JSON.stringify(userPayload));

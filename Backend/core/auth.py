@@ -59,7 +59,7 @@ async def get_current_user(
     user_id = verified["id"]
     user_type = verified["type"]
     
-    if user_type == "profesor":
+    if user_type == "academico":
         # Verificar que el profesor existe en la base de datos
         query = select(profesor).where(profesor.c.id_profesor == user_id)
         result = db.execute(query)

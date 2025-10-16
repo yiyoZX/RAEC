@@ -23,9 +23,15 @@ async def autenticar_usuario(
     if not bcrypt.checkpw(credenciales['password'].encode("utf-8"), db_usuario["password_hash"].encode("utf-8")):
         return None
     
+    # Crea token - agrega "rol" SOLO si existe en la tabla
     token_data = {"sub": str(db_usuario[campo_id])}
     if tipo_usuario:
         token_data["type"] = tipo_usuario
+    if 'id_rol' in db_usuario:  # Cambio: Valida si existe (compatible con alumnos)
+        token_data["id_rol"] = db_usuario["id_rol"]
+    else:
+        token_data["id_rol"] = None  # Para estudiantes, pon None
+    
     access_token = create_access_token(data=token_data)
     
     response = {
@@ -34,6 +40,12 @@ async def autenticar_usuario(
         "token_type": "bearer",
         f"id_{tipo_usuario or 'usuario'}": db_usuario[campo_id]
     }
+    
+    # Agrega "rol" SOLO si existe
+    if 'id_rol' in db_usuario:  # Cambio: Valida
+        response["id_rol"] = db_usuario["id_rol"]
+    else:
+        response["id_rol"] = None
     
     for campo in campos_extras:
         if campo in db_usuario:

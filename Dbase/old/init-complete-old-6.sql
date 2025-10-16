@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict ZjKMPewUdwTkMJWVJKbL25YKjyEj7oD81dBc9ovDBiVSabbEnG6VCfg5rmwDMpM
+\restrict MmqiiDERlO1PlqSlu8uKLd7U0WddNHweJtVPxhmo0Avam6mzo5h4esXxJBr5n5t
 
 -- Dumped from database version 17.6 (Debian 17.6-2.pgdg13+1)
 -- Dumped by pg_dump version 17.6
 
--- Started on 2025-10-15 20:54:05
+-- Started on 2025-09-29 00:56:09
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -52,7 +52,7 @@ CREATE SEQUENCE public.actividad_id_actividad_seq
 
 
 --
--- TOC entry 3561 (class 0 OID 0)
+-- TOC entry 3552 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: actividad_id_actividad_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -75,7 +75,7 @@ CREATE SEQUENCE public.actividad_id_subcategoria_seq
 
 
 --
--- TOC entry 3562 (class 0 OID 0)
+-- TOC entry 3553 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: actividad_id_subcategoria_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -100,7 +100,7 @@ CREATE TABLE public.alumno (
 
 
 --
--- TOC entry 3563 (class 0 OID 0)
+-- TOC entry 3554 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: COLUMN alumno.rut_alumno; Type: COMMENT; Schema: public; Owner: -
 --
@@ -123,7 +123,7 @@ CREATE SEQUENCE public.alumno_id_carrera_seq
 
 
 --
--- TOC entry 3564 (class 0 OID 0)
+-- TOC entry 3555 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: alumno_id_carrera_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -146,7 +146,7 @@ CREATE SEQUENCE public.alumno_rut_alumno_seq
 
 
 --
--- TOC entry 3565 (class 0 OID 0)
+-- TOC entry 3556 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: alumno_rut_alumno_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -180,7 +180,7 @@ CREATE SEQUENCE public.carrera_id_carrera_seq
 
 
 --
--- TOC entry 3566 (class 0 OID 0)
+-- TOC entry 3557 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: carrera_id_carrera_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -214,7 +214,7 @@ CREATE SEQUENCE public.categoria_id_categoria_seq
 
 
 --
--- TOC entry 3567 (class 0 OID 0)
+-- TOC entry 3558 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: categoria_id_categoria_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -248,7 +248,7 @@ CREATE SEQUENCE public.estado_id_estado_seq
 
 
 --
--- TOC entry 3568 (class 0 OID 0)
+-- TOC entry 3559 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: estado_id_estado_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -268,18 +268,6 @@ CREATE TABLE public.instituto (
 
 
 --
--- TOC entry 245 (class 1259 OID 24722)
--- Name: instituto-carrera; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public."instituto-carrera" (
-    id_instituto_carrera integer NOT NULL,
-    id_carrera integer,
-    id_instituto integer
-);
-
-
---
 -- TOC entry 230 (class 1259 OID 16418)
 -- Name: instituto_id_instituto_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
@@ -294,7 +282,7 @@ CREATE SEQUENCE public.instituto_id_instituto_seq
 
 
 --
--- TOC entry 3569 (class 0 OID 0)
+-- TOC entry 3560 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: instituto_id_instituto_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -333,7 +321,7 @@ CREATE SEQUENCE public.profesor_id_instituto_seq
 
 
 --
--- TOC entry 3570 (class 0 OID 0)
+-- TOC entry 3561 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: profesor_id_instituto_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -356,7 +344,7 @@ CREATE SEQUENCE public.profesor_id_profesor_seq
 
 
 --
--- TOC entry 3571 (class 0 OID 0)
+-- TOC entry 3562 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: profesor_id_profesor_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -379,7 +367,7 @@ CREATE SEQUENCE public.profesor_id_rol_seq
 
 
 --
--- TOC entry 3572 (class 0 OID 0)
+-- TOC entry 3563 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: profesor_id_rol_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -424,7 +412,7 @@ CREATE SEQUENCE public.registro_id_actividad_seq
 
 
 --
--- TOC entry 3573 (class 0 OID 0)
+-- TOC entry 3564 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: registro_id_actividad_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -447,7 +435,7 @@ CREATE SEQUENCE public.registro_id_alumno_seq
 
 
 --
--- TOC entry 3574 (class 0 OID 0)
+-- TOC entry 3565 (class 0 OID 0)
 -- Dependencies: 237
 -- Name: registro_id_alumno_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -470,7 +458,7 @@ CREATE SEQUENCE public.registro_id_profesor_seq
 
 
 --
--- TOC entry 3575 (class 0 OID 0)
+-- TOC entry 3566 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: registro_id_profesor_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -493,7 +481,7 @@ CREATE SEQUENCE public.registro_id_registro_seq
 
 
 --
--- TOC entry 3576 (class 0 OID 0)
+-- TOC entry 3567 (class 0 OID 0)
 -- Dependencies: 239
 -- Name: registro_id_registro_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -527,7 +515,7 @@ CREATE SEQUENCE public.rol_id_rol_seq
 
 
 --
--- TOC entry 3577 (class 0 OID 0)
+-- TOC entry 3568 (class 0 OID 0)
 -- Dependencies: 241
 -- Name: rol_id_rol_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -562,7 +550,7 @@ CREATE SEQUENCE public.subcategoria_id_categoria_seq
 
 
 --
--- TOC entry 3578 (class 0 OID 0)
+-- TOC entry 3569 (class 0 OID 0)
 -- Dependencies: 243
 -- Name: subcategoria_id_categoria_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -585,7 +573,7 @@ CREATE SEQUENCE public.subcategoria_id_subcategoria_seq
 
 
 --
--- TOC entry 3579 (class 0 OID 0)
+-- TOC entry 3570 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: subcategoria_id_subcategoria_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -594,7 +582,7 @@ ALTER SEQUENCE public.subcategoria_id_subcategoria_seq OWNED BY public.subcatego
 
 
 --
--- TOC entry 3331 (class 2604 OID 16447)
+-- TOC entry 3327 (class 2604 OID 16447)
 -- Name: actividad id_actividad; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -602,7 +590,7 @@ ALTER TABLE ONLY public.actividad ALTER COLUMN id_actividad SET DEFAULT nextval(
 
 
 --
--- TOC entry 3332 (class 2604 OID 16448)
+-- TOC entry 3328 (class 2604 OID 16448)
 -- Name: actividad id_subcategoria; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -610,7 +598,7 @@ ALTER TABLE ONLY public.actividad ALTER COLUMN id_subcategoria SET DEFAULT nextv
 
 
 --
--- TOC entry 3333 (class 2604 OID 16449)
+-- TOC entry 3329 (class 2604 OID 16449)
 -- Name: alumno rut_alumno; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -618,7 +606,7 @@ ALTER TABLE ONLY public.alumno ALTER COLUMN rut_alumno SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 3334 (class 2604 OID 16450)
+-- TOC entry 3330 (class 2604 OID 16450)
 -- Name: alumno id_carrera; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -626,7 +614,7 @@ ALTER TABLE ONLY public.alumno ALTER COLUMN id_carrera SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 3335 (class 2604 OID 16451)
+-- TOC entry 3331 (class 2604 OID 16451)
 -- Name: carrera id_carrera; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -634,7 +622,7 @@ ALTER TABLE ONLY public.carrera ALTER COLUMN id_carrera SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3336 (class 2604 OID 16452)
+-- TOC entry 3332 (class 2604 OID 16452)
 -- Name: categoria id_categoria; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -642,7 +630,7 @@ ALTER TABLE ONLY public.categoria ALTER COLUMN id_categoria SET DEFAULT nextval(
 
 
 --
--- TOC entry 3337 (class 2604 OID 16453)
+-- TOC entry 3333 (class 2604 OID 16453)
 -- Name: estado id_estado; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -650,7 +638,7 @@ ALTER TABLE ONLY public.estado ALTER COLUMN id_estado SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3338 (class 2604 OID 16454)
+-- TOC entry 3334 (class 2604 OID 16454)
 -- Name: instituto id_instituto; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -658,7 +646,7 @@ ALTER TABLE ONLY public.instituto ALTER COLUMN id_instituto SET DEFAULT nextval(
 
 
 --
--- TOC entry 3339 (class 2604 OID 16455)
+-- TOC entry 3335 (class 2604 OID 16455)
 -- Name: profesor id_profesor; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -666,7 +654,7 @@ ALTER TABLE ONLY public.profesor ALTER COLUMN id_profesor SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3340 (class 2604 OID 16456)
+-- TOC entry 3336 (class 2604 OID 16456)
 -- Name: profesor id_instituto; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -674,7 +662,7 @@ ALTER TABLE ONLY public.profesor ALTER COLUMN id_instituto SET DEFAULT nextval('
 
 
 --
--- TOC entry 3341 (class 2604 OID 16457)
+-- TOC entry 3337 (class 2604 OID 16457)
 -- Name: profesor id_rol; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -682,7 +670,7 @@ ALTER TABLE ONLY public.profesor ALTER COLUMN id_rol SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3342 (class 2604 OID 16458)
+-- TOC entry 3338 (class 2604 OID 16458)
 -- Name: registro id_registro; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -690,7 +678,7 @@ ALTER TABLE ONLY public.registro ALTER COLUMN id_registro SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3343 (class 2604 OID 16459)
+-- TOC entry 3339 (class 2604 OID 16459)
 -- Name: registro id_profesor; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -698,7 +686,7 @@ ALTER TABLE ONLY public.registro ALTER COLUMN id_profesor SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3344 (class 2604 OID 16460)
+-- TOC entry 3340 (class 2604 OID 16460)
 -- Name: registro id_actividad; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -706,7 +694,7 @@ ALTER TABLE ONLY public.registro ALTER COLUMN id_actividad SET DEFAULT nextval('
 
 
 --
--- TOC entry 3345 (class 2604 OID 16461)
+-- TOC entry 3341 (class 2604 OID 16461)
 -- Name: registro id_alumno; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -714,7 +702,7 @@ ALTER TABLE ONLY public.registro ALTER COLUMN id_alumno SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3346 (class 2604 OID 16462)
+-- TOC entry 3342 (class 2604 OID 16462)
 -- Name: rol id_rol; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -722,7 +710,7 @@ ALTER TABLE ONLY public.rol ALTER COLUMN id_rol SET DEFAULT nextval('public.rol_
 
 
 --
--- TOC entry 3347 (class 2604 OID 16463)
+-- TOC entry 3343 (class 2604 OID 16463)
 -- Name: subcategoria id_subcategoria; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -730,7 +718,7 @@ ALTER TABLE ONLY public.subcategoria ALTER COLUMN id_subcategoria SET DEFAULT ne
 
 
 --
--- TOC entry 3348 (class 2604 OID 16464)
+-- TOC entry 3344 (class 2604 OID 16464)
 -- Name: subcategoria id_categoria; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -738,7 +726,7 @@ ALTER TABLE ONLY public.subcategoria ALTER COLUMN id_categoria SET DEFAULT nextv
 
 
 --
--- TOC entry 3527 (class 0 OID 16385)
+-- TOC entry 3519 (class 0 OID 16385)
 -- Dependencies: 217
 -- Data for Name: actividad; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -760,7 +748,7 @@ COPY public.actividad (id_actividad, nombre_actividad, id_subcategoria) FROM std
 
 
 --
--- TOC entry 3530 (class 0 OID 16392)
+-- TOC entry 3522 (class 0 OID 16392)
 -- Dependencies: 220
 -- Data for Name: alumno; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -791,7 +779,7 @@ COPY public.alumno (rut_alumno, nombres, apellidos, correo, ano_egreso, id_carre
 
 
 --
--- TOC entry 3533 (class 0 OID 16399)
+-- TOC entry 3525 (class 0 OID 16399)
 -- Dependencies: 223
 -- Data for Name: carrera; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -808,7 +796,7 @@ COPY public.carrera (id_carrera, nombre_carrera) FROM stdin;
 
 
 --
--- TOC entry 3535 (class 0 OID 16405)
+-- TOC entry 3527 (class 0 OID 16405)
 -- Dependencies: 225
 -- Data for Name: categoria; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -820,20 +808,18 @@ COPY public.categoria (id_categoria, nombre_categoria) FROM stdin;
 
 
 --
--- TOC entry 3537 (class 0 OID 16409)
+-- TOC entry 3529 (class 0 OID 16409)
 -- Dependencies: 227
 -- Data for Name: estado; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.estado (id_estado, nombre_estado) FROM stdin;
-1	aceptado
-2	rechazado
-3	pendiente
+1	pendiente
 \.
 
 
 --
--- TOC entry 3539 (class 0 OID 16413)
+-- TOC entry 3531 (class 0 OID 16413)
 -- Dependencies: 229
 -- Data for Name: instituto; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -850,24 +836,7 @@ COPY public.instituto (id_instituto, nombre_instituto) FROM stdin;
 
 
 --
--- TOC entry 3555 (class 0 OID 24722)
--- Dependencies: 245
--- Data for Name: instituto-carrera; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public."instituto-carrera" (id_instituto_carrera, id_carrera, id_instituto) FROM stdin;
-1	1	1
-2	2	2
-3	3	3
-4	4	4
-5	5	5
-6	6	6
-7	7	7
-\.
-
-
---
--- TOC entry 3541 (class 0 OID 16419)
+-- TOC entry 3533 (class 0 OID 16419)
 -- Dependencies: 231
 -- Data for Name: profesor; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -887,7 +856,7 @@ COPY public.profesor (id_profesor, nombres, apellidos, correo, id_instituto, id_
 28888888-8	Javiera	Navarro	javiera.navarro@instituto4.cl	4	1	$2b$12$KDSSzL/aWeOrQhx6JKF1b.XwC8PFKq2h3KFX3RTSEcPDzLd9dHP2u
 29999999-9	José	Ortega	jose.ortega@instituto5.cl	5	1	$2b$12$ZBKo9ItfGDDPgD2ARrt0v.273O6/WozRLHoDm8CFsys.gsfLocwJK
 30101010-0	Carolina	Sánchez	carolina.sanchez@instituto6.cl	6	1	$2b$12$6yMP7vjTa0rEQk6dDWt.Vu1MWe2YL2PxBZHJ/w9AHdqCzfqXJlXFi
-11111111-1	Carlos	Pérez	carlos.perez@instituto1.cl	1	2	$2b$12$jlt2uRgLE0MzDMY753N86ucpwkL.ddALF20Yv5dvqEcYE6Rj.2rAi
+11111111-1	Carlos	Pérez	teamraec282@gmail.com	1	2	$2b$12$jlt2uRgLE0MzDMY753N86ucpwkL.ddALF20Yv5dvqEcYE6Rj.2rAi
 19999999-9	Ricardo	Castro	ricardo.castro@instituto2.cl	2	2	$2b$12$G0/36HguJP4exVHIaavm3ewiIPlBk/zQv9Df/TK6gtrsBAgTDbWjm
 20101010-0	Verónica	Silva	veronica.silva@instituto3.cl	3	2	$2b$12$NN1mVCh99KFAu6F/M34LjO/OV783X4mjUDlTie6gsVkTeURUVidFi
 21111111-1	Sebastián	López	sebastian.lopez@instituto4.cl	4	2	$2b$12$h04zyTyhzhDvDbzB2GGZe.3G3erEm2YulgApPtfZazEMlkFPl2L8S
@@ -898,20 +867,18 @@ COPY public.profesor (id_profesor, nombres, apellidos, correo, id_instituto, id_
 
 
 --
--- TOC entry 3545 (class 0 OID 16427)
+-- TOC entry 3537 (class 0 OID 16427)
 -- Dependencies: 235
 -- Data for Name: registro; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.registro (fecha_creacion, fecha_emision, archivo_data, comentario, id_registro, id_estado, id_profesor, id_actividad, id_alumno, archivo_nombre, fecha_inicio_actividad, fecha_termino_actividad, horas_totales) FROM stdin;
 2025-09-29 03:53:51.649511+00	2025-09-29 03:53:51.651294+00	\N		6	1	11111111-1	1	22222222-2	\N	2025-04-08 00:00:00+00	2025-09-29 00:00:00+00	199
-2025-09-29 13:25:57.605454+00	2025-09-29 13:25:57.608317+00	\N		7	1	1	1	22222222-2	\N	2025-09-02 00:00:00+00	2025-09-29 00:00:00+00	30
-2025-10-05 22:25:57.081867+00	2025-10-05 22:25:57.083601+00	\N		8	1	1	5	21111111-1	\N	2025-09-28 00:00:00+00	2025-10-05 00:00:00+00	10
 \.
 
 
 --
--- TOC entry 3550 (class 0 OID 16436)
+-- TOC entry 3542 (class 0 OID 16436)
 -- Dependencies: 240
 -- Data for Name: rol; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -923,7 +890,7 @@ COPY public.rol (id_rol, nombre_rol) FROM stdin;
 
 
 --
--- TOC entry 3552 (class 0 OID 16442)
+-- TOC entry 3544 (class 0 OID 16442)
 -- Dependencies: 242
 -- Data for Name: subcategoria; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -937,7 +904,7 @@ COPY public.subcategoria (id_subcategoria, subcategoria, id_categoria) FROM stdi
 
 
 --
--- TOC entry 3580 (class 0 OID 0)
+-- TOC entry 3571 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: actividad_id_actividad_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -946,7 +913,7 @@ SELECT pg_catalog.setval('public.actividad_id_actividad_seq', 1, false);
 
 
 --
--- TOC entry 3581 (class 0 OID 0)
+-- TOC entry 3572 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: actividad_id_subcategoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -955,7 +922,7 @@ SELECT pg_catalog.setval('public.actividad_id_subcategoria_seq', 1, false);
 
 
 --
--- TOC entry 3582 (class 0 OID 0)
+-- TOC entry 3573 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: alumno_id_carrera_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -964,7 +931,7 @@ SELECT pg_catalog.setval('public.alumno_id_carrera_seq', 1, false);
 
 
 --
--- TOC entry 3583 (class 0 OID 0)
+-- TOC entry 3574 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: alumno_rut_alumno_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -973,7 +940,7 @@ SELECT pg_catalog.setval('public.alumno_rut_alumno_seq', 1, false);
 
 
 --
--- TOC entry 3584 (class 0 OID 0)
+-- TOC entry 3575 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: carrera_id_carrera_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -982,7 +949,7 @@ SELECT pg_catalog.setval('public.carrera_id_carrera_seq', 1, false);
 
 
 --
--- TOC entry 3585 (class 0 OID 0)
+-- TOC entry 3576 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: categoria_id_categoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -991,7 +958,7 @@ SELECT pg_catalog.setval('public.categoria_id_categoria_seq', 1, false);
 
 
 --
--- TOC entry 3586 (class 0 OID 0)
+-- TOC entry 3577 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: estado_id_estado_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1000,7 +967,7 @@ SELECT pg_catalog.setval('public.estado_id_estado_seq', 1, false);
 
 
 --
--- TOC entry 3587 (class 0 OID 0)
+-- TOC entry 3578 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: instituto_id_instituto_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1009,7 +976,7 @@ SELECT pg_catalog.setval('public.instituto_id_instituto_seq', 1, false);
 
 
 --
--- TOC entry 3588 (class 0 OID 0)
+-- TOC entry 3579 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: profesor_id_instituto_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1018,7 +985,7 @@ SELECT pg_catalog.setval('public.profesor_id_instituto_seq', 1, false);
 
 
 --
--- TOC entry 3589 (class 0 OID 0)
+-- TOC entry 3580 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: profesor_id_profesor_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1027,7 +994,7 @@ SELECT pg_catalog.setval('public.profesor_id_profesor_seq', 1, true);
 
 
 --
--- TOC entry 3590 (class 0 OID 0)
+-- TOC entry 3581 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: profesor_id_rol_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1036,7 +1003,7 @@ SELECT pg_catalog.setval('public.profesor_id_rol_seq', 1, false);
 
 
 --
--- TOC entry 3591 (class 0 OID 0)
+-- TOC entry 3582 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: registro_id_actividad_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1045,7 +1012,7 @@ SELECT pg_catalog.setval('public.registro_id_actividad_seq', 1, false);
 
 
 --
--- TOC entry 3592 (class 0 OID 0)
+-- TOC entry 3583 (class 0 OID 0)
 -- Dependencies: 237
 -- Name: registro_id_alumno_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1054,7 +1021,7 @@ SELECT pg_catalog.setval('public.registro_id_alumno_seq', 1, false);
 
 
 --
--- TOC entry 3593 (class 0 OID 0)
+-- TOC entry 3584 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: registro_id_profesor_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1063,16 +1030,16 @@ SELECT pg_catalog.setval('public.registro_id_profesor_seq', 1, false);
 
 
 --
--- TOC entry 3594 (class 0 OID 0)
+-- TOC entry 3585 (class 0 OID 0)
 -- Dependencies: 239
 -- Name: registro_id_registro_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.registro_id_registro_seq', 8, true);
+SELECT pg_catalog.setval('public.registro_id_registro_seq', 6, true);
 
 
 --
--- TOC entry 3595 (class 0 OID 0)
+-- TOC entry 3586 (class 0 OID 0)
 -- Dependencies: 241
 -- Name: rol_id_rol_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1081,7 +1048,7 @@ SELECT pg_catalog.setval('public.rol_id_rol_seq', 1, false);
 
 
 --
--- TOC entry 3596 (class 0 OID 0)
+-- TOC entry 3587 (class 0 OID 0)
 -- Dependencies: 243
 -- Name: subcategoria_id_categoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1090,7 +1057,7 @@ SELECT pg_catalog.setval('public.subcategoria_id_categoria_seq', 1, false);
 
 
 --
--- TOC entry 3597 (class 0 OID 0)
+-- TOC entry 3588 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: subcategoria_id_subcategoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
@@ -1099,7 +1066,7 @@ SELECT pg_catalog.setval('public.subcategoria_id_subcategoria_seq', 1, true);
 
 
 --
--- TOC entry 3350 (class 2606 OID 16466)
+-- TOC entry 3346 (class 2606 OID 16466)
 -- Name: actividad id_actividad; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1108,7 +1075,7 @@ ALTER TABLE ONLY public.actividad
 
 
 --
--- TOC entry 3354 (class 2606 OID 16468)
+-- TOC entry 3350 (class 2606 OID 16468)
 -- Name: carrera id_carrera; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1117,7 +1084,7 @@ ALTER TABLE ONLY public.carrera
 
 
 --
--- TOC entry 3356 (class 2606 OID 16470)
+-- TOC entry 3352 (class 2606 OID 16470)
 -- Name: categoria id_categoria; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1126,7 +1093,7 @@ ALTER TABLE ONLY public.categoria
 
 
 --
--- TOC entry 3358 (class 2606 OID 16472)
+-- TOC entry 3354 (class 2606 OID 16472)
 -- Name: estado id_estado; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1135,7 +1102,7 @@ ALTER TABLE ONLY public.estado
 
 
 --
--- TOC entry 3360 (class 2606 OID 16474)
+-- TOC entry 3356 (class 2606 OID 16474)
 -- Name: instituto id_instituto; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1144,7 +1111,7 @@ ALTER TABLE ONLY public.instituto
 
 
 --
--- TOC entry 3362 (class 2606 OID 16476)
+-- TOC entry 3358 (class 2606 OID 16476)
 -- Name: profesor id_profesor; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1153,7 +1120,7 @@ ALTER TABLE ONLY public.profesor
 
 
 --
--- TOC entry 3364 (class 2606 OID 16478)
+-- TOC entry 3360 (class 2606 OID 16478)
 -- Name: registro id_registro; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1162,7 +1129,7 @@ ALTER TABLE ONLY public.registro
 
 
 --
--- TOC entry 3366 (class 2606 OID 16480)
+-- TOC entry 3362 (class 2606 OID 16480)
 -- Name: rol id_rol; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1171,7 +1138,7 @@ ALTER TABLE ONLY public.rol
 
 
 --
--- TOC entry 3368 (class 2606 OID 16482)
+-- TOC entry 3364 (class 2606 OID 16482)
 -- Name: subcategoria id_subcategoria; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1180,16 +1147,7 @@ ALTER TABLE ONLY public.subcategoria
 
 
 --
--- TOC entry 3370 (class 2606 OID 24736)
--- Name: instituto-carrera instituto_carrera_pk; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."instituto-carrera"
-    ADD CONSTRAINT instituto_carrera_pk PRIMARY KEY (id_instituto_carrera);
-
-
---
--- TOC entry 3352 (class 2606 OID 16484)
+-- TOC entry 3348 (class 2606 OID 16484)
 -- Name: alumno pk_alumno; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1198,7 +1156,7 @@ ALTER TABLE ONLY public.alumno
 
 
 --
--- TOC entry 3375 (class 2606 OID 16485)
+-- TOC entry 3369 (class 2606 OID 16485)
 -- Name: registro fk_alumno; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1207,7 +1165,7 @@ ALTER TABLE ONLY public.registro
 
 
 --
--- TOC entry 3376 (class 2606 OID 16490)
+-- TOC entry 3370 (class 2606 OID 16490)
 -- Name: registro fkey_actividad; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1216,7 +1174,7 @@ ALTER TABLE ONLY public.registro
 
 
 --
--- TOC entry 3372 (class 2606 OID 16495)
+-- TOC entry 3366 (class 2606 OID 16495)
 -- Name: alumno fkey_carrera; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1225,7 +1183,7 @@ ALTER TABLE ONLY public.alumno
 
 
 --
--- TOC entry 3379 (class 2606 OID 16500)
+-- TOC entry 3373 (class 2606 OID 16500)
 -- Name: subcategoria fkey_categoria; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1234,7 +1192,7 @@ ALTER TABLE ONLY public.subcategoria
 
 
 --
--- TOC entry 3377 (class 2606 OID 16505)
+-- TOC entry 3371 (class 2606 OID 16505)
 -- Name: registro fkey_estado; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1243,7 +1201,7 @@ ALTER TABLE ONLY public.registro
 
 
 --
--- TOC entry 3373 (class 2606 OID 16510)
+-- TOC entry 3367 (class 2606 OID 16510)
 -- Name: profesor fkey_instituto; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1252,7 +1210,7 @@ ALTER TABLE ONLY public.profesor
 
 
 --
--- TOC entry 3378 (class 2606 OID 16515)
+-- TOC entry 3372 (class 2606 OID 16515)
 -- Name: registro fkey_profesor; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1261,7 +1219,7 @@ ALTER TABLE ONLY public.registro
 
 
 --
--- TOC entry 3374 (class 2606 OID 16520)
+-- TOC entry 3368 (class 2606 OID 16520)
 -- Name: profesor fkey_rol; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1270,7 +1228,7 @@ ALTER TABLE ONLY public.profesor
 
 
 --
--- TOC entry 3371 (class 2606 OID 16525)
+-- TOC entry 3365 (class 2606 OID 16525)
 -- Name: actividad fkey_subcategoria; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1278,29 +1236,11 @@ ALTER TABLE ONLY public.actividad
     ADD CONSTRAINT fkey_subcategoria FOREIGN KEY (id_subcategoria) REFERENCES public.subcategoria(id_subcategoria);
 
 
---
--- TOC entry 3380 (class 2606 OID 24730)
--- Name: instituto-carrera instituto_carrera_carrera_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."instituto-carrera"
-    ADD CONSTRAINT instituto_carrera_carrera_fk FOREIGN KEY (id_carrera) REFERENCES public.carrera(id_carrera);
-
-
---
--- TOC entry 3381 (class 2606 OID 24725)
--- Name: instituto-carrera instituto_carrera_instituto_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."instituto-carrera"
-    ADD CONSTRAINT instituto_carrera_instituto_fk FOREIGN KEY (id_instituto) REFERENCES public.instituto(id_instituto);
-
-
--- Completed on 2025-10-15 20:54:05
+-- Completed on 2025-09-29 00:56:09
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict ZjKMPewUdwTkMJWVJKbL25YKjyEj7oD81dBc9ovDBiVSabbEnG6VCfg5rmwDMpM
+\unrestrict MmqiiDERlO1PlqSlu8uKLd7U0WddNHweJtVPxhmo0Avam6mzo5h4esXxJBr5n5t
 

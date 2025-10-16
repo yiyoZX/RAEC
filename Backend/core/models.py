@@ -69,6 +69,28 @@ registro = Table(
     Column("horas_totales", Integer, nullable=True)
 )
 
+carrera = Table(
+    "carrera",
+    metadata,
+    Column("id_carrera", Integer, primary_key=True),
+    Column("nombre_carrera", String(50), unique=True, nullable=False)
+)
+
+estado = Table(
+    "estado",
+    metadata,
+    Column("id_estado", Integer, primary_key=True),
+    Column("nombre_estado", String(50), unique=True, nullable=False)
+)
+
+instituto-carrera = Table(
+    "instituto_carrera",
+    metadata,
+    Column("id_instituto_carrera", Integer, primary_key=True),
+    Column("id_instituto", Integer, ForeignKey("Instituto.id_instituto")),
+    Column("id_carrera", Integer, ForeignKey("carrera.id_carrera"))
+)
+
 registro = Table("registro", metadata, autoload_with=engine)
 alumno = Table("alumno", metadata, autoload_with=engine)
 profesor = Table("profesor", metadata, autoload_with=engine)

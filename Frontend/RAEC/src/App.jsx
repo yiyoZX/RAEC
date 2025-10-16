@@ -5,7 +5,8 @@ import LoginPage from './pages/LoginPage';
 import LoginStudentPage from './pages/loginStudent';
 import DashboardStudentPage from  './pages/dashboardStudent';
 import DashboardPage from './pages/DashboardPage';
-import RegistroFormulario from './pages/RegistroFormulario';
+import RegistroFormularioAcademico from './pages/RegistroFormularioAcademico';
+import RegistroFormularioEstudiante from './pages/RegistroFormularioEstudiantes';
 import ReportesPage from './pages/ReportesPage';
 
 function App() {
@@ -18,7 +19,8 @@ function App() {
           <Route path="/loginStudent" element={<LoginStudentPage/>} />
           <Route path="/dashboardStudent" element={<ProtectedRoute><DashboardStudentPage /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/registrar" element={<ProtectedRoute><RegistroFormulario /></ProtectedRoute>} />
+          <Route path="/registrar" element={<ProtectedRoute><RegistroFormularioAcademico /></ProtectedRoute>} />
+          <Route path="/registroEstudiantes" element= {<ProtectedRoute><RegistroFormularioEstudiante/></ProtectedRoute>} />
           <Route path="/reportes" element={<ProtectedRoute><ReportesPage /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

@@ -83,7 +83,7 @@ estado = Table(
     Column("nombre_estado", String(50), unique=True, nullable=False)
 )
 
-instituto-carrera = Table(
+instituto_carrera = Table(
     "instituto_carrera",
     metadata,
     Column("id_instituto_carrera", Integer, primary_key=True),

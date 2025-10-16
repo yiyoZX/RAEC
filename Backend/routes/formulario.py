@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form, File, UploadFile, Depends
 from sqlalchemy.orm import Session
-from services.formulario_service import guardar_formulario
+from services.formulario_service import guardar_registro
 from core.database import get_db
 from core.auth import get_current_user
 from datetime import datetime
@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post("/submit/")
 async def submit_form(
-    rut: str = Form(...),
+    rut: str = Form(None),
     academica: str = Form(...),
     actividad: str = Form(...),
     fecha_inicio: str = Form(...),
@@ -22,17 +22,6 @@ async def submit_form(
     current_user: dict = Depends(get_current_user)
 ):
     # Convertir fechas y validar datos
-    print("Datos recibidos:", {
-        "rut": rut,
-        "academica": academica,
-        "actividad": actividad,
-        "fecha_inicio": fecha_inicio,
-        "fecha_termino": fecha_termino,
-        "horas_totales": horas_totales,
-        "about": about,
-        "archivos": archivos.filename if archivos else None
-    })
-    
     try:
         # Convertir strings a enteros
         academica_int = int(academica)
@@ -45,7 +34,7 @@ async def submit_form(
             raise HTTPException(status_code=422, detail="Las horas totales deben ser un número positivo")
         
                 # Validar que solo los directores (id_rol = 2) puedan registrar actividades no académicas (academica = 2)
-        if academica_int == 2 and current_user["id_rol"] != 2:
+        if academica_int == 2 and current_user.get("type") == "academico" and current_user["id_rol"] != 2:
             from fastapi import HTTPException
             raise HTTPException(status_code=403, detail="Solo los directores pueden registrar actividades no académicas")
 
@@ -65,6 +54,6 @@ async def submit_form(
         else:
             raise HTTPException(status_code=422, detail="Los campos numéricos deben contener valores válidos")
     
-    return await guardar_formulario(
-        rut, academica_int, actividad_int, fecha_inicio_dt, fecha_termino_dt, horas_totales_int, about, archivos, db, current_user["id_profesor"]
+    return await guardar_registro(
+        academica_int, actividad_int, fecha_inicio_dt, fecha_termino_dt, horas_totales_int, about, archivos, db, current_user, rut
     )

@@ -7,7 +7,7 @@ const DashboardStudent = () => {
 
   const actions = [
     { label: 'Registrar', to: '/registroEstudiantes', icon: '✔️' },
-    { label: 'Reportes', to: '/reportes', icon: '📊' },
+    { label: 'Reportes', to: '/reportesEstudiantes', icon: '📊' },
   ];
 
   return (

@@ -21,24 +21,21 @@ def _actividad_existe(db: Session, actividad_id: int) -> bool:
     stmt = select(actividad.c.id_actividad).where(actividad.c.id_actividad == actividad_id)
     return db.execute(stmt).first() is not None
 
-def obtener_reporte_alumno(db: Session, rut: str) -> List[Dict[str, Any]]:
-    stmt = (
-        select(
-            registro.c.id_alumno.label("rut_alumno"),
-            alumno.c.nombres,
-            alumno.c.apellidos,
-            actividad.c.nombre_actividad,
-            registro.c.fecha_creacion
-        )
-        .join(alumno, registro.c.id_alumno == alumno.c.rut_alumno, isouter=True)
-        .join(actividad, registro.c.id_actividad == actividad.c.id_actividad, isouter=True)
-        .where(registro.c.id_alumno == rut)
-        .order_by(desc(registro.c.fecha_creacion))
-    )
-    result = db.execute(stmt).mappings().all()
-    return [_serialize_row(r) for r in result]
-
-def obtener_reporte_general(db: Session, limite: int) -> List[Dict[str, Any]]:
+# Función genérica factorizada (nueva - maneja todos los tipos de reportes)
+def obtener_reporte(
+    db: Session,
+    current_user: Optional[Dict[str, Any]] = None,  # Para filtrar por user en estudiantes
+    rut: Optional[str] = None,  # Para reporte por alumno
+    actividad_id: Optional[int] = None,  # Para reporte por actividad
+    estado: Optional[int] = None,  # Para estudiantes: 1=aprobadas, 2=rechazadas, 3=pendientes
+    limite: int = 10  # Default 10
+) -> List[Dict[str, Any]]:
+    # Validaciones básicas
+    if actividad_id is not None:
+        if not _actividad_existe(db, actividad_id):
+            raise HTTPException(status_code=404, detail="Actividad no encontrada")
+    
+    # Query base común - joins a alumno y actividad
     stmt = (
         select(
             registro.c.id_alumno.label("rut_alumno"),
@@ -52,32 +49,20 @@ def obtener_reporte_general(db: Session, limite: int) -> List[Dict[str, Any]]:
         .order_by(desc(registro.c.fecha_creacion))
         .limit(limite)
     )
-    result = db.execute(stmt).mappings().all()
-    return [_serialize_row(r) for r in result]
 
-def obtener_reporte_por_actividad(db: Session, actividad_id: Optional[int], limite: int) -> List[Dict[str, Any]]:
-    if actividad_id is None:
-        raise HTTPException(status_code=422, detail="actividad_id es obligatorio")
-    try:
-        actividad_id = int(actividad_id)
-    except ValueError:
-        raise HTTPException(status_code=422, detail="actividad_id debe ser entero")
-    if not _actividad_existe(db, actividad_id):
-        raise HTTPException(status_code=404, detail="Actividad no encontrada")
+    # Agrega filtros basados en params (factorización - uno por filtro)
+    if rut is not None:  # Reporte por alumno
+        stmt = stmt.where(registro.c.id_alumno == rut)
+    if actividad_id is not None:  # Por actividad
+        stmt = stmt.where(registro.c.id_actividad == actividad_id)
+    if estado is not None:  # Para estudiantes por estado
+        if current_user and current_user.get("type") == "estudiante":
+            stmt = stmt.where(registro.c.id_estado == estado, registro.c.id_alumno == current_user.get("rut_alumno"))
+        else:
+            raise HTTPException(status_code=403, detail="Permiso denegado para este filtro")
+    if current_user and current_user.get("type") == "estudiante" and estado is None:  # General para estudiantes - solo suyos
+        stmt = stmt.where(registro.c.id_alumno == current_user.get("rut_alumno"))
 
-    stmt = (
-        select(
-            registro.c.id_alumno.label("rut_alumno"),
-            alumno.c.nombres,
-            alumno.c.apellidos,
-            actividad.c.nombre_actividad,
-            registro.c.fecha_creacion
-        )
-        .join(alumno, registro.c.id_alumno == alumno.c.rut_alumno, isouter=True)
-        .join(actividad, registro.c.id_actividad == actividad.c.id_actividad)
-        .where(registro.c.id_actividad == actividad_id)
-        .order_by(desc(registro.c.fecha_creacion))
-        .limit(limite)
-    )
+    # Ejecuta y serializa (común)
     result = db.execute(stmt).mappings().all()
     return [_serialize_row(r) for r in result]

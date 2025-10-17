@@ -22,7 +22,6 @@ class idData(BaseModel):
     id_profesor: str
     id_registro: int
 
-# Sacar datos de la base de datos según IDs para añadir a una lista de destinatarios
 def extraerDatos(rut_alumno: str, id_profesor: str, db: Session):
     queryAlumno = select(alumno.c.nombres, alumno.c.correo).where(alumno.c.rut_alumno == rut_alumno)
     queryProf = select(profesor.c.nombres, profesor.c.correo).where(profesor.c.id_profesor == id_profesor)

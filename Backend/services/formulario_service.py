@@ -37,7 +37,7 @@ async def guardar_registro(
     
     # Determina tipo de usuario y ajusta lógica
     user_type = current_user.get("type")
-    if user_type == "academico":
+    if user_type == "profesor":
         if not rut:  # Rut requerido para académicos
             raise HTTPException(status_code=400, detail="RUT requerido para académicos")
         rut_alumno = rut

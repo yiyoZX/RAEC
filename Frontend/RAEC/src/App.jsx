@@ -7,7 +7,8 @@ import DashboardStudentPage from  './pages/dashboardStudent';
 import DashboardPage from './pages/DashboardPage';
 import RegistroFormularioAcademico from './pages/RegistroFormularioAcademico';
 import RegistroFormularioEstudiante from './pages/RegistroFormularioEstudiantes';
-import ReportesPage from './pages/ReportesPage';
+import ReportesEstudiantes from './pages/ReportesEstudiantes';
+import ReportesAcademicos from './pages/ReportesAcademicos';
 
 function App() {
   return (
@@ -21,7 +22,8 @@ function App() {
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/registrar" element={<ProtectedRoute><RegistroFormularioAcademico /></ProtectedRoute>} />
           <Route path="/registroEstudiantes" element= {<ProtectedRoute><RegistroFormularioEstudiante/></ProtectedRoute>} />
-          <Route path="/reportes" element={<ProtectedRoute><ReportesPage /></ProtectedRoute>} />
+          <Route path="/reportesEstudiantes" element={<ProtectedRoute><ReportesEstudiantes /></ProtectedRoute>} />
+          <Route path="/reportesAcademicos" element={<ProtectedRoute><ReportesAcademicos /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>

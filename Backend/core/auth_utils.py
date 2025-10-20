@@ -1,4 +1,4 @@
-import bcrypt
+from passlib.hash import bcrypt
 from core.database import database
 from core.auth import create_access_token
 
@@ -20,7 +20,7 @@ async def autenticar_usuario(
     if not db_usuario:
         return None
     
-    if not bcrypt.checkpw(credenciales['password'].encode("utf-8"), db_usuario["password_hash"].encode("utf-8")):
+    if not bcrypt.verify(credenciales['password'], db_usuario["password_hash"]):
         return None
     
     # Crea token - agrega "rol" SOLO si existe en la tabla

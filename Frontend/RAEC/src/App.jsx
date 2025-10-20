@@ -8,7 +8,6 @@ import DashboardPage from './pages/DashboardPage';
 import DashboardAdmin from './pages/DashboardAdmin';
 import RegistroFormularioAcademico from './pages/RegistroFormularioAcademico';
 import RegistroFormularioEstudiante from './pages/RegistroFormularioEstudiantes';
-import DashboardAdmin from './pages/DashboardAdmin';
 import CrearActividad from './pages/CrearActividad';
 import ReportesEstudiantes from './pages/ReportesEstudiantes';
 import ReportesAcademicos from './pages/ReportesAcademicos';

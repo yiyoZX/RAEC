@@ -1,4 +1,4 @@
-11111111-1,Carlos,Pérez,carlos.perez@instituto1.cl,clave123,1,1
+11111111-1,Carlos,Pérez,carlos.perez@instituto1.cl,clave123,1,2
 12222222-2,Marta,González,marta.gonzalez@instituto2.cl,clave123,2,1
 13333333-3,Juan,Ramírez,juan.ramirez@instituto3.cl,clave123,3,1
 14444444-4,Ana,Fernández,ana.fernandez@instituto4.cl,clave123,4,1
@@ -6,12 +6,12 @@
 16666666-6,Claudia,Vargas,claudia.vargas@instituto6.cl,clave123,6,1
 17777777-7,Pedro,Morales,pedro.morales@instituto7.cl,clave123,7,1
 18888888-8,María,Rojas,maria.rojas@instituto1.cl,clave123,1,1
-19999999-9,Ricardo,Castro,ricardo.castro@instituto2.cl,clave123,2,1
-20101010-0,Verónica,Silva,veronica.silva@instituto3.cl,clave123,3,1
-21111111-1,Sebastián,López,sebastian.lopez@instituto4.cl,clave123,4,1
-22222222-2,Patricia,Martínez,patricia.martinez@instituto5.cl,clave123,5,1
-23333333-3,Andrés,Contreras,andres.contreras@instituto6.cl,clave123,6,1
-24444444-4,Daniela,Gutiérrez,daniela.gutierrez@instituto7.cl,clave123,7,1
+19999999-9,Ricardo,Castro,ricardo.castro@instituto2.cl,clave123,2,2
+20101010-0,Verónica,Silva,veronica.silva@instituto3.cl,clave123,3,2
+21111111-1,Sebastián,López,sebastian.lopez@instituto4.cl,clave123,4,2
+22222222-2,Patricia,Martínez,patricia.martinez@instituto5.cl,clave123,5,2
+23333333-3,Andrés,Contreras,andres.contreras@instituto6.cl,clave123,6,2
+24444444-4,Daniela,Gutiérrez,daniela.gutierrez@instituto7.cl,clave123,7,2
 25555555-5,Diego,Fuentes,diego.fuentes@instituto1.cl,clave123,1,1
 26666666-6,Francisca,Herrera,francisca.herrera@instituto2.cl,clave123,2,1
 27777777-7,Tomás,Reyes,tomas.reyes@instituto3.cl,clave123,3,1

@@ -125,7 +125,7 @@ function ReporteForm({ tipoUsuario }) {  // Prop: 'academico' o 'estudiante' par
               return (
                 <li key={i} className="border rounded-lg bg-white/70 px-4 py-3 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <div className="font-semibold">{titulo}</div>
+                    <div className="font-semibold text-purple-700">{titulo}</div>
                     <div className="text-sm text-gray-500">{fechaTxt}</div>
                   </div>
                   {rutVal && <div className="text-sm text-gray-600 mt-1">RUT: {rutVal}</div>}

@@ -28,7 +28,7 @@ def reporte_por_alumno(
 ):
     if current_user.get("type") != "profesor":  # Solo académicos
         raise HTTPException(status_code=403, detail="Acceso denegado")
-    rows = obtener_reporte(db, rut=rut)  # Usa genérica
+    rows = obtener_reporte(db, rut=rut, current_user=current_user)  # Pasa current_user
     return _return_reporte(rows, f"reporte_alumno_{rut}")
 
 @router.get("/actividad")
@@ -40,7 +40,7 @@ def reporte_por_actividad(
 ):
     if current_user.get("type") != "profesor":  # Solo académicos
         raise HTTPException(status_code=403, detail="Acceso denegado")
-    rows = obtener_reporte(db, actividad_id=actividad_id, limite=limite)
+    rows = obtener_reporte(db, actividad_id=actividad_id, limite=limite, current_user=current_user)  # Pasa current_user
     return _return_reporte(rows, f"reporte_actividad_{actividad_id}")
 
 @router.get("/general")
@@ -51,7 +51,7 @@ def reporte_general(
 ):
     if current_user.get("type") != "profesor":  # Solo académicos
         raise HTTPException(status_code=403, detail="Acceso denegado")
-    rows = obtener_reporte(db, limite=limite)
+    rows = obtener_reporte(db, limite=limite, current_user=current_user)  # Pasa current_user
     return _return_reporte(rows, "reporte_general")
 
 @router.get("/estudiante")

@@ -1,4 +1,4 @@
-from fastapi import UploadFile
+from fastapi import UploadFile, BackgroundTasks
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
@@ -18,6 +18,7 @@ def numeroRegistro(db: Session, id_registro: int):
 
 # Función genérica factorizada (nueva, para ambos tipos)
 async def guardar_registro(
+    rut: str,
     academica: int,
     actividad: int,
     fecha_inicio: datetime,
@@ -27,7 +28,7 @@ async def guardar_registro(
     archivos: UploadFile,
     db: Session,
     current_user: dict,
-    rut: str = None  # Opcional - solo para académicos
+    background_tasks: BackgroundTasks = None
 ):
     archivo_nombre = None
     archivo_data = None
@@ -74,12 +75,14 @@ async def guardar_registro(
 
     inserted_id = result.inserted_primary_key[0] if result.inserted_primary_key else None
 
-    mailData = idData(
-        rut_alumno = rut_alumno,
-        id_profesor = str(id_profesor),
-        id_registro = inserted_id
-    )
-    await formularioMail(mailData, db)
+    # Enviar correos en segundo plano para no bloquear la respuesta
+    if background_tasks:
+        mailData = idData(
+            rut_alumno = rut_alumno,  # Usa rut_alumno (no rut) - funciona para estudiantes y profesores
+            id_profesor = str(id_profesor),  # Convierte a string según modelo idData
+            id_registro = inserted_id
+        )
+        background_tasks.add_task(formularioMail, mailData, db)
 
     return {"message": "Formulario guardado exitosamente", "id": inserted_id, "horas_totales": horas_totales}
 

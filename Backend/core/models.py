@@ -4,15 +4,17 @@ from .database import engine
 
 metadata = MetaData()
 
+
 rol = Table(
-	"Rol",
+    "rol",
 	metadata,
 	Column("id_rol", Integer, primary_key=True),
 	Column("nombre_rol", String(50), unique=True, nullable=False)
 )
 
+
 instituto = Table(
-	"Instituto",
+    "instituto",
 	metadata,
 	Column("id_instituto", Integer, primary_key=True),
 	Column("nombre_instituto", String(50), unique=True, nullable=False)
@@ -30,11 +32,11 @@ profesor = Table(
 	"profesor",
 	metadata,
 	Column("id_profesor", String(10), primary_key=True),
-	Column("nombres", String(50), unique=True, nullable=False),
-	Column("apellidos", String(50), unique=True, nullable=False),
+	Column("nombres", String(50), nullable=False),
+	Column("apellidos", String(50), nullable=False),
 	Column("correo", String(50), unique=True, nullable=False),
-	Column("id_instituto", Integer, ForeignKey("Institutos.id_instituto")),
-	Column("id_rol", Integer, ForeignKey("Rol.id_rol")),
+    Column("id_instituto", Integer, ForeignKey("instituto.id_instituto")),
+    Column("id_rol", Integer, ForeignKey("rol.id_rol")),
     Column("password_hash", String, nullable=False)
 )
 
@@ -84,14 +86,9 @@ estado = Table(
 )
 
 instituto_carrera = Table(
-    "instituto_carrera",
+    "instituto-carrera",
     metadata,
     Column("id_instituto_carrera", Integer, primary_key=True),
-    Column("id_instituto", Integer, ForeignKey("Instituto.id_instituto")),
+    Column("id_instituto", Integer, ForeignKey("instituto.id_instituto")),
     Column("id_carrera", Integer, ForeignKey("carrera.id_carrera"))
 )
-
-registro = Table("registro", metadata, autoload_with=engine)
-alumno = Table("alumno", metadata, autoload_with=engine)
-profesor = Table("profesor", metadata, autoload_with=engine)
-actividad = Table("actividad", metadata, autoload_with=engine)

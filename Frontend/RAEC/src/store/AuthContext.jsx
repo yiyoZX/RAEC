@@ -43,9 +43,12 @@ export const AuthProvider = ({ children }) => {
       if (response.ok && data.access_token) {
           const userPayload = {
           id_profesor: data.id_profesor,
-          rol_id: data.id_rol || null,
-          instituto: data.instituto,
+          rol: data.id_rol,  // Backend envía id_rol
+          id_rol: data.id_rol,  // También guardamos id_rol por compatibilidad
+          instituto: data.id_instituto,  // Backend envía id_instituto
+          id_instituto: data.id_instituto,  // También guardamos id_instituto por compatibilidad
           message: data.message,
+          isAdmin: data.id_rol === 3,  // Añadimos un flag para identificar admins fácilmente
         };
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('user_data', JSON.stringify(userPayload));

@@ -27,7 +27,6 @@ function App() {
           <Route path="/registrar" element={<ProtectedRoute><RegistroFormularioAcademico /></ProtectedRoute>} />
           <Route path="/registroEstudiantes" element= {<ProtectedRoute><RegistroFormularioEstudiante/></ProtectedRoute>} />
           <Route path="/crear" element={<ProtectedRoute><CrearActividad /></ProtectedRoute>} />
-          <Route path="/dashboardAdmin" element={<ProtectedRoute><DashboardAdmin /></ProtectedRoute>} />
           <Route path="/reportesEstudiantes" element={<ProtectedRoute><ReportesEstudiantes /></ProtectedRoute>} />
           <Route path="/reportesAcademicos" element={<ProtectedRoute><ReportesAcademicos /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/login" replace />} />

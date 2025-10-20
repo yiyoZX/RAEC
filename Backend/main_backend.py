@@ -1,4 +1,3 @@
-
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,6 +6,7 @@ from sqlalchemy import create_engine
 from routes.profesores import router as profesores_router
 from routes.formulario import router as formulario_router
 from routes.reportes import router as reportes_router
+from routes.actividades import router as actividades_router
 from fastapi.staticfiles import StaticFiles
 
 
@@ -42,4 +42,6 @@ app.add_middleware(
 app.include_router(profesores_router)
 app.include_router(formulario_router)
 app.include_router(reportes_router)
+app.include_router(actividades_router)
+
 

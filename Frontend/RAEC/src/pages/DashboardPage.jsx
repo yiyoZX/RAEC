@@ -9,7 +9,7 @@ const DashboardPage = () => {
 
   const actions = [
     { label: 'Registrar', to: '/registrar', icon: '✔️' },
-    { label: 'Solicitudes', to: '/Solicitudes', icon: '👥' },
+    { label: 'Solicitudes', to: '/solicitudes', icon: '👥' },
     { label: 'Reportes', to: '/reportesAcademicos', icon: '📊' },
   ];
 

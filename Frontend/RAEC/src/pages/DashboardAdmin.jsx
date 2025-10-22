@@ -8,6 +8,8 @@ const DashboardAdmin = () => {
     { label: 'Registrar', to: '/registrar', icon: '✔️' },
     { label: 'Solicitudes', to: '/Solicitudes', icon: '👥' },
     { label: 'Reportes', to: '/reportes', icon: '📊' },
+    { label: 'Crear categoria', to: '/crear', icon: '🧾' },
+    { label: 'Activar periodo', to: '/periodo', icon: '🏴' },
   ];
 
   return (
@@ -15,11 +17,11 @@ const DashboardAdmin = () => {
       {/* Contenedor centrado */}
       <div className="w-full max-w-6xl mx-auto px-8 py-12">
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Bienvenido Administrador!</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Bienvenido!</h1>
           <p className="text-gray-600 text-lg">Por favor selecciona una opción:</p>
         </div>
 
-        {/* Botones como cuadros grandes horizontales */}
+        {/* Botones */}
         <div className="flex flex-col gap-6">
           {actions.map((action) => (
             <button

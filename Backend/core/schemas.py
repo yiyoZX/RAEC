@@ -7,3 +7,7 @@ class ProfesorLogin(BaseModel):
 class EstudianteLogin(BaseModel):
     correo: str
     password: str
+
+class ActividadCreate(BaseModel):
+    nombre: str
+    id_subcategoria: int

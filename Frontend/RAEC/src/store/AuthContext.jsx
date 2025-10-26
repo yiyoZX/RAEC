@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { isTokenExpired, clearSession } from '../utils/auth';
 
 const API_BASE = 'http://localhost:4001'; // Ajusta si cambia el puerto
 
@@ -17,16 +18,33 @@ export const AuthProvider = ({ children }) => {
   const [userType, setUserType] = useState(null); // 'profesor' | 'estudiante'
   const [loading, setLoading] = useState(true);
 
-  // Cargar sesión previa
+  // Cargar sesión previa y validar token
   useEffect(() => {
     const savedToken = localStorage.getItem('access_token');
     const savedUser = localStorage.getItem('user_data');
     const savedType = localStorage.getItem('user_type');
     const isAuthenticated = localStorage.getItem('isAuthenticated');
+    
+    // Validar que el token existe y no ha expirado
     if (savedToken && savedUser && isAuthenticated) {
-      setToken(savedToken);
-      setUserType(savedType || null);
-      try { setUser(JSON.parse(savedUser)); } catch (_) {}
+      if (isTokenExpired(savedToken)) {
+        // Token expirado, limpiar sesión
+        console.warn('Token expirado, limpiando sesión...');
+        clearSession();
+        setToken(null);
+        setUser(null);
+        setUserType(null);
+      } else {
+        // Token válido, restaurar sesión
+        setToken(savedToken);
+        setUserType(savedType || null);
+        try { 
+          setUser(JSON.parse(savedUser)); 
+        } catch (error) {
+          console.error('Error al parsear datos del usuario:', error);
+          clearSession();
+        }
+      }
     }
     setLoading(false);
   }, []);
@@ -102,10 +120,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user_data');
-    localStorage.removeItem('user_type');
-    localStorage.removeItem('isAuthenticated');
+    clearSession();
     setToken(null);
     setUser(null);
     setUserType(null);

@@ -2,10 +2,13 @@ import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Button from '../components/Button';
-import { ACTIVIDADES_ACADEMICAS, ACTIVIDADES_NO_ACADEMICAS } from '../utils/constants';
+import { useTodasActividades } from '../hooks/useActividades';
 import { authenticatedFetchFormData } from '../services/api';
 
 function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol para lógica, onSubmitSuccess para callback después de éxito
+  // Cargar actividades dinámicamente desde el backend
+  const { academicas, noAcademicas, loading: loadingActividades } = useTodasActividades();
+  
   const [values, setValues] = useState({
     rut: '',
     academica: '',
@@ -76,8 +79,9 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
 
   const canNoAcademica = userRol === 2 || userRol === 'estudiante';  // Lógica para no académicas
 
-  const opcionesAcademica = ACTIVIDADES_ACADEMICAS;
-  const opcionesNoAcademica = ACTIVIDADES_NO_ACADEMICAS;
+  // Usar actividades cargadas desde el backend
+  const opcionesAcademica = academicas;
+  const opcionesNoAcademica = noAcademicas;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -114,8 +118,8 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
       {/* Actividad */}
       <div>
         <label htmlFor="actividad" className="block text-sm font-semibold text-gray-700 mb-2">Actividad</label>
-        <select id="actividad" name="actividad" value={values.actividad} onChange={handleChanges} disabled={!values.academica} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed" required>
-          <option value="">Seleccione una actividad</option>
+        <select id="actividad" name="actividad" value={values.actividad} onChange={handleChanges} disabled={!values.academica || loadingActividades} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed" required>
+          <option value="">{loadingActividades ? 'Cargando actividades...' : 'Seleccione una actividad'}</option>
           {(values.academica === '1' ? opcionesAcademica : values.academica === '2' ? opcionesNoAcademica : []).map(op => (
             <option key={op.value} value={op.value}>{op.label}</option>
           ))}

@@ -79,13 +79,13 @@ const SolicitudesPage = () => {
   return (
     <HeaderLayout showBack backTo="/dashboard" title="Solicitudes Pendientes">
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-center mb-4">Solicitudes de Estudiantes Pendientes</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-600 mb-4">Solicitudes de Estudiantes Pendientes</h2>
         {solicitudes.length === 0 ? (
           <p className="text-center text-gray-600">No hay solicitudes pendientes.</p>
         ) : (
           <ul className="space-y-4">
             {solicitudes.map((solicitud) => (
-              <li key={solicitud.id_registro} className="bg-white p-4 rounded-lg shadow">  // Cambiado: key usa id_registro
+              <li key={solicitud.id_registro} className="bg-white p-4 rounded-lg shadow text-gray-600">  // Cambiado: key usa id_registro
                 <p><strong>RUT Estudiante:</strong> {solicitud.rut_alumno}</p>
                 <p><strong>Actividad:</strong> {solicitud.nombre_actividad}</p>
                 <p><strong>Fechas:</strong> {solicitud.fecha_inicio} a {solicitud.fecha_termino}</p>

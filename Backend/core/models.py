@@ -28,6 +28,14 @@ actividad = Table(
     Column("id_subcategoria", Integer, nullable=False)
 )
 
+subcategoria = Table(
+	"subcategoria",
+	metadata,
+	Column("id_subcategoria", Integer, primary_key=True),
+	Column("subcategoria", String(100), nullable=False),
+	Column("id_categoria", Integer, nullable=False)
+)
+
 profesor = Table(
 	"profesor",
 	metadata,

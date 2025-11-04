@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict yxhvEMVf5n4w2ovG3j3JyytMgmCGOwemzxdp3gHebmcohF18EwbOGZ3VK7jO3vK
+\restrict nYzpRFsGjVX9t3jpSlk04xVvy3p2J5a77ixP9NcsKEQZeUEZTeh3Np003yRfzaP
 
 -- Dumped from database version 17.6 (Debian 17.6-2.pgdg13+1)
 -- Dumped by pg_dump version 17.6
 
--- Started on 2025-11-03 11:26:56
+-- Started on 2025-10-17 22:01:45
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -33,10 +33,7 @@ SET default_table_access_method = heap;
 CREATE TABLE public.actividad (
     id_actividad integer NOT NULL,
     nombre_actividad character varying NOT NULL,
-    id_subcategoria integer NOT NULL,
-    dato1 character varying,
-    dato2 character varying,
-    dato3 character varying
+    id_subcategoria integer NOT NULL
 );
 
 
@@ -408,10 +405,7 @@ CREATE TABLE public.registro (
     archivo_nombre character varying(255),
     fecha_inicio_actividad timestamp with time zone,
     fecha_termino_actividad timestamp with time zone,
-    horas_totales integer,
-    dato1 character varying,
-    dato2 character varying,
-    dato3 character varying
+    horas_totales integer
 );
 
 
@@ -749,19 +743,19 @@ ALTER TABLE ONLY public.subcategoria ALTER COLUMN id_categoria SET DEFAULT nextv
 -- Data for Name: actividad; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.actividad (id_actividad, nombre_actividad, id_subcategoria, dato1, dato2, dato3) FROM stdin;
-7	Dirigencias	4	\N	\N	\N
-8	Deportivo destacado	4	\N	\N	\N
-9	Artístico destacado	4	\N	\N	\N
-10	Trabajo social destacado	4	\N	\N	\N
-11	Compromiso ambiental	4	\N	\N	\N
-12	Inclusion	4	\N	\N	\N
-1	Curso optativo completo	1	\N	\N	\N
-2	Curso optativo parcial	1	\N	\N	\N
-3	Trabajo en proyecto investigacion	2	\N	\N	\N
-4	Trabajo en proyecto de I+D	2	\N	\N	\N
-5	Asistencia a congresos	3	\N	\N	\N
-6	Publicaciones	2	\N	\N	\N
+COPY public.actividad (id_actividad, nombre_actividad, id_subcategoria) FROM stdin;
+7	Dirigencias	4
+8	Deportivo destacado	4
+9	Artístico destacado	4
+10	Trabajo social destacado	4
+11	Compromiso ambiental	4
+12	Inclusion	4
+1	Curso optativo completo	1
+2	Curso optativo parcial	1
+3	Trabajo en proyecto investigacion	2
+4	Trabajo en proyecto de I+D	2
+5	Asistencia a congresos	3
+6	Publicaciones	2
 \.
 
 
@@ -909,13 +903,11 @@ COPY public.profesor (id_profesor, nombres, apellidos, correo, id_instituto, id_
 -- Data for Name: registro; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.registro (fecha_creacion, fecha_emision, archivo_data, comentario, id_registro, id_estado, id_profesor, id_actividad, id_alumno, archivo_nombre, fecha_inicio_actividad, fecha_termino_actividad, horas_totales, dato1, dato2, dato3) FROM stdin;
-2025-09-29 03:53:51.649511+00	2025-09-29 03:53:51.651294+00	\N		6	1	11111111-1	1	22222222-2	\N	2025-04-08 00:00:00+00	2025-09-29 00:00:00+00	199	\N	\N	\N
-2025-09-29 13:25:57.605454+00	2025-09-29 13:25:57.608317+00	\N		7	1	1	1	22222222-2	\N	2025-09-02 00:00:00+00	2025-09-29 00:00:00+00	30	\N	\N	\N
-2025-10-05 22:25:57.081867+00	2025-10-05 22:25:57.083601+00	\N		8	1	1	5	21111111-1	\N	2025-09-28 00:00:00+00	2025-10-05 00:00:00+00	10	\N	\N	\N
-2025-10-16 22:06:51.513805+00	2025-10-16 22:06:51.516186+00	\N		9	1	1	1	23333333-3	\N	2025-10-11 00:00:00+00	2025-10-16 00:00:00+00	2	\N	\N	\N
-2025-10-23 17:55:26.926528+00	2025-10-23 17:55:26.927957+00	\N		10	1	1	8	21111111-1	\N	2025-10-09 00:00:00+00	2025-10-23 00:00:00+00	10	\N	\N	\N
-2025-10-23 18:59:49.999336+00	2025-10-23 18:59:50.006311+00	\N	raye el decanato	11	2	1	9	21111111-1	\N	2025-10-09 00:00:00+00	2025-10-23 00:00:00+00	13	\N	\N	\N
+COPY public.registro (fecha_creacion, fecha_emision, archivo_data, comentario, id_registro, id_estado, id_profesor, id_actividad, id_alumno, archivo_nombre, fecha_inicio_actividad, fecha_termino_actividad, horas_totales) FROM stdin;
+2025-09-29 03:53:51.649511+00	2025-09-29 03:53:51.651294+00	\N		6	1	11111111-1	1	22222222-2	\N	2025-04-08 00:00:00+00	2025-09-29 00:00:00+00	199
+2025-09-29 13:25:57.605454+00	2025-09-29 13:25:57.608317+00	\N		7	1	1	1	22222222-2	\N	2025-09-02 00:00:00+00	2025-09-29 00:00:00+00	30
+2025-10-05 22:25:57.081867+00	2025-10-05 22:25:57.083601+00	\N		8	1	1	5	21111111-1	\N	2025-09-28 00:00:00+00	2025-10-05 00:00:00+00	10
+2025-10-16 22:06:51.513805+00	2025-10-16 22:06:51.516186+00	\N		9	1	1	1	23333333-3	\N	2025-10-11 00:00:00+00	2025-10-16 00:00:00+00	2
 \.
 
 
@@ -952,7 +944,7 @@ COPY public.subcategoria (id_subcategoria, subcategoria, id_categoria) FROM stdi
 -- Name: actividad_id_actividad_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.actividad_id_actividad_seq', 12, true);
+SELECT pg_catalog.setval('public.actividad_id_actividad_seq', 1, false);
 
 
 --
@@ -1078,7 +1070,7 @@ SELECT pg_catalog.setval('public.registro_id_profesor_seq', 1, false);
 -- Name: registro_id_registro_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.registro_id_registro_seq', 11, true);
+SELECT pg_catalog.setval('public.registro_id_registro_seq', 9, true);
 
 
 --
@@ -1105,7 +1097,7 @@ SELECT pg_catalog.setval('public.subcategoria_id_categoria_seq', 1, false);
 -- Name: subcategoria_id_subcategoria_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.subcategoria_id_subcategoria_seq', 4, true);
+SELECT pg_catalog.setval('public.subcategoria_id_subcategoria_seq', 1, true);
 
 
 --
@@ -1306,11 +1298,11 @@ ALTER TABLE ONLY public."instituto-carrera"
     ADD CONSTRAINT instituto_carrera_instituto_fk FOREIGN KEY (id_instituto) REFERENCES public.instituto(id_instituto);
 
 
--- Completed on 2025-11-03 11:26:56
+-- Completed on 2025-10-17 22:01:46
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict yxhvEMVf5n4w2ovG3j3JyytMgmCGOwemzxdp3gHebmcohF18EwbOGZ3VK7jO3vK
+\unrestrict nYzpRFsGjVX9t3jpSlk04xVvy3p2J5a77ixP9NcsKEQZeUEZTeh3Np003yRfzaP
 

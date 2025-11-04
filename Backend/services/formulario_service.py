@@ -26,6 +26,9 @@ async def guardar_registro(
     horas_totales: int,
     about: str,
     archivos: UploadFile,
+    dato1: str,
+    dato2: str,
+    dato3: str,
     db: Session,
     current_user: dict,
     background_tasks: BackgroundTasks = None
@@ -38,7 +41,7 @@ async def guardar_registro(
     
     # Determina tipo de usuario y ajusta lógica
     user_type = current_user.get("type")
-    if user_type == "profesor":
+    if user_type == "academico":
         if not rut:  # Rut requerido para académicos
             raise HTTPException(status_code=400, detail="RUT requerido para académicos")
         rut_alumno = rut
@@ -68,7 +71,10 @@ async def guardar_registro(
         horas_totales = horas_totales,
         comentario = about,
         archivo_nombre = archivo_nombre,
-        archivo_data = archivo_data
+        archivo_data = archivo_data,
+        dato1 = dato1,
+        dato2 = dato2,
+        dato3 = dato3
     )
     result = db.execute(nuevo)
     db.commit()

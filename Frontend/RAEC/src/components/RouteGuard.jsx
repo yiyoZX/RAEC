@@ -10,7 +10,7 @@ import { isSessionValid, isStudent, isAdmin, isDirector, isAcademic } from '../u
 export const RouteGuard = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, loading } = useAuth();
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -20,6 +20,11 @@ export const RouteGuard = ({ children }) => {
     
     if (publicRoutes.includes(currentPath)) {
       return; // No validar rutas públicas
+    }
+
+    // Esperar a que termine de cargar antes de validar
+    if (loading) {
+      return; // No hacer nada mientras está cargando
     }
 
     // Validar sesión
@@ -38,13 +43,14 @@ export const RouteGuard = ({ children }) => {
       '/reportesEstudiantes': { type: 'estudiante' },
       
       // Rutas de académicos (profesor, director, admin)
-      '/dashboard': { types: ['academico', 'director', 'admin'] },
-      '/crear': { types: ['academico', 'director', 'admin'] },
-      '/reportesAcademicos': { types: ['academico', 'director', 'admin'] },
+      '/dashboard': { types: ['profesor', 'academico', 'director', 'admin'] },
+      '/crear': { types: ['profesor', 'academico', 'director', 'admin'] },
+      '/reportesAcademicos': { types: ['profesor', 'academico', 'director', 'admin'] },
+      '/registrar': { types: ['profesor', 'academico', 'director', 'admin'] },  // Todos los académicos pueden registrar
+      '/solicitudes': { types: ['profesor', 'academico', 'director', 'admin'] },  // Todos los académicos pueden ver solicitudes
       
       // Rutas de administración (solo admin y director)
       '/dashboardAdmin': { types: ['director', 'admin'] },
-      '/registrar': { types: ['director', 'admin'] },
     };
 
     const routeConfig = routePermissions[currentPath];
@@ -72,7 +78,7 @@ export const RouteGuard = ({ children }) => {
     } else {
       console.log(`✅ Acceso permitido a ${currentPath}`);
     }
-  }, [location.pathname, isAuthenticated, logout, navigate]);
+  }, [location.pathname, isAuthenticated, loading, logout, navigate]);
 
   /**
    * Verifica si el usuario actual cumple con el tipo requerido
@@ -81,8 +87,12 @@ export const RouteGuard = ({ children }) => {
     switch (type) {
       case 'estudiante':
         return isStudent();
-      case 'academico':
+      case 'profesor':
+        // Profesor normal (rol 1) - no es director ni admin
         return isAcademic() && !isDirector() && !isAdmin();
+      case 'academico':
+        // Cualquier académico (profesor, director o admin)
+        return isAcademic();
       case 'director':
         return isDirector();
       case 'admin':
@@ -107,6 +117,26 @@ export const RouteGuard = ({ children }) => {
       navigate('/login', { replace: true });
     }
   };
+
+  // Mostrar pantalla de carga mientras se verifica la autenticación
+  if (loading) {
+    const currentPath = location.pathname;
+    const publicRoutes = ['/login', '/loginStudent', '/'];
+    
+    // No mostrar loading en rutas públicas
+    if (publicRoutes.includes(currentPath)) {
+      return children;
+    }
+    
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Verificando sesión...</p>
+        </div>
+      </div>
+    );
+  }
 
   return children;
 };

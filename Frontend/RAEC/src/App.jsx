@@ -76,6 +76,14 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/registrar" 
+              element={
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                  <RegistroFormularioAcademico />
+                </ProtectedRoute>
+              } 
+            />
             
             {/* Rutas protegidas para ADMINISTRADORES y DIRECTORES */}
             <Route 
@@ -83,14 +91,6 @@ function App() {
               element={
                 <ProtectedRoute requireAdminOrDirector>
                   <DashboardAdmin />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/registrar" 
-              element={
-                <ProtectedRoute requireAdminOrDirector>
-                  <RegistroFormularioAcademico />
                 </ProtectedRoute>
               } 
             />

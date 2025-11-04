@@ -1,6 +1,5 @@
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Text, LargeBinary, DateTime
 from datetime import datetime, timezone
-from .database import engine
 
 metadata = MetaData()
 
@@ -25,7 +24,10 @@ actividad = Table(
 	metadata,
 	Column("id_actividad", Integer, primary_key=True),
 	Column("nombre_actividad", String, nullable=False),
-    Column("id_subcategoria", Integer, nullable=False)
+    Column("id_subcategoria", Integer, nullable=False),
+    Column("dato1", String, nullable=True),
+    Column("dato2", String, nullable=True),
+    Column("dato3", String, nullable=True)
 )
 
 subcategoria = Table(
@@ -76,7 +78,10 @@ registro = Table(
     Column("comentario", Text, nullable=True),
     Column("fecha_inicio_actividad", DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)),
     Column("fecha_termino_actividad", DateTime(timezone=True), nullable=True, default=lambda: datetime.now(timezone.utc)),
-    Column("horas_totales", Integer, nullable=True)
+    Column("horas_totales", Integer, nullable=True),
+    Column("dato1", String, nullable=True),
+    Column("dato2", String, nullable=True),
+    Column("dato3", String, nullable=True)
 )
 
 carrera = Table(

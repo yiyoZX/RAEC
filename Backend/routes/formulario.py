@@ -19,6 +19,9 @@ async def submit_form(
     horas_totales: str = Form(...),
     about: str = Form(""),
     archivos: UploadFile = File(None),
+    dato1: str = Form(None),
+    dato2: str = Form(None),
+    dato3: str = Form(None),
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -36,7 +39,7 @@ async def submit_form(
         # Validar que solo los directores (id_rol = 2) puedan registrar actividades no académicas (academica = 2)
         # Los estudiantes (type = "estudiante") SÍ pueden registrar actividades no académicas
         if academica_int == 2:        
-            if current_user.get("type") == "profesor" and current_user.get("id_rol") != 2:
+            if current_user.get("type") == "academico" and current_user.get("id_rol") != 2:
                 raise HTTPException(status_code=403, detail="Solo los directores pueden registrar actividades no académicas")
 
         # Convertir fechas de string a datetime
@@ -54,5 +57,5 @@ async def submit_form(
             raise HTTPException(status_code=422, detail="Los campos numéricos deben contener valores válidos")
     
     return await guardar_registro(
-        rut, academica_int, actividad_int, fecha_inicio_dt, fecha_termino_dt, horas_totales_int, about, archivos, db, current_user, background_tasks
+        rut, academica_int, actividad_int, fecha_inicio_dt, fecha_termino_dt, horas_totales_int, about, archivos, dato1, dato2, dato3, db, current_user, background_tasks
     )

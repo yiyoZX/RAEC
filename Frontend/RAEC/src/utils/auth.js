@@ -98,10 +98,11 @@ export const isStudent = () => {
 
 /**
  * Verifica si el usuario es académico (cualquier tipo)
+ * Incluye: profesores, directores y administradores
  */
 export const isAcademic = () => {
   const userType = localStorage.getItem('user_type');
-  return userType === 'profesor' || userType === 'academico';
+  return userType === 'profesor' || userType === 'academico' || userType === 'director' || userType === 'admin';
 };
 
 /**

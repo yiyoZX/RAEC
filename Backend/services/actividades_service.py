@@ -50,11 +50,19 @@ def crear_actividad(db: Session, datos: NuevaActividad) -> dict:
     # Obtener el id_subcategoria según el tipo
     id_subcategoria = obtener_id_subcategoria(datos.tipo)
     
+    # Preparar los campos adicionales (máximo 3)
+    dato1 = datos.campos_adicionales[0] if len(datos.campos_adicionales) > 0 else None
+    dato2 = datos.campos_adicionales[1] if len(datos.campos_adicionales) > 1 else None
+    dato3 = datos.campos_adicionales[2] if len(datos.campos_adicionales) > 2 else None
+    
     try:
-        # Insertar la nueva actividad
+        # Insertar la nueva actividad con campos dinámicos
         stmt_insert = actividad.insert().values(
             nombre_actividad=datos.nombre.strip(),
-            id_subcategoria=id_subcategoria
+            id_subcategoria=id_subcategoria,
+            dato1=dato1,
+            dato2=dato2,
+            dato3=dato3
         )
         
         result = db.execute(stmt_insert)
@@ -63,12 +71,22 @@ def crear_actividad(db: Session, datos: NuevaActividad) -> dict:
         # Obtener el ID de la actividad creada
         id_actividad = result.inserted_primary_key[0] if result.inserted_primary_key else None
         
-        return {
+        response = {
             "message": "Actividad creada exitosamente",
             "id_actividad": id_actividad,
             "nombre_actividad": datos.nombre.strip(),
             "tipo": datos.tipo
         }
+        
+        # Agregar campos adicionales si existen
+        if dato1:
+            response["dato1"] = dato1
+        if dato2:
+            response["dato2"] = dato2
+        if dato3:
+            response["dato3"] = dato3
+        
+        return response
     except IntegrityError as e:
         db.rollback()
         # Capturar errores de secuencia o duplicados
@@ -93,7 +111,10 @@ def listar_actividades(db: Session, tipo: str = None) -> list:
     stmt = select(
         actividad.c.id_actividad,
         actividad.c.nombre_actividad,
-        actividad.c.id_subcategoria
+        actividad.c.id_subcategoria,
+        actividad.c.dato1,
+        actividad.c.dato2,
+        actividad.c.dato3
     )
     
     # Filtrar por tipo si se especifica
@@ -106,11 +127,21 @@ def listar_actividades(db: Session, tipo: str = None) -> list:
     # Convertir a lista de diccionarios
     actividades = []
     for row in result:
-        actividades.append({
+        act = {
             "id_actividad": row.id_actividad,
             "nombre_actividad": row.nombre_actividad,
             "id_subcategoria": row.id_subcategoria,
             "tipo": "academica" if row.id_subcategoria in [1, 2, 3] else "no_academica"
-        })
+        }
+        
+        # Agregar campos adicionales si existen
+        if row.dato1:
+            act["dato1"] = row.dato1
+        if row.dato2:
+            act["dato2"] = row.dato2
+        if row.dato3:
+            act["dato3"] = row.dato3
+        
+        actividades.append(act)
     
     return actividades

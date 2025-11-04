@@ -79,7 +79,10 @@ function ProtectedRoute({
           if (isStudent()) hasPermission = true;
           break;
         case 'academico':
-          if (userType === 'profesor' || userType === 'academico') hasPermission = true;
+          // Académicos incluyen: profesores, directores y admins
+          if (userType === 'profesor' || userType === 'academico' || userType === 'director' || userType === 'admin') {
+            hasPermission = true;
+          }
           break;
         case 'director':
           if (isDirector()) hasPermission = true;

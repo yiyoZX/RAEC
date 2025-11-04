@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
  * Props:
  *  - children: contenido principal
  *  - showBack: mostrar botón volver
- *  - backTo: ruta para volver (por defecto /dashboard)
+ *  - backTo: ruta para volver (opcional, si no se especifica se calcula automáticamente según el rol)
  *  - title: título en el header
  *  - fullScreen: si true, el header ocupa toda la pantalla y muestra los children dentro
  *  - center: centra vertical y horizontalmente el contenido (solo en fullScreen)
@@ -14,17 +14,34 @@ import { useNavigate } from 'react-router-dom';
 const HeaderLayout = ({
   children,
   showBack = false,
-  backTo = '/dashboard',
+  backTo,  // Ya no tiene valor por defecto
   title = 'RAEC',
   fullScreen = false,
   center = false,
 }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, userType } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  // Calcular la ruta de retorno según el rol del usuario
+  const getBackRoute = () => {
+    // Si se especificó una ruta personalizada, usarla
+    if (backTo) return backTo;
+
+    // Si no, determinar según el tipo de usuario
+    if (userType === 'estudiante') {
+      return '/dashboardStudent';
+    } else if (user?.id_rol === 3 || user?.rol === 3 || user?.isAdmin) {
+      // Administrador
+      return '/dashboardAdmin';
+    } else {
+      // Profesor o Director (académicos en general)
+      return '/dashboard';
+    }
   };
 
   return (
@@ -40,7 +57,7 @@ const HeaderLayout = ({
           <div className="flex items-center gap-3">
             {showBack && (
               <button
-                onClick={() => navigate(backTo)}
+                onClick={() => navigate(getBackRoute())}
                 className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition font-bold border border-black"
               >
                 Volver

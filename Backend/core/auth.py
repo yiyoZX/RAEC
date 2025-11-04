@@ -79,7 +79,7 @@ async def get_current_user(
             "correo": db_user.correo,
             "id_rol": db_user.id_rol,
             "id_instituto": db_user.id_instituto,
-            "type": "profesor"  
+            "type": "academico"  
         }
     
     elif user_type == "estudiante":

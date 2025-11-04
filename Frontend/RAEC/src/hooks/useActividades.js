@@ -10,6 +10,7 @@ import { authenticatedFetch } from '../services/api';
 export const useTodasActividades = () => {
   const [academicas, setAcademicas] = useState([]);
   const [noAcademicas, setNoAcademicas] = useState([]);
+  const [actividadesCompletas, setActividadesCompletas] = useState([]); // Guardar datos completos
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -27,6 +28,9 @@ export const useTodasActividades = () => {
         
         const data = await response.json();
         const actividades = data.actividades || [];
+        
+        // Guardar todas las actividades completas con sus datos adicionales
+        setActividadesCompletas(actividades);
         
         // Separar por subcategoría (1 = académica, 2 = no académica)
         const academicasArray = actividades
@@ -58,5 +62,5 @@ export const useTodasActividades = () => {
     cargarTodasActividades();
   }, []);
 
-  return { academicas, noAcademicas, loading, error };
+  return { academicas, noAcademicas, actividadesCompletas, loading, error };
 };

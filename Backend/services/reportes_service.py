@@ -65,7 +65,7 @@ def obtener_reporte(
         stmt = stmt.where(registro.c.id_alumno == current_user.get("rut_alumno"))
     
     # Filtros para profesores y directores
-    if current_user and current_user.get("type") == "profesor":
+    if current_user and current_user.get("type") == "academico":
         id_rol = current_user.get("id_rol")
         id_profesor = current_user.get("id_profesor")
         id_instituto = current_user.get("id_instituto")

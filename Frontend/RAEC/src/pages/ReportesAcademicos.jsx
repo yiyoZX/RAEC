@@ -3,7 +3,7 @@ import ReporteForm from '../components/ReportesForm';  //componente para Reporte
 
 const ReportesAcademicos = () => {
   return (
-    <HeaderLayout showBack backTo="/dashboard">
+    <HeaderLayout showBack>
       <ReporteForm tipoUsuario='academico' />
     </HeaderLayout>
   );

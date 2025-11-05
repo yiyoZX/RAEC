@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './store/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import RouteGuard from './components/RouteGuard';
 import LoginPage from './pages/LoginPage';
 import LoginStudentPage from './pages/loginStudent';
 import DashboardStudentPage from  './pages/dashboardStudent';
@@ -12,26 +13,108 @@ import CrearActividad from './pages/CrearActividad';
 import ReportesEstudiantes from './pages/ReportesEstudiantes';
 import ReportesAcademicos from './pages/ReportesAcademicos';
 import SolicitudesPage from './pages/Solicitudes';
+import ConfigurarPeriodos from './pages/ConfigurarPeriodos';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/loginStudent" element={<LoginStudentPage/>} />
-          <Route path="/dashboardStudent" element={<ProtectedRoute><DashboardStudentPage /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/dashboardAdmin" element={<ProtectedRoute><DashboardAdmin /></ProtectedRoute>} />
-          <Route path="/registrar" element={<ProtectedRoute><RegistroFormularioAcademico /></ProtectedRoute>} />
-          <Route path="/solicitudes" element={<ProtectedRoute><SolicitudesPage /></ProtectedRoute>} />
-          <Route path="/registroEstudiantes" element= {<ProtectedRoute><RegistroFormularioEstudiante/></ProtectedRoute>} />
-          <Route path="/crear" element={<ProtectedRoute><CrearActividad /></ProtectedRoute>} />
-          <Route path="/reportesEstudiantes" element={<ProtectedRoute><ReportesEstudiantes /></ProtectedRoute>} />
-          <Route path="/reportesAcademicos" element={<ProtectedRoute><ReportesAcademicos /></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+        <RouteGuard>
+          <Routes>
+            {/* Rutas públicas */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/loginStudent" element={<LoginStudentPage/>} />
+            
+            {/* Rutas protegidas para ESTUDIANTES */}
+            <Route 
+              path="/dashboardStudent" 
+              element={
+                <ProtectedRoute allowedRoles="estudiante">
+                  <DashboardStudentPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/registroEstudiantes" 
+              element={
+                <ProtectedRoute allowedRoles="estudiante">
+                  <RegistroFormularioEstudiante/>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/reportesEstudiantes" 
+              element={
+                <ProtectedRoute allowedRoles="estudiante">
+                  <ReportesEstudiantes />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Rutas protegidas para ACADÉMICOS (profesor/director) */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/crear" 
+              element={
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                  <CrearActividad />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/reportesAcademicos" 
+              element={
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                  <ReportesAcademicos />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/registrar" 
+              element={
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                  <RegistroFormularioAcademico />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Rutas protegidas para ADMINISTRADORES y DIRECTORES */}
+            <Route 
+              path="/dashboardAdmin" 
+              element={
+                <ProtectedRoute requireAdminOrDirector>
+                  <DashboardAdmin />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/solicitudes" 
+              element={
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                  <SolicitudesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/periodos" 
+              element={
+                <ProtectedRoute>
+                  <ConfigurarPeriodos />
+                </ProtectedRoute>
+              } 
+            />
+            {/* Ruta por defecto - redirige al login */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </RouteGuard>
       </Router>
     </AuthProvider>
   );

@@ -2,10 +2,13 @@ import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Button from '../components/Button';
-import { ACTIVIDADES_ACADEMICAS, ACTIVIDADES_NO_ACADEMICAS } from '../utils/constants';
+import { useTodasActividades } from '../hooks/useActividades';
 import { authenticatedFetchFormData } from '../services/api';
 
 function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol para lógica, onSubmitSuccess para callback después de éxito
+  // Cargar actividades dinámicamente desde el backend
+  const { academicas, noAcademicas, actividadesCompletas, loading: loadingActividades } = useTodasActividades();
+  
   const [values, setValues] = useState({
     rut: '',
     academica: '',
@@ -15,6 +18,17 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
     horas_totales: '',
     archivos: null,
     about: '',
+    // Campos dinámicos
+    dato1: '',
+    dato2: '',
+    dato3: '',
+  });
+
+  // Estado para almacenar los nombres de los campos adicionales de la actividad seleccionada
+  const [camposAdicionales, setCamposAdicionales] = useState({
+    dato1: null,
+    dato2: null,
+    dato3: null,
   });
 
   const ResetFun = () => { 
@@ -27,6 +41,14 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
       horas_totales: '',
       archivos: null,
       about: '',
+      dato1: '',
+      dato2: '',
+      dato3: '',
+    });
+    setCamposAdicionales({
+      dato1: null,
+      dato2: null,
+      dato3: null,
     });
   };
 
@@ -45,6 +67,24 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
       const numValue = parseInt(value);
       if (value !== '' && (isNaN(numValue) || numValue <= 0)) { alert('Horas inválidas'); return; }
       setValues({ ...values, [name]: value });
+    } else if (name === 'actividad') {
+      // Cuando cambia la actividad, actualizar los campos adicionales
+      setValues({ ...values, [name]: value, dato1: '', dato2: '', dato3: '' });
+      
+      // Buscar la actividad seleccionada en actividadesCompletas
+      const actividadSeleccionada = actividadesCompletas.find(
+        act => String(act.id_actividad) === value
+      );
+      
+      if (actividadSeleccionada) {
+        setCamposAdicionales({
+          dato1: actividadSeleccionada.dato1 || null,
+          dato2: actividadSeleccionada.dato2 || null,
+          dato3: actividadSeleccionada.dato3 || null,
+        });
+      } else {
+        setCamposAdicionales({ dato1: null, dato2: null, dato3: null });
+      }
     } else {
       setValues({ ...values, [name]: value });
     }
@@ -76,8 +116,9 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
 
   const canNoAcademica = userRol === 2 || userRol === 'estudiante';  // Lógica para no académicas
 
-  const opcionesAcademica = ACTIVIDADES_ACADEMICAS;
-  const opcionesNoAcademica = ACTIVIDADES_NO_ACADEMICAS;
+  // Usar actividades cargadas desde el backend
+  const opcionesAcademica = academicas;
+  const opcionesNoAcademica = noAcademicas;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -114,13 +155,76 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
       {/* Actividad */}
       <div>
         <label htmlFor="actividad" className="block text-sm font-semibold text-gray-700 mb-2">Actividad</label>
-        <select id="actividad" name="actividad" value={values.actividad} onChange={handleChanges} disabled={!values.academica} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed" required>
-          <option value="">Seleccione una actividad</option>
+        <select id="actividad" name="actividad" value={values.actividad} onChange={handleChanges} disabled={!values.academica || loadingActividades} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed" required>
+          <option value="">{loadingActividades ? 'Cargando actividades...' : 'Seleccione una actividad'}</option>
           {(values.academica === '1' ? opcionesAcademica : values.academica === '2' ? opcionesNoAcademica : []).map(op => (
             <option key={op.value} value={op.value}>{op.label}</option>
           ))}
         </select>
       </div>
+
+      {/* Campos Adicionales Dinámicos */}
+      {values.actividad && (camposAdicionales.dato1 || camposAdicionales.dato2 || camposAdicionales.dato3) && (
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 space-y-4">
+          <h3 className="text-sm font-semibold text-purple-800 mb-3">
+            📋 Información Adicional de la Actividad
+          </h3>
+          
+          {camposAdicionales.dato1 && (
+            <div>
+              <label htmlFor="dato1" className="block text-sm font-semibold text-gray-700 mb-2">
+                {camposAdicionales.dato1}
+              </label>
+              <input
+                type="text"
+                id="dato1"
+                name="dato1"
+                value={values.dato1}
+                onChange={handleChanges}
+                placeholder={`Ingrese ${camposAdicionales.dato1.toLowerCase()}`}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+          )}
+          
+          {camposAdicionales.dato2 && (
+            <div>
+              <label htmlFor="dato2" className="block text-sm font-semibold text-gray-700 mb-2">
+                {camposAdicionales.dato2}
+              </label>
+              <input
+                type="text"
+                id="dato2"
+                name="dato2"
+                value={values.dato2}
+                onChange={handleChanges}
+                placeholder={`Ingrese ${camposAdicionales.dato2.toLowerCase()}`}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+          )}
+          
+          {camposAdicionales.dato3 && (
+            <div>
+              <label htmlFor="dato3" className="block text-sm font-semibold text-gray-700 mb-2">
+                {camposAdicionales.dato3}
+              </label>
+              <input
+                type="text"
+                id="dato3"
+                name="dato3"
+                value={values.dato3}
+                onChange={handleChanges}
+                placeholder={`Ingrese ${camposAdicionales.dato3.toLowerCase()}`}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Horas Totales */}
       <div>

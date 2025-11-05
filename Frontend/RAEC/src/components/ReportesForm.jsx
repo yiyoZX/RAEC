@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import Button from '../components/Button';
-import { ACTIVIDADES_ACADEMICAS, ACTIVIDADES_NO_ACADEMICAS } from '../utils/constants';
+import { useTodasActividades } from '../hooks/useActividades';
 
 function ReporteForm({ tipoUsuario }) {  // Prop: 'academico' o 'estudiante' para ajustar
+  // Cargar actividades dinámicamente desde el backend
+  const { academicas, noAcademicas, loading: loadingActividades } = useTodasActividades();
+  
   const [tipoReporte, setTipoReporte] = useState('');
   const [rut, setRut] = useState('');
   const [tipoActividad, setTipoActividad] = useState('');
@@ -59,10 +62,11 @@ function ReporteForm({ tipoUsuario }) {  // Prop: 'academico' o 'estudiante' par
     } finally { setLoading(false); }
   };
 
-  const listaActividades = tipoActividad === 'academica' ? ACTIVIDADES_ACADEMICAS : tipoActividad === 'no_academica' ? ACTIVIDADES_NO_ACADEMICAS : [];
+  // Usar actividades cargadas desde el backend
+  const listaActividades = tipoActividad === 'academica' ? academicas : tipoActividad === 'no_academica' ? noAcademicas : [];
 
   return (
-    <div className="max-w-3xl mx-auto mt-6 flex items-start gap-6 flex-col md:flex-row">
+    <div className="w-full max-w-6xl mx-auto px-8 py-12 md:flex-row">
       <div className="flex-1 w-full">
         <label className="block text-lg font-semibold text-gray-700 mb-2 text-center">Selecciona un tipo de reporte</label>
 
@@ -86,8 +90,8 @@ function ReporteForm({ tipoUsuario }) {  // Prop: 'academico' o 'estudiante' par
                   <option value="academica">Académica</option>
                   <option value="no_academica">No Académica</option>
                 </select>
-                <select value={actividad} onChange={e=>setActividad(e.target.value)} className="w-full mt-4 border border-gray-400 rounded-lg px-4 py-2 shadow">
-                  <option value="">Seleccione una actividad</option>
+                <select value={actividad} onChange={e=>setActividad(e.target.value)} className="w-full mt-4 border border-gray-400 rounded-lg px-4 py-2 shadow" disabled={loadingActividades}>
+                  <option value="">{loadingActividades ? 'Cargando actividades...' : 'Seleccione una actividad'}</option>
                   {listaActividades.map(a=> <option key={a.value} value={a.value}>{a.label}</option>)}
                 </select>
               </>
@@ -124,9 +128,9 @@ function ReporteForm({ tipoUsuario }) {  // Prop: 'academico' o 'estudiante' par
               if (apellidos && nombres) titulo = `${apellidos}, ${nombres}`; else if (nombres) titulo=nombres; else if (apellidos) titulo=apellidos; else titulo=rutVal || 'Registro';
               return (
                 <li key={i} className="border rounded-lg bg-white/70 px-4 py-3 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div className="font-semibold text-purple-700">{titulo}</div>
-                    <div className="text-sm text-gray-500">{fechaTxt}</div>
+                  <div className="flex items-center text-gray-600 justify-between">
+                    <div className="font-semibold">{titulo}</div>
+                    <div className="text-sm text-gray-600">{fechaTxt}</div>
                   </div>
                   {rutVal && <div className="text-sm text-gray-600 mt-1">RUT: {rutVal}</div>}
                   <div className="mt-2">

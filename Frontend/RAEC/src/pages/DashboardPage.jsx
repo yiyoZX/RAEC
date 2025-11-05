@@ -1,8 +1,6 @@
-// ...existing code...
 import { useNavigate } from 'react-router-dom';
 import HeaderLayout from '../layouts/HeaderLayout';
-import Button from '../components/Button';
-// ...existing code...
+
 
 const DashboardPage = () => {
   const navigate = useNavigate();

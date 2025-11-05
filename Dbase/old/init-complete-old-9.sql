@@ -306,47 +306,6 @@ ALTER SEQUENCE public.instituto_id_instituto_seq OWNED BY public.instituto.id_in
 
 
 --
--- TOC entry 236 (class 1259 OID 16430)
--- Name: periodos; Type: TABLE; Schema: public; Owner: Login_Admin
---
-
-CREATE TABLE public.periodos (
-    id_periodos integer NOT NULL,
-    inicio timestamp with time zone NOT NULL,
-    fin timestamp with time zone NOT NULL,
-    id_profesor character varying(10) NOT NULL,
-    extra boolean NOT NULL
-);
-
-
-ALTER TABLE public.periodos OWNER TO "Login_Admin";
-
---
--- TOC entry 237 (class 1259 OID 16433)
--- Name: periodos_id_periodos_seq; Type: SEQUENCE; Schema: public; Owner: Login_Admin
---
-
-CREATE SEQUENCE public.periodos_id_periodos_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.periodos_id_periodos_seq OWNER TO "Login_Admin";
-
---
--- TOC entry 3503 (class 0 OID 0)
--- Dependencies: 237
--- Name: periodos_id_periodos_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Login_Admin
---
-
-ALTER SEQUENCE public.periodos_id_periodos_seq OWNED BY public.periodos.id_periodos;
-
-
---
 -- TOC entry 232 (class 1259 OID 16422)
 -- Name: profesor; Type: TABLE; Schema: public; Owner: -
 --
@@ -1181,17 +1140,8 @@ ALTER TABLE ONLY public.categoria
 -- Name: estado id_estado; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-
 ALTER TABLE ONLY public.estado
     ADD CONSTRAINT id_estado PRIMARY KEY (id_estado);
-
---
--- TOC entry 3321 (class 2606 OID 16436)
--- Name: periodos id_periodos; Type: CONSTRAINT; Schema: public; Owner: Login_Admin
---
-
-ALTER TABLE ONLY public.periodos
-    ADD CONSTRAINT id_periodos PRIMARY KEY (id_periodos);
 
 
 --
@@ -1354,14 +1304,6 @@ ALTER TABLE ONLY public."instituto-carrera"
 
 ALTER TABLE ONLY public."instituto-carrera"
     ADD CONSTRAINT instituto_carrera_instituto_fk FOREIGN KEY (id_instituto) REFERENCES public.instituto(id_instituto);
-
---
--- TOC entry 3322 (class 2606 OID 24578)
--- Name: periodos id_profesor; Type: FK CONSTRAINT; Schema: public; Owner: Login_Admin
---
-
-ALTER TABLE ONLY public.periodos
-    ADD CONSTRAINT fkey_profesor FOREIGN KEY (id_profesor) REFERENCES public.profesor(id_profesor);
 
 
 -- Completed on 2025-11-03 11:26:56

@@ -27,8 +27,8 @@ const LoginStudentPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-sm bg-white rounded-xl shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-center mb-2">RAEC</h1>
-          <h2 className="text-lg font-semibold text-center text-gray-700 mb-4">Iniciar sesión</h2>
+          <h1 className="text-2xl font-bold text-center text-gray-700 mb-2">RAEC</h1>
+          <h2 className="text-lg font-semibold text-center text-gray-700 mb-4">Iniciar sesión como estudiante</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="correo" className="block text-gray-700 font-medium mb-1">Correo</label>

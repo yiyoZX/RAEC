@@ -9,7 +9,7 @@ const DashboardAdmin = () => {
     { label: 'Solicitudes', to: '/Solicitudes', icon: '👥' },
     { label: 'Reportes', to: '/reportes', icon: '📊' },
     { label: 'Crear categoria', to: '/crear', icon: '🧾' },
-    { label: 'Activar periodo', to: '/periodo', icon: '🏴' },
+    { label: 'Activar periodos', to: '/periodos', icon: '📅' },
   ];
 
   return (

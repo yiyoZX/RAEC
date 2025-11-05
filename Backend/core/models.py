@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Text, LargeBinary, DateTime
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Text, LargeBinary, DateTime, Boolean
 from datetime import datetime, timezone
 
 metadata = MetaData()
@@ -104,4 +104,14 @@ instituto_carrera = Table(
     Column("id_instituto_carrera", Integer, primary_key=True),
     Column("id_instituto", Integer, ForeignKey("instituto.id_instituto")),
     Column("id_carrera", Integer, ForeignKey("carrera.id_carrera"))
+)
+
+periodos = Table(
+    "periodos",
+    metadata,
+    Column("id_periodos", Integer, primary_key=True),
+    Column("inicio", DateTime(timezone=True), nullable=False),
+    Column("fin", DateTime(timezone=True), nullable=False),
+    Column("id_profesor", String(10), nullable=False),
+    Column("extra", Boolean, nullable=True)
 )

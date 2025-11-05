@@ -13,6 +13,7 @@ import CrearActividad from './pages/CrearActividad';
 import ReportesEstudiantes from './pages/ReportesEstudiantes';
 import ReportesAcademicos from './pages/ReportesAcademicos';
 import SolicitudesPage from './pages/Solicitudes';
+import ConfigurarPeriodos from './pages/ConfigurarPeriodos';
 
 function App() {
   return (
@@ -99,6 +100,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
                   <SolicitudesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/periodos" 
+              element={
+                <ProtectedRoute>
+                  <ConfigurarPeriodos />
                 </ProtectedRoute>
               } 
             />

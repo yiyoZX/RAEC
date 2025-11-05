@@ -8,6 +8,7 @@ from routes.formulario import router as formulario_router
 from routes.reportes import router as reportes_router
 from routes.solicitudes import router as solicitud_router
 from routes.actividades import router as actividades_router
+from routes.periodos import router as periodos_router
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
@@ -61,5 +62,4 @@ app.include_router(formulario_router)
 app.include_router(reportes_router)
 app.include_router(solicitud_router)
 app.include_router(actividades_router)
-
-
+app.include_router(periodos_router)

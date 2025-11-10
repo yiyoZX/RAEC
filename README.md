@@ -177,6 +177,7 @@ El archivo `Dbase/init-complete.sql` contiene:
 - `registro`: Registros de actividades realizadas
 - `rol`: Roles del sistema
 - `instituto`: Institutos o facultades
+- `periodos`: Fechas de inscripciones para alumnos
 
 ### Comandos Útiles
 

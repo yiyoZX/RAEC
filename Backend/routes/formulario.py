@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Form, File, UploadFile, Depends
+from fastapi import APIRouter, Form, File, UploadFile, Depends, BackgroundTasks, HTTPException
 from sqlalchemy.orm import Session
-from services.formulario_service import guardar_formulario
+from services.formulario_service import guardar_registro
 from core.database import get_db
 from core.auth import get_current_user
 from datetime import datetime
@@ -10,7 +10,8 @@ router = APIRouter()
 
 @router.post("/submit/")
 async def submit_form(
-    rut: str = Form(...),
+    background_tasks: BackgroundTasks,
+    rut: str = Form(None),  # Opcional - estudiantes no lo envían
     academica: str = Form(...),
     actividad: str = Form(...),
     fecha_inicio: str = Form(...),
@@ -18,21 +19,13 @@ async def submit_form(
     horas_totales: str = Form(...),
     about: str = Form(""),
     archivos: UploadFile = File(None),
+    dato1: str = Form(None),
+    dato2: str = Form(None),
+    dato3: str = Form(None),
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
     # Convertir fechas y validar datos
-    print("Datos recibidos:", {
-        "rut": rut,
-        "academica": academica,
-        "actividad": actividad,
-        "fecha_inicio": fecha_inicio,
-        "fecha_termino": fecha_termino,
-        "horas_totales": horas_totales,
-        "about": about,
-        "archivos": archivos.filename if archivos else None
-    })
-    
     try:
         # Convertir strings a enteros
         academica_int = int(academica)
@@ -40,14 +33,14 @@ async def submit_form(
         horas_totales_int = int(horas_totales)
         
         # Validar que las horas totales sean positivas
-        if horas_totales_int <= 0:
-            from fastapi import HTTPException
+        if horas_totales_int <= 0: 
             raise HTTPException(status_code=422, detail="Las horas totales deben ser un número positivo")
         
-                # Validar que solo los directores (id_rol = 2) puedan registrar actividades no académicas (academica = 2)
-        if academica_int == 2 and current_user["id_rol"] != 2:
-            from fastapi import HTTPException
-            raise HTTPException(status_code=403, detail="Solo los directores pueden registrar actividades no académicas")
+        # Validar que solo los directores (id_rol = 2) puedan registrar actividades no académicas (academica = 2)
+        # Los estudiantes (type = "estudiante") SÍ pueden registrar actividades no académicas
+        if academica_int == 2:        
+            if current_user.get("type") == "academico" and current_user.get("id_rol") != 2:
+                raise HTTPException(status_code=403, detail="Solo los directores pueden registrar actividades no académicas")
 
         # Convertir fechas de string a datetime
         fecha_inicio_dt = datetime.strptime(fecha_inicio, "%Y-%m-%d")
@@ -55,16 +48,14 @@ async def submit_form(
         
         # Validar que fecha_inicio sea anterior a fecha_termino
         if fecha_inicio_dt > fecha_termino_dt:
-            from fastapi import HTTPException
             raise HTTPException(status_code=422, detail="La fecha de inicio debe ser anterior a la fecha de término")
             
     except ValueError as e:
-        from fastapi import HTTPException
         if "time data" in str(e):
             raise HTTPException(status_code=422, detail="Formato de fecha inválido. Use YYYY-MM-DD")
         else:
             raise HTTPException(status_code=422, detail="Los campos numéricos deben contener valores válidos")
     
-    return await guardar_formulario(
-        rut, academica_int, actividad_int, fecha_inicio_dt, fecha_termino_dt, horas_totales_int, about, archivos, db, current_user["id_profesor"]
+    return await guardar_registro(
+        rut, academica_int, actividad_int, fecha_inicio_dt, fecha_termino_dt, horas_totales_int, about, archivos, dato1, dato2, dato3, db, current_user, background_tasks
     )

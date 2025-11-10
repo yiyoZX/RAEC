@@ -1,0 +1,67 @@
+/* Global (migrado desde index.css original) */
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  /* quitar color-scheme global forzando contraste manual */
+  color: #222; /* texto por defecto oscuro para legibilidad */
+  background-color: #f5f5f5; /* fondo claro neutro */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body { 
+  margin: 0; 
+  padding: 0;
+  min-width: 320px; 
+  min-height: 100vh; 
+  color: #222; 
+  background: #f5f5f5; 
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Inputs y campos de formulario */
+input, select, textarea { color:#222 !important; background:#ffffff; }
+input::placeholder, textarea::placeholder { color:#666; }
+select option { color:#222; }
+
+/* Forzar en modo oscuro del SO que no invierta texto a blanco sobre blanco */
+@media (prefers-color-scheme: dark) {
+  :root { background-color:#1e1e1e; color:#f0f0f0; }
+  body { 
+    margin: 0;
+    padding: 0;
+    background:#1e1e1e; 
+    color:#f0f0f0; 
+  }
+  input, select, textarea { background:#2a2a2a; color:#f0f0f0 !important; border-color:#444; }
+  input::placeholder, textarea::placeholder { color:#aaa; }
+  select option { background:#2a2a2a; color:#f0f0f0; }
+}
+
+a { font-weight:500; color:#646cff; text-decoration:none; }
+a:hover { color:#535bf2; }
+
+h1 { font-size:3.2em; line-height:1.1; }
+
+/* Estilos base de botones - sin padding ni font-size para no interferir con Tailwind */
+button { 
+  border: 1px solid transparent;
+  font-family: inherit; 
+  cursor: pointer; 
+  transition: border-color .25s;
+}
+button:focus, 
+button:focus-visible { 
+  outline: 4px auto -webkit-focus-ring-color; 
+}
+button:disabled { 
+  opacity: .6; 
+  cursor: not-allowed; 
+}

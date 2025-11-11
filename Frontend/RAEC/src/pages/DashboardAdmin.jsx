@@ -6,8 +6,8 @@ const DashboardAdmin = () => {
 
   const actions = [
     { label: 'Registrar', to: '/registrar', icon: '✔️' },
-    { label: 'Solicitudes', to: '/Solicitudes', icon: '👥' },
-    { label: 'Reportes', to: '/reportes', icon: '📊' },
+    { label: 'Solicitudes', to: '/solicitudes', icon: '👥' },
+    { label: 'Reportes', to: '/reportesAcademicos', icon: '📊' },
     { label: 'Crear categoria', to: '/crear', icon: '🧾' },
     { label: 'Activar periodos', to: '/periodos', icon: '📅' },
   ];

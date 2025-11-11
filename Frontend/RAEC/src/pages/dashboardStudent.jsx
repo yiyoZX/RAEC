@@ -7,11 +7,11 @@ const DashboardStudent = () => {
 
   const actions = [
     { label: 'Registrar', to: '/registroEstudiantes', icon: '✔️' },
-    { label: 'Reportes', to: '/reportesEstudiantes', icon: '📊' },
+    { label: 'Historial', to: '/reportesEstudiantes', icon: '📊' },
   ];
 
   return (
-    <HeaderLayout fullScreen>
+    <HeaderLayout fullScreen title='RAEC - Estudiantes'>
       {/* Contenedor centrado */}
       <div className="w-full max-w-6xl mx-auto px-8 py-12">
         <div className="mb-12 text-center">

@@ -12,7 +12,7 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
   const [values, setValues] = useState({
     rut: '',
     academica: '',
-    actividad: '',
+    actividad: '', 
     fecha_inicio: new Date(),
     fecha_termino: new Date(),
     horas_totales: '',

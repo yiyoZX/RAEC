@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.database import database, metadata, DATABASE_URL
 from sqlalchemy import create_engine
-from routes.profesores import router as profesores_router
+from routes.login import router as login_router
 from routes.formulario import router as formulario_router
 from routes.reportes import router as reportes_router
 from routes.solicitudes import router as solicitud_router
@@ -57,7 +57,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(profesores_router)
+app.include_router(login_router)
 app.include_router(formulario_router)
 app.include_router(reportes_router)
 app.include_router(solicitud_router)

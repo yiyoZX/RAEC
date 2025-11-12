@@ -8,8 +8,8 @@ const DashboardAdmin = () => {
     { label: 'Registrar', to: '/registrar', icon: '✔️' },
     { label: 'Solicitudes', to: '/Solicitudes', icon: '👥' },
     { label: 'Reportes', to: '/reportes', icon: '📊' },
-    { label: 'Crear categoria', to: '/crear', icon: '🧾' },
-    { label: 'Activar periodos', to: '/periodos', icon: '📅' },
+    { label: 'Crear categorÍa', to: '/crear', icon: '🧾' },
+    { label: 'Activar períodos', to: '/periodos', icon: '📅' },
   ];
 
   return (

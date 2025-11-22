@@ -52,7 +52,7 @@ function ConfigurarPeriodos() {
   };
 
   return (
-    <HeaderLayout showBack backTo="/dashboardAdmin" title="RAEC - Configuración de Períodos">
+    <HeaderLayout showBack title="RAEC - Configuración de Períodos">
       <div className="w-full max-w-4xl mx-auto px-6 py-10">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">

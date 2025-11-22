@@ -3,7 +3,7 @@ import ReporteForm from '../components/ReportesForm';
 
 const ReportesEstudiantes = () => {
   return (
-    <HeaderLayout showBack title='RAEC - Historial'>
+    <HeaderLayout showBack title='RAEC - Reportes estudiantes'>
       <ReporteForm tipoUsuario='estudiante' />
     </HeaderLayout>
   );

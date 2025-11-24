@@ -1,0 +1,97 @@
+import React, { useState } from 'react';
+import Button from './Button';
+
+function ReporteLista({ items, csvUrl, mensaje, onDownload }) {
+  const [expandedIndex, setExpandedIndex] = useState(null);
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+          <h3 className="font-bold text-gray-700 text-lg">Resultados ({items.length})</h3>
+          {csvUrl && (
+              <a href={csvUrl} download className="text-sm text-green-700 font-bold hover:underline flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                  Descargar CSV
+              </a>
+          )}
+      </div>
+
+      {mensaje ? (
+        <div className="text-center py-10 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 bg-gray-50">
+            {mensaje}
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {items.map((item, i) => {
+            // Normalización de datos
+            const nombre = item.nombre_actividad ?? item.actividad ?? 'Sin nombre';
+            const fecha = item.fecha_creacion ?? item.fecha ?? '';
+            const titulo = (item.nombres && item.apellidos) ? `${item.apellidos}, ${item.nombres}` : nombre;
+            const isExpanded = expandedIndex === i;
+
+            return (
+              <li key={i} className="bg-white border rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                {/* Cabecera Clickable */}
+                <div 
+                  className="px-4 py-3 cursor-pointer hover:bg-purple-50 flex justify-between items-center transition-colors"
+                  onClick={() => setExpandedIndex(isExpanded ? null : i)}
+                >
+                  <div>
+                    <div className="font-bold text-gray-800">{titulo}</div>
+                    {item.rut && <div className="text-xs text-gray-500 font-mono">{item.rut}</div>}
+                  </div>
+                  <div className="flex items-center gap-3">
+                     {item.estado && (
+                        <span className={`text-xs px-2 py-1 rounded border font-medium uppercase ${
+                           item.estado === 'Aprobada' ? 'bg-green-100 text-green-800 border-green-200' :
+                           item.estado === 'Rechazada' ? 'bg-red-100 text-red-800 border-red-200' :
+                           'bg-yellow-100 text-yellow-800 border-yellow-200'
+                        }`}>
+                           {item.estado}
+                        </span>
+                     )}
+                     <svg className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                  </div>
+                </div>
+
+                {/* Detalle Expandido */}
+                {isExpanded && (
+                  <div className="px-4 py-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-700">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4 mb-3">
+                       
+                       {/* === AQUI ESTÁ EL CAMBIO: CAMPO ACTIVIDAD === */}
+                       <p><strong className="text-gray-900">Actividad:</strong> {nombre}</p>
+                       
+                       {item.carrera && <p><strong className="text-gray-900">Carrera:</strong> {item.carrera}</p>}
+                       {item.horas_totales && <p><strong className="text-gray-900">Horas:</strong> {item.horas_totales}</p>}
+                       {fecha && <p><strong className="text-gray-900">Fecha Solicitud:</strong> {new Date(fecha).toLocaleDateString()}</p>}
+                       {item.profesor_nombres && <p><strong className="text-gray-900">Profesor:</strong> {item.profesor_nombres} {item.profesor_apellidos}</p>}
+                       {item.fecha_inicio_actividad && <p><strong className="text-gray-900">Inicio Actividad:</strong> {new Date(item.fecha_inicio_actividad).toLocaleDateString()}</p>}
+                    </div>
+                    
+                    {item.comentario && (
+                       <div className="p-3 bg-white border border-gray-200 rounded italic text-gray-600 mb-3 relative">
+                          <span className="absolute -top-2 left-2 bg-white px-1 text-xs text-gray-400">Comentario</span>
+                          "{item.comentario}"
+                       </div>
+                    )}
+
+                    {item.tiene_archivo && (
+                       <div className="flex justify-end border-t border-gray-200 pt-3">
+                          <Button variant="outline" size="sm" onClick={(e) => onDownload(item, e)}>
+                             Descargar Archivo Adjunto
+                          </Button>
+                       </div>
+                    )}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export default ReporteLista;

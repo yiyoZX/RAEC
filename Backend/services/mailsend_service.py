@@ -16,11 +16,16 @@ class Destinatario(BaseModel):
     email: EmailStr
     nombre: str
 
-# Modelo de datos ajustado (cambio: id_profesor a int, ya que es numérico en DB)
-class idData(BaseModel):
+class idForm(BaseModel):
     rut_alumno: str
     id_profesor: str
     id_registro: int
+
+class idMailing(BaseModel):
+    rut_alumno: str
+    id_profesor: str
+    fecha_periodo: datetime = None
+    estado: int = None
 
 def extraerDatos(rut_alumno: str, id_profesor: str, db: Session):
     queryAlumno = select(alumno.c.nombres, alumno.c.correo).where(alumno.c.rut_alumno == rut_alumno)
@@ -38,9 +43,12 @@ def extraerDatos(rut_alumno: str, id_profesor: str, db: Session):
     return lista_datos
 
 # Envío de correos sobre registros de formularios creados
-async def formularioMail(data: idData, db: Session):
+async def formularioMail(data: idForm, db: Session, esAcademico: bool):
     lista_datos = extraerDatos(data.rut_alumno, data.id_profesor, db)  # Busca nombres en base a IDs
     fm = FastMail(conf)  # Asigna datos del correo automático para los envíos
+
+    env_key = "FORM_DIR" if esAcademico else "REQ_DIR"
+    template_name = os.getenv(env_key)
 
     for d in lista_datos:
         message = MessageSchema(
@@ -49,9 +57,11 @@ async def formularioMail(data: idData, db: Session):
             template_body={
                 "nombre": d.nombre,
                 "id_registro": data.id_registro,
+                **({"rut_alumno": data.rut_alumno} if not esAcademico else {}),
                 "fecha": datetime.now(ZoneInfo("America/Santiago")).strftime("%d/%m/%Y %H:%M:%S")
             },
             subtype=MessageType.html
         )
-        await fm.send_message(message, template_name=os.getenv("TEMPLATE_DIR"))  # Mensaje individual por destinatario, mismo template
+
+        await fm.send_message(message, template_name=template_name)  # Mensaje individual por destinatario, mismo template
     return

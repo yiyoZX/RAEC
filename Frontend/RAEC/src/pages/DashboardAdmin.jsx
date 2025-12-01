@@ -11,6 +11,7 @@ const DashboardAdmin = () => {
     { label: 'Crear categoria', to: '/crear', icon: '🧾' },
     { label: 'Activar periodos', to: '/periodos', icon: '📅' },
     { label: 'Cambiar Rol', to: '/CambiarRol', icon: '🔄' },
+    { label: 'Carga masiva', to: '/carga-masiva', icon: '📥' },
   ];
 
   return (

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from sqlalchemy import func, select
 from core.models import alumno, profesor, actividad, registro
-from services.mailsend_service import idData, formularioMail
+from services.mailsend_service import idForm, formularioMail
 
 def verificarDatos(db: Session, rut_alumno: str, id_actividad: int):
     if not db.execute(select(alumno).where(alumno.c.rut_alumno == rut_alumno)).first():
@@ -80,16 +80,46 @@ async def guardar_registro(
     db.commit()
 
     inserted_id = result.inserted_primary_key[0] if result.inserted_primary_key else None
+    esAcademico = True
 
     # Enviar correos en segundo plano para no bloquear la respuesta
-    if background_tasks:
-        mailData = idData(
-            rut_alumno = rut_alumno,  # Usa rut_alumno (no rut) - funciona para estudiantes y profesores
-            id_profesor = str(id_profesor),  # Convierte a string según modelo idData
-            id_registro = inserted_id
+    if user_type == "academico":
+        if background_tasks:
+            mailData = idForm(
+                rut_alumno = rut_alumno,  # Usa rut_alumno (no rut) - funciona para estudiantes y profesores
+                id_profesor = str(id_profesor),  # Convierte a string según modelo idForm
+                id_registro = inserted_id
+            )
+
+    elif user_type == "estudiante":
+        stmt = (
+            select(profesor.c.id_profesor)
+            .select_from(
+                profesor.join(
+                    alumno,
+                    profesor.c.id_instituto == alumno.c.id_carrera
+                )
+            )
+            .where(
+                profesor.c.id_rol == 2,
+                alumno.c.rut_alumno == rut_alumno
+            )
+            .limit(1)
         )
-        background_tasks.add_task(formularioMail, mailData, db)
+        id_director = db.execute(stmt).scalar_one_or_none()
+        if not id_director:
+            raise HTTPException(status_code=404, detail="Director no encontrado para este alumno")
+
+        if background_tasks:
+            mailData = idForm(
+                rut_alumno = rut_alumno,
+                id_profesor = str(id_director),
+                id_registro = inserted_id
+            )
+        esAcademico = False
+    
+    background_tasks.add_task(formularioMail, mailData, db, esAcademico)
 
     return {"message": "Formulario guardado exitosamente", "id": inserted_id, "horas_totales": horas_totales}
 
-# Quita la antigua guardar_formulario - usa la genérica
+# Quita la antigua guardar_formulario - usa la genérica 

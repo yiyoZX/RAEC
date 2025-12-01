@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
 import Button from './Button';
 
-function ReporteLista({ items, csvUrl, mensaje, onDownload }) {
+function ReporteLista({ items, csvUrl, mensaje, onDownload, totalRecords, currentPage, pageSize }) {
   const [expandedIndex, setExpandedIndex] = useState(null);
+
+  // Calcular rango de registros mostrados
+  const startRecord = items.length > 0 ? (currentPage - 1) * pageSize + 1 : 0;
+  const endRecord = Math.min((currentPage - 1) * pageSize + items.length, totalRecords || items.length);
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-          <h3 className="font-bold text-gray-700 text-lg">Resultados ({items.length})</h3>
+          <div>
+            <h3 className="font-bold text-gray-700 text-lg">
+              Resultados {totalRecords > 0 && `(${totalRecords} total)`}
+            </h3>
+            {items.length > 0 && totalRecords > 0 && (
+              <p className="text-sm text-gray-500 mt-1">
+                Mostrando {startRecord} - {endRecord} de {totalRecords} registros
+              </p>
+            )}
+          </div>
           {csvUrl && (
               <a href={csvUrl} download className="text-sm text-green-700 font-bold hover:underline flex items-center gap-1">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                  Descargar CSV
+                  Descargar CSV Completo
               </a>
           )}
       </div>

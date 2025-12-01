@@ -14,6 +14,7 @@ import ReportesEstudiantes from './pages/ReportesEstudiantes';
 import ReportesAcademicos from './pages/ReportesAcademicos';
 import SolicitudesPage from './pages/Solicitudes';
 import ConfigurarPeriodos from './pages/ConfigurarPeriodos';
+import ChangeUserRole from './pages/CambiarRol';
 
 function App() {
   return (
@@ -92,6 +93,14 @@ function App() {
               element={
                 <ProtectedRoute requireAdminOrDirector>
                   <DashboardAdmin />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/CambiarRol" 
+              element={
+                <ProtectedRoute requireAdminOrDirector>
+                  <ChangeUserRole />
                 </ProtectedRoute>
               } 
             />

@@ -10,6 +10,7 @@ const DashboardAdmin = () => {
     { label: 'Reportes', to: '/reportesAcademicos', icon: '📊' },
     { label: 'Crear categoria', to: '/crear', icon: '🧾' },
     { label: 'Activar periodos', to: '/periodos', icon: '📅' },
+    { label: 'Cambiar Rol', to: '/CambiarRol', icon: '🔄' },
   ];
 
   return (

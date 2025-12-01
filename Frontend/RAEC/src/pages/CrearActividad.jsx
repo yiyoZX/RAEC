@@ -93,7 +93,7 @@ const NuevaActividadPage = () => {
   };
 
   return (
-    <HeaderLayout showBack title="Nueva Actividad">
+    <HeaderLayout showBack title="RAEC - Nueva Actividad">
       <div className="w-full max-w-xl mx-auto p-6 mt-8 bg-white rounded-xl shadow-md">
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
           Registrar Nueva Actividad

@@ -13,11 +13,17 @@ import io
 
 router = APIRouter(prefix="/reportes", tags=["Reportes"])
 
-def _return_reporte(rows: List[Dict[str, Any]], filename_base: str):
+def _return_reporte(rows: List[Dict[str, Any]], filename_base: str, page: int = 1, page_size: int = 50, total_records: int = None):
     csv_path = guardar_csv(filename_base, rows)
     filename = os.path.basename(csv_path)
+    total = total_records if total_records is not None else len(rows)
+    total_pages = (total + page_size - 1) // page_size  # Redondeo hacia arriba
+    
     return {
-        "total": len(rows),
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": total_pages,
         "csv_file": csv_path,
         "csv_url": f"/exports/{filename}",
         "data": rows
@@ -34,32 +40,51 @@ def reporte_general(
     actividad_id: Optional[int] = Query(None),
     fecha_inicio: Optional[str] = Query(None),
     fecha_fin: Optional[str] = Query(None),
-    limite: int = Query(50, ge=1, le=500),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=500),
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
     if current_user.get("type") != "academico":
         raise HTTPException(status_code=403, detail="Acceso denegado")
     
-    rows = obtener_reporte(
+    # Obtener todos los resultados
+    all_rows = obtener_reporte(
         db, current_user=current_user, rut=rut, actividad_id=actividad_id,
         tipo_actividad=tipo_actividad, fecha_inicio=fecha_inicio,
-        fecha_fin=fecha_fin, limite=limite
+        fecha_fin=fecha_fin
     )
-    return _return_reporte(rows, "reporte_general_filtrado")
+    
+    total_records = len(all_rows)
+    
+    # Aplicar paginación
+    start_idx = (page - 1) * page_size
+    end_idx = start_idx + page_size
+    rows = all_rows[start_idx:end_idx]
+    
+    return _return_reporte(rows, "reporte_general_filtrado", page, page_size, total_records)
 
 @router.get("/estudiante")
 def reporte_estudiante(
     estado: Optional[str] = Query(None),
-    limite: int = Query(50, ge=1, le=500),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=500),
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
     if current_user.get("type") != "estudiante":
         raise HTTPException(status_code=403, detail="Acceso denegado")
     
-    rows = obtener_reporte(db, current_user=current_user, estado=estado, limite=limite)
-    return _return_reporte(rows, "reporte_estudiante")
+    # Obtener todos los resultados
+    all_rows = obtener_reporte(db, current_user=current_user, estado=estado)
+    total_records = len(all_rows)
+    
+    # Aplicar paginación
+    start_idx = (page - 1) * page_size
+    end_idx = start_idx + page_size
+    rows = all_rows[start_idx:end_idx]
+    
+    return _return_reporte(rows, "reporte_estudiante", page, page_size, total_records)
 
 # Mantenidos por compatibilidad
 @router.get("/alumno")
@@ -68,9 +93,9 @@ def reporte_por_alumno(rut: str, db: Session = Depends(get_db), current_user: di
     return _return_reporte(obtener_reporte(db, rut=rut, current_user=current_user), f"reporte_alumno_{rut}")
 
 @router.get("/actividad")
-def reporte_por_actividad(actividad_id: int, limite: int = 50, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def reporte_por_actividad(actividad_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     if current_user.get("type") != "academico": raise HTTPException(403, "Acceso denegado")
-    return _return_reporte(obtener_reporte(db, actividad_id=actividad_id, limite=limite, current_user=current_user), f"reporte_actividad_{actividad_id}")
+    return _return_reporte(obtener_reporte(db, actividad_id=actividad_id, current_user=current_user), f"reporte_actividad_{actividad_id}")
 
 # --------------------------------------------------------------------------
 # ENDPOINT OPTIMIZADO: DESCARGA

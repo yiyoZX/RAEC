@@ -3,6 +3,7 @@ import { useTodasActividades } from '../hooks/useActividades';
 import ReportesGraficos from '../components/ReportesGraficos';
 import ReporteFiltros from '../components/reportesFiltros';
 import ReporteLista from '../components/reporteLista';
+import Paginacion from '../components/Paginacion';
 
 function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
   
@@ -19,6 +20,12 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
     estado: ''
   });
 
+  // --- ESTADOS DE PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pageSize] = useState(10); // 20 registros por página
+
   // --- ESTADOS UI ---
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,7 +39,10 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
   const resetPreview = (msg) => {
     setItems([]); 
     setCsvUrl(null); 
-    setMensaje(msg || null); 
+    setMensaje(msg || null);
+    setCurrentPage(1);
+    setTotalPages(0);
+    setTotalRecords(0);
   };
 
  
@@ -70,16 +80,21 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
         fechaFin: '',
         estado: ''
     });
+    setCurrentPage(1);
     resetPreview('Filtros limpiados.');
   };
 
-  // Lógica de Consulta
-  const handleConsultar = async () => {
+  // Lógica de Consulta con paginación
+  const fetchReportes = async (page = 1) => {
     let url = 'http://localhost:4001/reportes';
     const params = new URLSearchParams();
 
     // Desestructuramos del estado de objetos
     const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado } = filtros;
+
+    // Agregar parámetros de paginación
+    params.append('page', page);
+    params.append('page_size', pageSize);
 
     // Lógica Académico: Filtros simultáneos
     if (tipoUsuario === 'academico') {
@@ -99,7 +114,6 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
 
     setLoading(true);
     setMensaje('Buscando registros...');
-    setItems([]); 
 
     try {
       const token = localStorage.getItem('access_token') || '';
@@ -119,6 +133,11 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
       setItems(data);
       setCsvUrl(json.csv_url ? `http://localhost:4001${json.csv_url}` : null);
       
+      // Actualizar información de paginación
+      if (json.total !== undefined) setTotalRecords(json.total);
+      if (json.total_pages !== undefined) setTotalPages(json.total_pages);
+      if (json.page !== undefined) setCurrentPage(json.page);
+      
       if (!data.length) setMensaje('No se encontraron resultados.'); 
       else setMensaje(null);
 
@@ -128,6 +147,18 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
     } finally { 
       setLoading(false); 
     }
+  };
+
+  const handleConsultar = () => {
+    setCurrentPage(1);
+    fetchReportes(1);
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    fetchReportes(newPage);
+    // Scroll al inicio de la lista
+    window.scrollTo({ top: 300, behavior: 'smooth' });
   };
 
   // Calculamos la lista dinámica para pasarla a ReporteFiltros
@@ -167,7 +198,20 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
         csvUrl={csvUrl}
         mensaje={mensaje}
         onDownload={handleDownload}
+        totalRecords={totalRecords}
+        currentPage={currentPage}
+        pageSize={pageSize}
       />
+
+      {/* COMPONENTE DE PAGINACIÓN */}
+      {items.length > 0 && (
+        <Paginacion
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          loading={loading}
+        />
+      )}
 
     </div>
   );

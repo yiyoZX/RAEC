@@ -1,5 +1,7 @@
 // Servicio de peticiones autenticadas al backend
 
+const API_BASE_URL = 'http://localhost:4001';
+
 const getToken = () => localStorage.getItem('access_token');
 
 export const authenticatedFetch = async (url, options = {}) => {
@@ -7,7 +9,7 @@ export const authenticatedFetch = async (url, options = {}) => {
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
   if (token) headers['Authorization'] = `Bearer ${token}`;
   try {
-    const response = await fetch(url, { ...options, headers });
+    const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
     if (response.status === 401) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_data');
@@ -22,12 +24,12 @@ export const authenticatedFetch = async (url, options = {}) => {
   }
 };
 
-export const authenticatedFetchFormData = async (url, formData, options = {}) => {
+export const authenticatedFetchFormData = async (url, options = {}) => {
   const token = getToken();
   const headers = { ...(options.headers || {}) }; // No establecer Content-Type manualmente
   if (token) headers['Authorization'] = `Bearer ${token}`;
   try {
-    const response = await fetch(url, { method: 'POST', ...options, headers, body: formData });
+    const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
     if (response.status === 401) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_data');

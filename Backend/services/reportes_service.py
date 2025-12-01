@@ -42,8 +42,7 @@ def obtener_reporte(
     tipo_actividad: Optional[str] = None,
     fecha_inicio: Optional[str] = None,
     fecha_fin: Optional[str] = None,
-    estado: Optional[str] = None,
-    limite: int = 100
+    estado: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     
     if actividad_id is not None and not _actividad_existe(db, actividad_id):
@@ -115,7 +114,6 @@ def obtener_reporte(
             stmt = stmt.where(profesor.c.id_instituto == current_user.get("id_instituto"))
 
     # 4. Ejecución
-    stmt = stmt.limit(limite)
     result = db.execute(stmt).mappings().all()
     
     return [_serialize_row(r) for r in result]

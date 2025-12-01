@@ -14,6 +14,7 @@ import ReportesEstudiantes from './pages/ReportesEstudiantes';
 import ReportesAcademicos from './pages/ReportesAcademicos';
 import SolicitudesPage from './pages/Solicitudes';
 import ConfigurarPeriodos from './pages/ConfigurarPeriodos';
+import CargaMasiva from './pages/CargaMasiva';
 
 function App() {
   return (
@@ -108,6 +109,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ConfigurarPeriodos />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/carga-masiva" 
+              element={
+                <ProtectedRoute>
+                  <CargaMasiva />
                 </ProtectedRoute>
               } 
             />

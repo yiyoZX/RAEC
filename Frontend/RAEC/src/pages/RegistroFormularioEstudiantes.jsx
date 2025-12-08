@@ -9,8 +9,7 @@ function RegistroFormularioEstudiante() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // null => cargando, true => abiertas, false => cerradas
-  const [solicitudesAbiertas, setSolicitudesAbiertas] = useState(null);
+  const [solicitudesAbiertas, setSolicitudesAbiertas] = useState(true);
 
   useEffect(() => {
     let mounted = true;
@@ -43,7 +42,13 @@ function RegistroFormularioEstudiante() {
       <div className="w-full max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Registrar Nueva Solicitud</h2>
-          <FormularioActividad userRol='estudiante' onSubmitSuccess={handleSuccess} />
+          {solicitudesAbiertas ? (
+            <FormularioActividad userRol='estudiante' onSubmitSuccess={handleSuccess} />
+          ) : (
+            <div className="text-center py-12 text-gray-600 font-semibold text-lg">
+              Período de solicitudes cerrado
+            </div>
+          )}
         </div>
       </div>
     </HeaderLayout>

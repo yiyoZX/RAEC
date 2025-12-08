@@ -114,7 +114,7 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
     }
   };
 
-  const canNoAcademica = userRol === 2 || userRol === 'estudiante';  // Lógica para no académicas
+  const canNoAcademica = userRol === 2 || userRol === 3 || userRol === 'estudiante';  // Directores (2), Administradores (3) y Estudiantes
 
   // Usar actividades cargadas desde el backend
   const opcionesAcademica = academicas;
@@ -147,7 +147,7 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
         </div>
         {userRol === 1 && (
           <div className="mt-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-            ℹ️ Solo los directores pueden registrar actividades no académicas.
+            ℹ️ Los profesores solo pueden registrar actividades académicas. Los directores y administradores pueden registrar ambos tipos.
           </div>
         )}
       </div>

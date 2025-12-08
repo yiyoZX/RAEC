@@ -104,7 +104,7 @@ function ProtectedRoute({
       if (isStudent()) {
         return <Navigate to="/dashboardStudent" replace />;
       } else if (isAdmin()) {
-        return <Navigate to="/dashboardAdmin" replace />;
+        return <Navigate to="/dashboard" replace />;
       } else {
         return <Navigate to="/dashboard" replace />;
       }

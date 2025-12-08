@@ -18,7 +18,7 @@ const LoginStudentPage = () => {
       const res = await loginStudent(correo, password);
       setLoading(false);
       if (res.success) {
-        navigate('/dashboardStudent');
+        navigate('/dashboard');
       } else {
         setError(res.error || 'Error al iniciar sesión');
       }

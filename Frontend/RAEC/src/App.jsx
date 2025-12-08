@@ -4,9 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import RouteGuard from './components/RouteGuard';
 import LoginPage from './pages/LoginPage';
 import LoginStudentPage from './pages/loginStudent';
-import DashboardStudentPage from  './pages/dashboardStudent';
-import DashboardPage from './pages/DashboardPage';
-import DashboardAdmin from './pages/DashboardAdmin';
+import Dashboard from './pages/Dashboard';
 import RegistroFormularioAcademico from './pages/RegistroFormularioAcademico';
 import RegistroFormularioEstudiante from './pages/RegistroFormularioEstudiantes';
 import CrearActividad from './pages/CrearActividad';
@@ -33,7 +31,7 @@ function App() {
               path="/dashboardStudent" 
               element={
                 <ProtectedRoute allowedRoles="estudiante">
-                  <DashboardStudentPage />
+                  <Dashboard />
                 </ProtectedRoute>
               } 
             />
@@ -54,12 +52,12 @@ function App() {
               } 
             />
             
-            {/* Rutas protegidas para ACADÉMICOS (profesor/director) */}
+            {/* Rutas protegidas para ACADÉMICOS (profesor/director/admin) */}
             <Route 
               path="/dashboard" 
               element={
                 <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
-                  <DashboardPage />
+                  <Dashboard />
                 </ProtectedRoute>
               } 
             />
@@ -89,14 +87,6 @@ function App() {
             />
             
             {/* Rutas protegidas para ADMINISTRADORES y DIRECTORES */}
-            <Route 
-              path="/dashboardAdmin" 
-              element={
-                <ProtectedRoute requireAdminOrDirector>
-                  <DashboardAdmin />
-                </ProtectedRoute>
-              } 
-            />
             <Route 
               path="/CambiarRol" 
               element={

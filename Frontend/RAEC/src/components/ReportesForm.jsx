@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTodasActividades } from '../hooks/useActividades';
+import { useTodasCarreras } from '../hooks/useCarreras';
 import ReportesGraficos from '../components/ReportesGraficos';
 import ReporteFiltros from '../components/reportesFiltros';
 import ReporteLista from '../components/reporteLista';
@@ -8,6 +9,7 @@ import Paginacion from '../components/Paginacion';
 function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
   
   const { academicas, noAcademicas, loading: loadingActividades } = useTodasActividades();
+  const { carreras, loading: loadingCarreras} = useTodasCarreras();
 
   // --- ESTADO UNIFICADO DE FILTROS ---
   // Agrupamos todos los inputs en un solo objeto para pasarlo a ReporteFiltros
@@ -17,7 +19,11 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
     actividad: '',
     fechaInicio: '',
     fechaFin: '',
-    estado: ''
+    estado: '',
+    carrera:[],
+    horas:'',
+    fechaActInicio:'',
+    fechaActFin:''
   });
 
   // --- ESTADOS DE PAGINACIÓN ---
@@ -78,7 +84,12 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
         actividad: '',
         fechaInicio: '',
         fechaFin: '',
-        estado: ''
+        estado: '',
+        carrera:[],
+        horas:'',
+        fechaActInicio:'',
+        fechaActFin:''
+
     });
     setCurrentPage(1);
     resetPreview('Filtros limpiados.');
@@ -88,9 +99,8 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
   const fetchReportes = async (page = 1) => {
     let url = 'http://localhost:4001/reportes';
     const params = new URLSearchParams();
-
     // Desestructuramos del estado de objetos
-    const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado } = filtros;
+    const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado, carrera, horas, fechaActInicio, fechaActFin  } = filtros;
 
     // Agregar parámetros de paginación
     params.append('page', page);
@@ -104,6 +114,10 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
       if (actividad) params.append('actividad_id', actividad);
       if (fechaInicio) params.append('fecha_inicio', fechaInicio);
       if (fechaFin) params.append('fecha_fin', fechaFin);
+      if (carrera.length > 0){ params.append('carrera', carrera.join(','));}
+      if (horas) params.append('horas', horas);
+      if (fechaActInicio) params.append('fechaActInicio', fechaActInicio);
+      if (fechaActFin) params.append('fechaActFin', fechaActFin);
     
     // Lógica Estudiante: Filtro único
     } else {
@@ -188,7 +202,9 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
         onLimpiar={handleLimpiar}
         listas={{
             actividadesDisponibles,
-            loadingActividades
+            loadingActividades,
+            carreras,
+            loadingCarreras
         }}
       />
 

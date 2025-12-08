@@ -10,7 +10,6 @@ export const MENUS = {
   PROFESOR: [ // Rol 1
     { label: 'Inicio', path: '/dashboard' },
     { label: 'Registrar', path: '/registrar' },
-    { label: 'Solicitudes', path: '/solicitudes' },
     { label: 'Reportes', path: '/reportesAcademicos'},
   ],
   

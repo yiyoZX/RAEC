@@ -43,14 +43,11 @@ export const RouteGuard = ({ children }) => {
       '/reportesEstudiantes': { type: 'estudiante' },
       
       // Rutas de académicos (profesor, director, admin)
-      '/dashboard': { types: ['profesor', 'academico', 'director', 'admin'] },
+      '/dashboard': { types: ['profesor', 'director', 'admin', 'academico'] },
       '/crear': { types: ['profesor', 'academico', 'director', 'admin'] },
       '/reportesAcademicos': { types: ['profesor', 'academico', 'director', 'admin'] },
       '/registrar': { types: ['profesor', 'academico', 'director', 'admin'] },  // Todos los académicos pueden registrar
       '/solicitudes': { types: ['profesor', 'academico', 'director', 'admin'] },  // Todos los académicos pueden ver solicitudes
-      
-      // Rutas de administración (solo admin y director)
-      '/dashboardAdmin': { types: ['director', 'admin'] },
     };
 
     const routeConfig = routePermissions[currentPath];
@@ -109,7 +106,7 @@ export const RouteGuard = ({ children }) => {
     if (isStudent()) {
       navigate('/dashboardStudent', { replace: true });
     } else if (isAdmin() || isDirector()) {
-      navigate('/dashboardAdmin', { replace: true });
+      navigate('/dashboard', { replace: true });
     } else if (isAcademic()) {
       navigate('/dashboard', { replace: true });
     } else {

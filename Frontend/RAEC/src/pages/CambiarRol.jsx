@@ -104,7 +104,7 @@ export default function ChangeUserRole() {
 
             <button
               type="button"
-              onClick={() => navigate('/dashboardAdmin')}
+              onClick={() => navigate('/dashboard')}
               className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
               disabled={loading}
             >

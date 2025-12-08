@@ -31,7 +31,7 @@ const SolicitudesPage = () => {
       }
     };
 
-    if (user && (user.id_rol === 2 || user.rol === 2)) {  // Cambio: Agrega user && para evitar null.rol error y verificar ambos campos
+    if (user && (user.id_rol === 2 || user.rol === 2) || user && (user.id_rol === 3 || user.rol === 3)) {  // Cambio: Agrega user && para evitar null.rol error y verificar ambos campos
       fetchSolicitudes();
     } else {
       setError('Solo directores pueden acceder a esta página.');

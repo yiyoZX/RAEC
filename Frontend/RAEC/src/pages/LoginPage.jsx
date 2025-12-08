@@ -18,17 +18,8 @@ const LoginPage = () => {
     const res = await login(correo, password);
     setLoading(false);
     if (res.success) {
-      // Obtener el rol del usuario desde localStorage
-      const userData = JSON.parse(localStorage.getItem('user_data'));
-      const userRole = userData?.id_rol;
-      
-      // Redirigir según el rol (asumiendo que el rol admin tiene id_rol = 3)
-      // Ajusta el número según tu base de datos
-      if (userRole === 3) {
-        navigate('/dashboardAdmin');
-      } else {
-        navigate('/dashboard');
-      }
+      // Redirigir al dashboard unificado
+      navigate('/dashboard');
     } else {
       setError(res.error || 'Error al iniciar sesión');
     }

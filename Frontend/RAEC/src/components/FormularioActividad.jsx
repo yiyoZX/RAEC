@@ -31,6 +31,30 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
     dato3: null,
   });
 
+  // Estado para rastrear campos tocados
+  const [touched, setTouched] = useState({});
+
+  // Función para verificar si un campo está vacío
+  const isFieldEmpty = (fieldName) => {
+    const value = values[fieldName];
+    return !value || value === '';
+  };
+
+  // Función para obtener clase de borde (rojo si está vacío y tocado)
+  const getInputClass = (fieldName, baseClass) => {
+    const isEmpty = isFieldEmpty(fieldName);
+    const isTouched = touched[fieldName];
+    if (isEmpty && isTouched) {
+      return baseClass.replace('border-gray-300', 'border-red-500');
+    }
+    return baseClass;
+  };
+
+  // Manejar blur (cuando el usuario sale del campo)
+  const handleBlur = (fieldName) => {
+    setTouched({ ...touched, [fieldName]: true });
+  };
+
   const ResetFun = () => { 
     setValues({
       rut: '',
@@ -54,6 +78,7 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
 
   const handleChanges = (e) => {
     const { name, value, type, files } = e.target;
+    setTouched({ ...touched, [name]: true });
     if (type === 'file') {
       const file = files[0];
       if (file) {
@@ -122,45 +147,92 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* RUT solo si no es estudiante */}
+      {/* RUT y Tipo de Actividad en la misma fila (solo si no es estudiante) */}
       {userRol !== 'estudiante' && (
-        <div>
-          <label htmlFor="rut" className="block text-sm font-semibold text-gray-700 mb-2">RUT</label>
-          <input type="text" id="rut" name="rut" placeholder="Ej: 12345678-9" value={values.rut} onChange={handleChanges} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" required />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* RUT */}
+          <div>
+            <label htmlFor="rut" className="block text-sm font-semibold text-gray-700 mb-2">RUT*</label>
+            <input 
+              type="text" 
+              id="rut" 
+              name="rut" 
+              placeholder="Ej: 12345678-9" 
+              value={values.rut} 
+              onChange={handleChanges}
+              onBlur={() => handleBlur('rut')}
+              className={getInputClass('rut', 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition')}
+              required 
+            />
+            {touched.rut && isFieldEmpty('rut') && (
+              <p className="text-red-500 text-xs mt-1">Este campo es obligatorio</p>
+            )}
+          </div>
+
+          {/* Tipo de Actividad */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo de Actividad*</label>
+            <div className="flex items-center gap-6 h-12">
+              <label className="inline-flex items-center cursor-pointer">
+                <input type="radio" name="academica" value="1" checked={values.academica === '1'} onChange={handleChanges} className="w-4 h-4 text-blue-600 focus:ring-blue-500" required />
+                <span className="ml-2 text-gray-700">Académica</span>
+              </label>
+              {canNoAcademica && (
+                <label className="inline-flex items-center cursor-pointer">
+                  <input type="radio" name="academica" value="2" checked={values.academica === '2'} onChange={handleChanges} className="w-4 h-4 text-blue-600 focus:ring-blue-500" />
+                  <span className="ml-2 text-gray-700">No Académica</span>
+                </label>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Tipo de Actividad */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo de Actividad</label>
-        <div className="flex items-center gap-6 h-12">
-          <label className="inline-flex items-center cursor-pointer">
-            <input type="radio" name="academica" value="1" checked={values.academica === '1'} onChange={handleChanges} className="w-4 h-4 text-blue-600 focus:ring-blue-500" required />
-            <span className="ml-2 text-gray-700">Académica</span>
-          </label>
-          {canNoAcademica && (
+      {/* Tipo de Actividad solo para estudiantes */}
+      {userRol === 'estudiante' && (
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo de Actividad*</label>
+          <div className="flex items-center gap-6 h-12">
+            <label className="inline-flex items-center cursor-pointer">
+              <input type="radio" name="academica" value="1" checked={values.academica === '1'} onChange={handleChanges} className="w-4 h-4 text-blue-600 focus:ring-blue-500" required />
+              <span className="ml-2 text-gray-700">Académica</span>
+            </label>
             <label className="inline-flex items-center cursor-pointer">
               <input type="radio" name="academica" value="2" checked={values.academica === '2'} onChange={handleChanges} className="w-4 h-4 text-blue-600 focus:ring-blue-500" />
               <span className="ml-2 text-gray-700">No Académica</span>
             </label>
-          )}
-        </div>
-        {userRol === 1 && (
-          <div className="mt-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-            ℹ️ Los profesores solo pueden registrar actividades académicas. Los directores y administradores pueden registrar ambos tipos.
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Mensaje informativo para profesores */}
+      {userRol === 1 && (
+        <div className="px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+          ℹ️ Los profesores solo pueden registrar actividades académicas. Los directores y administradores pueden registrar ambos tipos.
+        </div>
+      )}
 
       {/* Actividad */}
       <div>
-        <label htmlFor="actividad" className="block text-sm font-semibold text-gray-700 mb-2">Actividad</label>
-        <select id="actividad" name="actividad" value={values.actividad} onChange={handleChanges} disabled={!values.academica || loadingActividades} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed" required>
+        <label htmlFor="actividad" className="block text-sm font-semibold text-gray-700 mb-2">Actividad*</label>
+        <select 
+          id="actividad" 
+          name="actividad" 
+          value={values.actividad} 
+          onChange={handleChanges}
+          onBlur={() => handleBlur('actividad')}
+          disabled={!values.academica || loadingActividades} 
+          className={getInputClass('actividad', 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed')}
+          required
+        >
           <option value="">{loadingActividades ? 'Cargando actividades...' : 'Seleccione una actividad'}</option>
           {(values.academica === '1' ? opcionesAcademica : values.academica === '2' ? opcionesNoAcademica : []).map(op => (
             <option key={op.value} value={op.value}>{op.label}</option>
           ))}
         </select>
+        {touched.actividad && isFieldEmpty('actividad') && (
+          <p className="text-red-500 text-xs mt-1">Este campo es obligatorio</p>
+        )}
       </div>
 
       {/* Campos Adicionales Dinámicos */}
@@ -226,21 +298,34 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
         </div>
       )}
 
-      {/* Horas Totales */}
-      <div>
-        <label htmlFor="horas_totales" className="block text-sm font-semibold text-gray-700 mb-2">Horas Totales</label>
-        <input type="number" id="horas_totales" name="horas_totales" placeholder="Ej: 10" value={values.horas_totales} onChange={handleChanges} min="1" max="9999" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" required />
-      </div>
-
-      {/* Fechas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Fechas y Horas Totales en la misma fila */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Inicio</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Inicio*</label>
           <DatePicker selected={values.fecha_inicio} onChange={handleFechaInicioChange} dateFormat="dd/MM/yyyy" maxDate={new Date()} showYearDropdown showMonthDropdown dropdownMode="select" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" required />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Término</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Término*</label>
           <DatePicker selected={values.fecha_termino} onChange={handleFechaTerminoChange} dateFormat="dd/MM/yyyy" maxDate={new Date()} minDate={values.fecha_inicio} showYearDropdown showMonthDropdown dropdownMode="select" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" required />
+        </div>
+        <div>
+          <label htmlFor="horas_totales" className="block text-sm font-semibold text-gray-700 mb-2">Horas Totales*</label>
+          <input 
+            type="number" 
+            id="horas_totales" 
+            name="horas_totales" 
+            placeholder="Ej: 10" 
+            value={values.horas_totales} 
+            onChange={handleChanges}
+            onBlur={() => handleBlur('horas_totales')}
+            min="1" 
+            max="9999" 
+            className={getInputClass('horas_totales', 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition')}
+            required 
+          />
+          {touched.horas_totales && isFieldEmpty('horas_totales') && (
+            <p className="text-red-500 text-xs mt-1">Este campo es obligatorio</p>
+          )}
         </div>
       </div>
 

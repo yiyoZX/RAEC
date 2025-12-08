@@ -69,7 +69,7 @@ const HeaderLayout = ({
     <>
       <header
         className="shadow-md w-full relative z-50"
-        style={{ backgroundColor: '#e3d3e6' }}
+        style={{ backgroundColor: '#D4A574' }}
       >
         <div className="flex justify-between items-center px-8 py-4"> {/* Ajusté py-6 a py-4 para que no quede gigante con las 2 líneas */}
           

@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, or_
 from fastapi import HTTPException
 from core.models import registro, actividad, alumno, profesor, carrera
 from core.models import estado as tabla_estado
@@ -38,23 +38,26 @@ def obtener_reporte(
     db: Session,
     current_user: Optional[Dict[str, Any]] = None,
     rut: Optional[str] = None,
-    actividad_id: Optional[int] = None,
+    # AHORA RECIBIMOS STRINGS (ej: "1,2,3") O LISTAS
+    actividad_ids: Optional[str] = None, 
+    carrera_ids: Optional[str] = None,   
+    profesor_ids: Optional[str] = None,  
     tipo_actividad: Optional[str] = None,
     fecha_inicio: Optional[str] = None,
     fecha_fin: Optional[str] = None,
-    estado: Optional[str] = None
+    estado: Optional[str] = None,
+    horas_min: Optional[int] = None, # Agregué esto por si acaso (vimos horas en el front)
 ) -> List[Dict[str, Any]]:
-    
-    if actividad_id is not None and not _actividad_existe(db, actividad_id):
-        raise HTTPException(status_code=404, detail="Actividad no encontrada")
 
-    # 1. Query Base
+    # 1. Query Base (Con todos los JOINS necesarios)
+    # Nota: Asegúrate de que los modelos importados sean los correctos
     stmt = (
         select(
             registro.c.id_registro,
             registro.c.id_alumno.label("rut_alumno"),
             alumno.c.nombres,
             alumno.c.apellidos,
+            alumno.c.id_carrera, # Necesario para filtrar carrera si no estaba antes
             actividad.c.id_actividad,
             actividad.c.nombre_actividad,
             registro.c.fecha_creacion,
@@ -63,6 +66,7 @@ def obtener_reporte(
             registro.c.horas_totales,
             registro.c.comentario,
             registro.c.archivo_nombre,
+            registro.c.id_profesor, # Necesario para filtrar profesor
             tabla_estado.c.nombre_estado,
             profesor.c.nombres.label("profesor_nombres"),
             profesor.c.apellidos.label("profesor_apellidos"),
@@ -76,14 +80,40 @@ def obtener_reporte(
         .order_by(desc(registro.c.fecha_creacion))
     )
 
-    # 2. Filtros Dinámicos
+    # ==========================================
+    # 2. PROCESAMIENTO DE FILTROS (ARREGLOS)
+    # ==========================================
+
+    # A. Filtro por ACTIVIDADES (Múltiples)
+    if actividad_ids:
+        # Convertimos "1,2,3" -> [1, 2, 3]
+        lista_act = [int(x) for x in actividad_ids.split(',') if x.isdigit()]
+        if lista_act:
+            stmt = stmt.where(registro.c.id_actividad.in_(lista_act))
+
+    # B. Filtro por CARRERAS (Múltiples)
+    if carrera_ids:
+        # Convertimos "1,2" -> [1, 2]
+        lista_carreras = [int(x) for x in carrera_ids.split(',') if x.isdigit()]
+        if lista_carreras:
+            stmt = stmt.where(alumno.c.id_carrera.in_(lista_carreras))
+
+    # C. Filtro por PROFESORES SELECCIONADOS (Múltiples)
+    if profesor_ids:
+        # Convertimos "111-1,222-2" -> ["111-1", "222-2"] (RUTs son strings)
+        lista_profes = [x.strip() for x in profesor_ids.split(',') if x.strip()]
+        if lista_profes:
+            stmt = stmt.where(registro.c.id_profesor.in_(lista_profes))
+
+    # ==========================================
+    # 3. OTROS FILTROS
+    # ==========================================
+    
     if rut:
         stmt = stmt.where(registro.c.id_alumno.ilike(f"%{rut}%"))
 
-    if actividad_id:
-        stmt = stmt.where(registro.c.id_actividad == actividad_id)
-
     if tipo_actividad:
+        # Asumiendo que ACADEMIC_IDS y NON_ACADEMIC_IDS son listas globales constantes
         if tipo_actividad == 'academica':
             stmt = stmt.where(actividad.c.id_actividad.in_(ACADEMIC_IDS))
         elif tipo_actividad == 'no_academica':
@@ -95,25 +125,46 @@ def obtener_reporte(
     if fecha_fin:
         stmt = stmt.where(registro.c.fecha_inicio_actividad <= fecha_fin)
 
-    # 3. Lógica de Roles
-    if current_user and current_user.get("type") == "estudiante":
-        stmt = stmt.where(registro.c.id_alumno == current_user.get("rut_alumno"))
-        
-        if estado:
-            mapa_estados = {'aprobadas': 1, 'rechazadas': 2, 'pendientes': 3}
-            id_estado_filtro = int(estado) if str(estado).isdigit() else mapa_estados.get(estado.lower())
-            if id_estado_filtro:
-                stmt = stmt.where(registro.c.id_estado == id_estado_filtro)
+    if horas_min:
+        stmt = stmt.where(registro.c.horas_totales >= horas_min)
 
-    elif current_user and current_user.get("type") == "academico":
-        id_rol = current_user.get("id_rol")
+    # ==========================================
+    # 4. SEGURIDAD Y ROLES
+    # ==========================================
+    
+    if current_user:
+        rol = current_user.get("type") # 'estudiante' o 'academico'
         
-        if id_rol == 1:  # Profesor
-            stmt = stmt.where(registro.c.id_profesor == current_user.get("id_profesor"))
-        elif id_rol == 2:  # Director
-            stmt = stmt.where(profesor.c.id_instituto == current_user.get("id_instituto"))
+        # --- LÓGICA ESTUDIANTE ---
+        if rol == "estudiante":
+            stmt = stmt.where(registro.c.id_alumno == current_user.get("rut_alumno"))
+            
+            # Filtro de estado específico para vistas de estudiante
+            if estado:
+                mapa_estados = {'aprobadas': 1, 'rechazadas': 2, 'pendientes': 3}
+                # Intentamos ver si es número ("1") o texto ("aprobadas")
+                val_estado = int(estado) if str(estado).isdigit() else mapa_estados.get(str(estado).lower())
+                if val_estado:
+                    stmt = stmt.where(registro.c.id_estado == val_estado)
 
-    # 4. Ejecución
+        # --- LÓGICA ACADÉMICO ---
+        elif rol == "academico":
+            id_rol_bd = current_user.get("id_rol") # 1: Profe, 2: Director, 3: Admin
+            
+            if id_rol_bd == 1:  # Profesor normal
+                # Solo ve registros donde él es el tutor
+                stmt = stmt.where(registro.c.id_profesor == current_user.get("id_profesor"))
+            
+            elif id_rol_bd == 2:  # Director
+                # Ve registros de SU instituto
+                # (OJO: Esto se suma a los filtros anteriores, es un AND)
+                stmt = stmt.where(profesor.c.id_instituto == current_user.get("id_instituto"))
+
+    # 5. Ejecución
     result = db.execute(stmt).mappings().all()
     
     return [_serialize_row(r) for r in result]
+
+# Helper (si no lo tenías definido)
+def _serialize_row(row):
+    return dict(row)

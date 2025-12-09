@@ -37,9 +37,17 @@ def _return_reporte(rows: List[Dict[str, Any]], filename_base: str, page: int = 
 def reporte_general(
     rut: Optional[str] = Query(None),
     tipo_actividad: Optional[str] = Query(None),
-    actividad_id: Optional[int] = Query(None),
+    
+    # ### CAMBIO 1: actividad_id ahora es str para recibir "1,2,3"
+    actividad_id: Optional[str] = Query(None), 
+    
+    # ### CAMBIO 2: Agregamos los nuevos filtros que envía el Frontend
+    carrera: Optional[str] = Query(None),
+    profesor: Optional[str] = Query(None),
+    
     fecha_inicio: Optional[str] = Query(None),
     fecha_fin: Optional[str] = Query(None),
+    horas: Optional[int] = Query(None),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=500),
     db: Session = Depends(get_db),
@@ -48,10 +56,21 @@ def reporte_general(
     if current_user.get("type") != "academico":
         raise HTTPException(status_code=403, detail="Acceso denegado")
     
-    # Obtener todos los resultados
+    # ### CAMBIO 3: Pasamos los parámetros con los nombres correctos al servicio
+    # Recuerda que en el paso anterior renombramos los argumentos en 'obtener_reporte'
+    # para que fueran plurales (actividad_ids, carrera_ids, etc.)
     all_rows = obtener_reporte(
-        db, current_user=current_user, rut=rut, actividad_id=actividad_id,
-        tipo_actividad=tipo_actividad, fecha_inicio=fecha_inicio,
+        db, 
+        current_user=current_user, 
+        rut=rut, 
+        
+        # Conectamos los inputs del endpoint con los argumentos del servicio
+        actividad_ids=actividad_id, 
+        carrera_ids=carrera,        
+        profesor_ids=profesor,      
+        horas_min=horas,
+        tipo_actividad=tipo_actividad, 
+        fecha_inicio=fecha_inicio,
         fecha_fin=fecha_fin
     )
     

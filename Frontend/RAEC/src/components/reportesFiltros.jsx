@@ -2,7 +2,8 @@ import React from 'react';
 import Button from './Button';
 
 function ReporteFiltros({ 
-  tipoUsuario, 
+  tipoUsuario,
+  idRol, 
   filtros, 
   setFiltros, 
   listas, 
@@ -11,30 +12,50 @@ function ReporteFiltros({
   onLimpiar 
 }) {
   // Desestructuramos para facilitar lectura
-  const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado, carrera, horas, fechaActInicio, fechaActFin } = filtros;
-  const { actividadesDisponibles, loadingActividades, carreras, loadingCarreras } = listas;
+  const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado, carrera, horas, profesor, fechaActInicio, fechaActFin } = filtros;
+  const { actividadesDisponibles, loadingActividades, carreras, loadingCarreras, profesores, loadingProfesores } = listas;
+
+  const esProfesor = idRol === 1;
+  const esDirector = idRol === 2;
 
   const handleChange = (field, value) => {
     setFiltros(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleActividadChange = (idActividad) => {
+    setFiltros(prev => {
+        const seleccionActual = prev.actividad || []; 
+        
+        if (seleccionActual.includes(idActividad)) {
+            return { ...prev, actividad: seleccionActual.filter(id => id !== idActividad) };
+        } else {
+            return { ...prev, actividad: [...seleccionActual, idActividad] };
+        }
+    });
+  };
+
   const handleCarreraChange = (codigoCarrera) => {
     setFiltros(prev => {
-        const seleccionActual = prev.carrera || []; // Aseguramos que sea array
+        const seleccionActual = prev.carrera || []; 
         
-        // Verificamos si ya está seleccionado
         if (seleccionActual.includes(codigoCarrera)) {
-            // SI YA ESTÁ: Lo sacamos (filtramos todos MENOS ese)
             return { 
-                ...prev, 
-                carrera: seleccionActual.filter(c => c !== codigoCarrera) 
-            };
+                ...prev, carrera: seleccionActual.filter(c => c !== codigoCarrera) };
         } else {
-            // SI NO ESTÁ: Lo agregamos al final
+            return { ...prev, carrera: [...seleccionActual, codigoCarrera] };
+        }
+    });
+  };
+
+  const handleProfesorChange = (codigoProfesor) => {
+    setFiltros(prev => {
+        const seleccionActual = prev.profesor || []; 
+        
+        if (seleccionActual.includes(codigoProfesor)) {
             return { 
-                ...prev, 
-                carrera: [...seleccionActual, codigoCarrera] 
-            };
+                ...prev, profesor: seleccionActual.filter(p => p !== codigoProfesor) };
+        } else {
+            return { ...prev, profesor: [...seleccionActual, codigoProfesor] };
         }
     });
   };
@@ -62,7 +83,7 @@ function ReporteFiltros({
             <label className="text-sm font-semibold text-gray-600 mb-1">Tipo Actividad</label>
             <select 
               value={tipoActividad} 
-              onChange={e => { handleChange('tipoActividad', e.target.value); handleChange('actividad', ''); }} 
+              onChange={e => { handleChange('tipoActividad', e.target.value); handleChange('actividad', []); }} 
               className="border border-gray-300 rounded px-3 py-2 bg-white outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="">Todas</option>
@@ -73,17 +94,37 @@ function ReporteFiltros({
 
           <div className="flex flex-col">
             <label className="text-sm font-semibold text-gray-600 mb-1">Actividad Específica</label>
-            <select 
-              value={actividad} 
-              onChange={e => handleChange('actividad', e.target.value)} 
-              className="border border-gray-300 rounded px-3 py-2 bg-white outline-none disabled:bg-gray-100" 
-              disabled={loadingActividades}
-            >
-              <option value="">Todas</option>
-              {actividadesDisponibles.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
-            </select>
-          </div>
+            
+            <div className="border border-gray-300 rounded p-2 h-32 overflow-y-auto bg-white disabled:bg-gray-100">
+                {loadingActividades ? (
+                    <p className="text-xs text-gray-500">Cargando...</p>
+                ) : (
+                    actividadesDisponibles.map(a => (
+                        <label key={a.value} className="flex items-center space-x-2 mb-1 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                            <input 
+                                type="checkbox" 
+                                value={a.value}
+                                // Verificamos si el ID está en el array
+                                checked={actividad.includes(a.value)}
+                                onChange={() => handleActividadChange(a.value)}
+                                className="rounded text-purple-600 focus:ring-purple-500"
+                            />
+                            <span className="text-sm text-gray-700">{a.label}</span>
+                        </label>
+                    ))
+                )}
+                
+                {/* Mensaje si no hay datos */}
+                {!loadingActividades && actividadesDisponibles.length === 0 && (
+                    <p className="text-xs text-gray-400 italic">Sin actividades disponibles</p>
+                )}
+            </div>
+            <p className="text-xs text-gray-400 mt-1">
+                {actividad.length} seleccionadas
+            </p>
+        </div>
 
+        {!esProfesor && !esDirector &&(          
           <div className="flex flex-col">
             <label className="text-sm font-semibold text-gray-600 mb-1">Carreras (Selección Múltiple)</label>
             
@@ -110,6 +151,7 @@ function ReporteFiltros({
                 {carrera.length} seleccionadas
             </p>
           </div>
+        )}
 
           <div className="flex flex-col">
             <label className="text-sm font-semibold text-gray-600 mb-1">Horas realizadas</label>
@@ -121,6 +163,33 @@ function ReporteFiltros({
             />
           </div>
 
+        {!esProfesor && (  
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold text-gray-600 mb-1">Profesor (Selección Múltiple)</label>
+            
+            {/* Contenedor con scroll para que no ocupe tanto espacio */}
+            <div className="border border-gray-300 rounded p-2 h-32 overflow-y-auto bg-white">
+                
+                {loadingCarreras && <p className="text-xs text-gray-500">Cargando profesores...</p>}
+                
+                {!loadingProfesores && profesores.map(p => (
+                    <label key={p.value} className="flex items-center space-x-2 mb-1 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                        <input 
+                            type="checkbox" 
+                            value={p.value}
+                            checked={profesor.includes(p.value)}
+                            onChange={() => handleProfesorChange(p.value)}
+                            className="rounded text-purple-600 focus:ring-purple-500"
+                        />
+                        <span className="text-sm text-gray-700">{p.label}</span>
+                    </label>
+                ))}
+            </div>
+            <p className="text-xs text-gray-400 mt-1">
+                {profesor.length} seleccionadas
+            </p>
+          </div>
+        )}
           <div className="flex flex-col">
             <label className="text-sm font-semibold text-gray-600 mb-1">Desde</label>
             <input type="date" value={fechaInicio} onChange={e => handleChange('fechaInicio', e.target.value)} className="border border-gray-300 rounded px-3 py-2 outline-none" />

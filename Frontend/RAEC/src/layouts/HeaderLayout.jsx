@@ -51,8 +51,7 @@ const HeaderLayout = ({
 
   const getBackRoute = () => {
     if (backTo) return backTo;
-    if (navOptions.length > 0) return navOptions[0].path;
-    return '/login';
+    return '/dashboard';
   };
 
   useEffect(() => {

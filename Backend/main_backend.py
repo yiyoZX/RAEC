@@ -11,6 +11,8 @@ from routes.actividades import router as actividades_router
 from routes.periodos import router as periodos_router
 from routes.Roles import router as roles_router
 from routes.carga_masiva import router as carga_masiva_router
+from routes.carreras import router as carreras_router
+from routes.profesores import router as profesores_router
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
@@ -68,3 +70,6 @@ app.include_router(actividades_router)
 app.include_router(periodos_router)
 app.include_router(roles_router)
 app.include_router(carga_masiva_router)
+app.include_router(carreras_router)
+app.include_router(profesores_router)
+

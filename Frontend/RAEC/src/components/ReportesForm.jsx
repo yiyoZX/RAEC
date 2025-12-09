@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTodasActividades } from '../hooks/useActividades';
-import { useTodasCarreras } from '../hooks/useCarreras';
+import { useListaOpciones } from '../hooks/useListaOpciones';
 import ReportesGraficos from '../components/ReportesGraficos';
 import ReporteFiltros from '../components/reportesFiltros';
 import ReporteLista from '../components/reporteLista';
@@ -8,20 +8,28 @@ import Paginacion from '../components/Paginacion';
 
 function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
   
+  const userDataStr = localStorage.getItem('user_data'); // Leemos el texto
+  const userDataObj = userDataStr ? JSON.parse(userDataStr) : {}; // Lo convertimos a objeto
+  const idRolUsuario = userDataObj.id_rol; // Sacamos el 1.
+  const idInstitutoUsuario = userDataObj.id_instituto;
+
+
   const { academicas, noAcademicas, loading: loadingActividades } = useTodasActividades();
-  const { carreras, loading: loadingCarreras} = useTodasCarreras();
+  const { items: carreras, loading: loadC } = useListaOpciones('/carreras/listar', 'carreras');
+  const { items: profesores, loading: loadP } = useListaOpciones('/profesores/listar', 'profesores');
 
   // --- ESTADO UNIFICADO DE FILTROS ---
   // Agrupamos todos los inputs en un solo objeto para pasarlo a ReporteFiltros
   const [filtros, setFiltros] = useState({
     rut: '',
     tipoActividad: '',
-    actividad: '',
+    actividad: [],
     fechaInicio: '',
     fechaFin: '',
     estado: '',
     carrera:[],
     horas:'',
+    profesor:[],
     fechaActInicio:'',
     fechaActFin:''
   });
@@ -81,12 +89,13 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
     setFiltros({
         rut: '',
         tipoActividad: '',
-        actividad: '',
+        actividad: [],
         fechaInicio: '',
         fechaFin: '',
         estado: '',
         carrera:[],
         horas:'',
+        profesor:[],
         fechaActInicio:'',
         fechaActFin:''
 
@@ -100,7 +109,7 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
     let url = 'http://localhost:4001/reportes';
     const params = new URLSearchParams();
     // Desestructuramos del estado de objetos
-    const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado, carrera, horas, fechaActInicio, fechaActFin  } = filtros;
+    const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado, carrera, horas, profesor, fechaActInicio, fechaActFin  } = filtros;
 
     // Agregar parámetros de paginación
     params.append('page', page);
@@ -111,11 +120,12 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
       url += '/general'; 
       if (rut.trim()) params.append('rut', rut.trim());
       if (tipoActividad) params.append('tipo_actividad', tipoActividad);
-      if (actividad) params.append('actividad_id', actividad);
+      if (actividad.length > 0) { params.append('actividad_id', actividad.join(','));}
       if (fechaInicio) params.append('fecha_inicio', fechaInicio);
       if (fechaFin) params.append('fecha_fin', fechaFin);
       if (carrera.length > 0){ params.append('carrera', carrera.join(','));}
       if (horas) params.append('horas', horas);
+      if (profesor.length > 0){ params.append('profesor', profesor.join(','));}
       if (fechaActInicio) params.append('fechaActInicio', fechaActInicio);
       if (fechaActFin) params.append('fechaActFin', fechaActFin);
     
@@ -182,6 +192,30 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
           ? noAcademicas 
           : [...academicas, ...noAcademicas];
 
+  const profesoresFiltrados = useMemo(() => {
+    // A. Si soy DIRECTOR (Rol 2), solo muestro profes de MI carrera/instituto
+    if (idRolUsuario === 2) {
+        return profesores.filter(profe => {
+            if (!profe.carreraIds) return false;
+            return profe.carreraIds.some(id => id.toString() === idInstitutoUsuario.toString());
+        });
+    }
+
+    if (!filtros.carrera || filtros.carrera.length === 0) {
+        return profesores;
+    }
+
+    return profesores.filter(profe => {
+       if (!profe.carreraIds || !Array.isArray(profe.carreraIds)) return false;
+       return profe.carreraIds.some(idProfe => 
+           filtros.carrera.map(idFiltro => idFiltro.toString()).includes(idProfe.toString())
+       );
+    });
+  }, [profesores, filtros.carrera, idRolUsuario, idInstitutoUsuario]);
+
+
+
+
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
       
@@ -195,6 +229,7 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
       {/* COMPONENTE DE FILTROS */}
       <ReporteFiltros 
         tipoUsuario={tipoUsuario}
+        idRol={idRolUsuario}
         filtros={filtros}
         setFiltros={setFiltros}
         loading={loading}
@@ -204,7 +239,9 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
             actividadesDisponibles,
             loadingActividades,
             carreras,
-            loadingCarreras
+            loadC,
+            profesores: profesoresFiltrados,
+            loadP
         }}
       />
 

@@ -2,12 +2,19 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../store/AuthContext';
 import HeaderLayout from '../layouts/HeaderLayout';
 import Button from '../components/Button';
+import Paginacion from '../components/Paginacion';
 
 const SolicitudesPage = () => {
   const { user } = useAuth();  // Para rol y token
   const [solicitudes, setSolicitudes] = useState([]);  // Lista de pendientes
   const [loading, setLoading] = useState(true);  // Cargando al inicio
   const [error, setError] = useState(null);  // Errores
+  
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pageSize] = useState(20);
 
   // Cargar solicitudes al inicio
   useEffect(() => {
@@ -16,28 +23,29 @@ const SolicitudesPage = () => {
       setError(null);
       try {
         const token = localStorage.getItem('access_token') || '';
-        const response = await fetch('http://localhost:4001/solicitudes/pendientes', {
+        const response = await fetch(`http://localhost:4001/solicitudes/pendientes?page=${currentPage}&page_size=${pageSize}`, {
           headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         if (!response.ok) throw new Error('Error al cargar solicitudes');
         const data = await response.json();
-        setSolicitudes(data);
+        setSolicitudes(data.data || []);
+        setTotalRecords(data.total || 0);
+        setTotalPages(data.total_pages || 0);
       } catch (e) {
-        console.log('Error fetch:', e.message, response ? response.status : 'No response');
+        console.log('Error fetch:', e.message);
         setError('No se pudieron cargar las solicitudes.');
-
       } finally {
         setLoading(false);
       }
     };
 
-    if (user && (user.id_rol === 2 || user.rol === 2) || user && (user.id_rol === 3 || user.rol === 3)) {  // Cambio: Agrega user && para evitar null.rol error y verificar ambos campos
+    if (user && (user.id_rol === 2 || user.rol === 2 || user.id_rol === 3 || user.rol === 3)) {
       fetchSolicitudes();
     } else {
-      setError('Solo directores pueden acceder a esta página.');
+      setError('Solo directores y administradores pueden acceder a esta página.');
       setLoading(false);
     }
-  }, [user]);  // Depend de user - recarga si cambia
+  }, [user, currentPage, pageSize]);  // Depend de user - recarga si cambia
 
   // Función para aprobar/rechazar
   const handleUpdate = async (id, nuevoEstado) => {
@@ -65,25 +73,47 @@ const SolicitudesPage = () => {
         throw new Error(`Error al actualizar: ${response.status} - ${errorText}`);
       }
 
-      setSolicitudes(solicitudes.filter(s => s.id_registro !== id));  // Cambiado: Usa id_registro para filtrar
+      setSolicitudes(solicitudes.filter(s => s.id_registro !== id));
+      
+      // Si la página actual queda vacía, ir a la página anterior
+      if (solicitudes.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+      
       alert('Solicitud actualizada');
     } catch (e) {
-      console.error('Excepción completa:', e);  // Log la excepción completa
+      console.error('Excepción completa:', e);
       alert(`No se pudo actualizar: ${e.message}`);
     }
+  };
+
+  // Manejar cambio de página
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (loading) return <div>Cargando solicitudes...</div>;
   if (error) return <div>{error}</div>;
 
+  // Calcular rango de registros
+  const startRecord = (currentPage - 1) * pageSize + 1;
+  const endRecord = Math.min(currentPage * pageSize, totalRecords);
+
   return (
     <HeaderLayout showBack title="Solicitudes Pendientes">
       <div className="p-6">
         <h2 className="text-2xl font-bold text-center text-gray-600 mb-4">Solicitudes de Estudiantes Pendientes</h2>
+        {totalRecords > 0 && (
+          <p className="text-center text-gray-600 mb-4">
+            Mostrando {startRecord} - {endRecord} de {totalRecords} solicitudes
+          </p>
+        )}
         {solicitudes.length === 0 ? (
           <p className="text-center text-gray-600">No hay solicitudes pendientes.</p>
         ) : (
-          <ul className="space-y-4">
+          <>
+            <ul className="space-y-4">
             {solicitudes.map((solicitud) => (
               <li key={solicitud.id_registro} className="bg-white p-4 rounded-lg shadow text-gray-600">  // Cambiado: key usa id_registro
                 <p><strong>RUT Estudiante:</strong> {solicitud.rut_alumno}</p>
@@ -99,6 +129,19 @@ const SolicitudesPage = () => {
               </li>
             ))}
           </ul>
+          
+          {/* Componente de paginación */}
+          {totalPages > 1 && (
+            <div className="mt-6">
+              <Paginacion
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                loading={loading}
+              />
+            </div>
+          )}
+          </>
         )}
       </div>
     </HeaderLayout>

@@ -84,7 +84,7 @@ function ReporteLista({ items, csvUrl, mensaje, onDownload, totalRecords, curren
                     
                     {item.comentario && (
                        <div className="p-3 bg-white border border-gray-200 rounded italic text-gray-600 mb-3 relative">
-                          <span className="absolute -top-2 left-2 bg-white px-1 text-xs text-gray-400">Comentario</span>
+                          <span className="absolute -top-2 left-2 bg-white px-1 text-xs text-gray-400">Decripcion</span>
                           "{item.comentario}"
                        </div>
                     )}

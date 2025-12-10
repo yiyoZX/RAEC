@@ -1,6 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
 import HeaderLayout from '../layouts/HeaderLayout';
+import registroIcon from '../assets/Registro.png';
+import reportesIcon from '../assets/Reportes (2).png';
+import solicitudesIcon from '../assets/Solicitudes.png';
+import crearCategoriaIcon from '../assets/Crear_categoria.png';
+import periodosIcon from '../assets/Periodos.png';
+import cambiarRolIcon from '../assets/Cambiar_rol.png';
+import cargaMasivaIcon from '../assets/Carga_masiva.png';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -22,33 +29,33 @@ const Dashboard = () => {
     switch (rol) {
       case 'estudiante':
         return [
-          { label: 'Registrar', to: '/registroEstudiantes', icon: '✔️' },
-          { label: 'Historial', to: '/reportesEstudiantes', icon: '📊' },
+          { label: 'Registrar', to: '/registroEstudiantes', icon: registroIcon },
+          { label: 'Historial', to: '/reportesEstudiantes', icon: reportesIcon },
         ];
       
       case 'profesor':
         return [
-          { label: 'Registrar', to: '/registrar', icon: '✔️' },
-          { label: 'Reportes', to: '/reportesAcademicos', icon: '📊' },
+          { label: 'Registrar', to: '/registrar', icon: registroIcon },
+          { label: 'Reportes', to: '/reportesAcademicos', icon: reportesIcon },
         ];
       
       case 'director':
         return [
-          { label: 'Registrar', to: '/registrar', icon: '✔️' },
-          { label: 'Solicitudes', to: '/solicitudes', icon: '👥' },
-          { label: 'Reportes', to: '/reportesAcademicos', icon: '📊' },
-          { label: 'Cambiar Rol', to: '/CambiarRol', icon: '🔄' },
+          { label: 'Registrar', to: '/registrar', icon: registroIcon },
+          { label: 'Solicitudes', to: '/solicitudes', icon: solicitudesIcon },
+          { label: 'Reportes', to: '/reportesAcademicos', icon: reportesIcon },
+          { label: 'Cambiar Rol', to: '/CambiarRol', icon: cambiarRolIcon },
         ];
       
       case 'admin':
         return [
-          { label: 'Registrar', to: '/registrar', icon: '✔️' },
-          { label: 'Solicitudes', to: '/solicitudes', icon: '👥' },
-          { label: 'Reportes', to: '/reportesAcademicos', icon: '📊' },
-          { label: 'Crear categoría', to: '/crear', icon: '🧾' },
-          { label: 'Activar periodos', to: '/periodos', icon: '📅' },
-          { label: 'Cambiar Rol', to: '/CambiarRol', icon: '🔄' },
-          { label: 'Carga masiva', to: '/carga-masiva', icon: '📥' },
+          { label: 'Registrar', to: '/registrar', icon: registroIcon },
+          { label: 'Solicitudes', to: '/solicitudes', icon: solicitudesIcon },
+          { label: 'Reportes', to: '/reportesAcademicos', icon: reportesIcon },
+          { label: 'Crear categoría', to: '/crear', icon: crearCategoriaIcon },
+          { label: 'Activar periodos', to: '/periodos', icon: periodosIcon },
+          { label: 'Cambiar Rol', to: '/CambiarRol', icon: cambiarRolIcon },
+          { label: 'Carga masiva', to: '/carga-masiva', icon: cargaMasivaIcon },
         ];
       
       default:
@@ -91,7 +98,7 @@ const Dashboard = () => {
               onClick={() => navigate(action.to)}
               className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 flex flex-col items-center justify-center gap-4 w-64 h-64 text-2xl font-semibold"
             >
-              <span className="text-5xl">{action.icon}</span>
+              <img src={action.icon} alt={action.label} className="w-20 h-20 object-contain" />
               <span>{action.label}</span>
             </button>
           ))}

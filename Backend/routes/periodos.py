@@ -21,13 +21,13 @@ async def configurar_periodo(
     if current_user["id_rol"] != 3:
         raise HTTPException(status_code=403, detail="Solo los directores pueden registrar actividades no académicas")
     
-    # Convertir fechas str a datetime
+    # Convertir fechas str a datetime.date() para evitar problemas de zona horaria
     regular_inicio_dt = None
     regular_termino_dt = None
     if regular_inicio is not None and regular_termino is not None:
         try:
-            regular_inicio_dt = datetime.strptime(regular_inicio, "%Y-%m-%d")
-            regular_termino_dt = datetime.strptime(regular_termino, "%Y-%m-%d")
+            regular_inicio_dt = datetime.strptime(regular_inicio, "%Y-%m-%d").date()
+            regular_termino_dt = datetime.strptime(regular_termino, "%Y-%m-%d").date()
         except Exception:
             raise HTTPException(status_code=422, detail="Formato de fecha inválido para período regular. Use YYYY-MM-DD")
 
@@ -35,8 +35,8 @@ async def configurar_periodo(
     extra_termino_dt = None
     if extra_inicio is not None and extra_termino is not None:
         try:
-            extra_inicio_dt = datetime.strptime(extra_inicio, "%Y-%m-%d")
-            extra_termino_dt = datetime.strptime(extra_termino, "%Y-%m-%d")
+            extra_inicio_dt = datetime.strptime(extra_inicio, "%Y-%m-%d").date()
+            extra_termino_dt = datetime.strptime(extra_termino, "%Y-%m-%d").date()
         except Exception:
             raise HTTPException(status_code=422, detail="Formato de fecha inválido para período extra. Use YYYY-MM-DD")
 

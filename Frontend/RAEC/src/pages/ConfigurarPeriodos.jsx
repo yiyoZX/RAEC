@@ -23,6 +23,12 @@ function ConfigurarPeriodos() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validar que al menos un período esté activado
+    if (!mostrarRegular && !mostrarExtra) {
+      alert('⚠️ Debe activar al menos un período (Regular o Extraordinario) para guardar cambios');
+      return;
+    }
+
     const formData = new FormData();
     
     if (mostrarRegular) {
@@ -35,7 +41,10 @@ function ConfigurarPeriodos() {
     }
 
     try {
-      const res = await authenticatedFetchFormData('http://localhost:4001/periodos/', formData);
+      const res = await authenticatedFetchFormData('/periodos/', {
+        method: 'POST',
+        body: formData
+      });
 
       const text = await res.clone().text();
       console.log('Response body:', text);

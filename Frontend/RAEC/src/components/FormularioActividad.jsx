@@ -127,15 +127,29 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
       if ((k === 'fecha_inicio' || k === 'fecha_termino') && v instanceof Date) formData.append(k, v.toISOString().split('T')[0]);
       else formData.append(k, v);
     });
+    
+    console.log('Enviando FormData con:', Object.fromEntries(formData));
+    
     try {
-      const res = await authenticatedFetchFormData('http://localhost:4001/submit/', formData);
-      if (!res.ok) throw new Error('Error backend');
+      const res = await authenticatedFetchFormData('/submit/', {
+        method: 'POST',
+        body: formData
+      });
+      
+      console.log('Respuesta del servidor:', res);
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Error del backend:', errorText);
+        throw new Error(`Error backend: ${errorText}`);
+      }
       const data = await res.json();
       alert(data.message || 'Formulario enviado ✅');
       ResetFun();  // Resetea local
       if (onSubmitSuccess) onSubmitSuccess();  // Llama callback para navegación u otro
     } catch (err) {
-      alert('No se pudo enviar ❌');
+      console.error('Error completo:', err);
+      alert(`No se pudo enviar ❌\n${err.message}`);
     }
   };
 

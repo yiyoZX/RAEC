@@ -16,7 +16,7 @@ function RegistroFormularioEstudiante() {
 
     const fetchStatus = async () => {
       try {
-        const res = await authenticatedFetch('http://localhost:4001/periodos/status/');
+        const res = await authenticatedFetch('/periodos/status/');
         if (!res || !res.ok) {
           if (mounted) setSolicitudesAbiertas(false);
           return;

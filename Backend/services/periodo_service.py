@@ -9,7 +9,14 @@ def get_semester(date: datetime):
     semester = 1 if date.month <= 6 else 2
     return year, semester
 
-def insert_period_query(db: Session, inicio: datetime, fin: datetime, extra: bool, id_profesor:int,  exists: bool, id_periodo: int = None):
+def insert_period_query(db: Session, inicio, fin, extra: bool, id_profesor:int,  exists: bool, id_periodo: int = None):
+    # Convertir a datetime si es date para compatibilidad con la BD
+    from datetime import date as date_type
+    if isinstance(inicio, date_type):
+        inicio = datetime.combine(inicio, datetime.min.time())
+    if isinstance(fin, date_type):
+        fin = datetime.combine(fin, datetime.min.time())
+    
     if exists:
         req = (
             periodos.update()
@@ -144,21 +151,14 @@ async def guardar_periodos(
 
 
 def is_solicitudes_abiertas(db: Session) -> bool:
-
+    from sqlalchemy import cast, Date
     hoy = datetime.now().date()
 
-    # Busca periodos regulares que incluyan hoy
-    regular = db.query(periodos).filter(
-        periodos.c.inicio <= hoy,
-        periodos.c.fin >= hoy
-        ).first()
-    if regular:
-        return True
-
-    # Busca periodos extraordinarios que incluyan hoy
-    extra = db.query(periodos).filter(
-        periodos.c.inicio_extra != None,
-        periodos.c.inicio_extra <= hoy,
-        periodos.c.fin_extra >= hoy,
+    # Busca cualquier periodo (regular o extraordinario) que incluya hoy
+    # Convertimos las columnas datetime a date para comparar correctamente
+    periodo_activo = db.query(periodos).filter(
+        cast(periodos.c.inicio, Date) <= hoy,
+        cast(periodos.c.fin, Date) >= hoy
     ).first()
-    return bool(extra)
+    
+    return bool(periodo_activo)

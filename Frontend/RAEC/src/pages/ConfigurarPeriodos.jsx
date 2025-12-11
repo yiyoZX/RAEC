@@ -23,6 +23,12 @@ function ConfigurarPeriodos() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validar que al menos un período esté activado
+    if (!mostrarRegular && !mostrarExtra) {
+      alert('⚠️ Debe activar al menos un período (Regular o Extraordinario) para guardar cambios');
+      return;
+    }
+
     const formData = new FormData();
     
     if (mostrarRegular) {

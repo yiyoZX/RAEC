@@ -172,6 +172,9 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
       else if ((k === 'fecha_inicio' || k === 'fecha_termino') && v instanceof Date) formData.append(k, v.toISOString().split('T')[0]);
       else formData.append(k, v);
     });
+    
+    console.log('Enviando FormData con:', Object.fromEntries(formData));
+    
     try {
       const res = await authenticatedFetchFormData('/submit',{method: 'POST', body: formData});
       if (!res.ok) throw new Error('Error backend');
@@ -180,7 +183,8 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
       ResetFun();  // Resetea local
       if (onSubmitSuccess) onSubmitSuccess();  // Llama callback para navegación u otro
     } catch (err) {
-      alert('No se pudo enviar ❌');
+      console.error('Error completo:', err);
+      alert(`No se pudo enviar ❌\n${err.message}`);
     }
   };
 

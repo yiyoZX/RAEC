@@ -35,7 +35,7 @@ function ConfigurarPeriodos() {
     }
 
     try {
-      const res = await authenticatedFetchFormData('http://localhost:4001/periodos/', formData);
+      const res = await authenticatedFetchFormData('/periodos', {method: 'POST',body : formData});
 
       const text = await res.clone().text();
       console.log('Response body:', text);

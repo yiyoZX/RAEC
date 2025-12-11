@@ -29,6 +29,7 @@ async def guardar_registro(
     dato1: str,
     dato2: str,
     dato3: str,
+    id_profesor_seleccionado: str,
     db: Session,
     current_user: dict,
     background_tasks: BackgroundTasks = None
@@ -46,13 +47,15 @@ async def guardar_registro(
             raise HTTPException(status_code=400, detail="RUT requerido para académicos")
         rut_alumno = rut
         estado = 1
-        id_profesor = current_user.get("id_profesor", 1)  # De user o 1 temporal
+        id_profesor_insert = current_user.get("id_profesor", 1)  # De user o 1 temporal
+        print(id_profesor_insert)
     elif user_type == "estudiante":
         rut_alumno = current_user.get("rut_alumno")  # De user, no form
         estado = 3
         if not rut_alumno:
             raise HTTPException(status_code=400, detail="No se encontró RUT del estudiante")
-        id_profesor = 1  # Temporal, como dijiste
+        id_profesor_insert = id_profesor_seleccionado  # Temporal, como dijiste
+        print(id_profesor_insert)
     else:
         raise HTTPException(status_code=403, detail="Tipo de usuario no autorizado")
 
@@ -62,7 +65,7 @@ async def guardar_registro(
     # Insertar registro
     nuevo = registro.insert().values(
         id_alumno = rut_alumno,
-        id_profesor = id_profesor,
+        id_profesor = id_profesor_insert,
         id_actividad = actividad,
         id_estado = estado,  # solucionado si es estudiante estado es 3 sino 1
         fecha_creacion = datetime.now(timezone.utc),
@@ -87,7 +90,7 @@ async def guardar_registro(
         if background_tasks:
             mailData = idForm(
                 rut_alumno = rut_alumno,  # Usa rut_alumno (no rut) - funciona para estudiantes y profesores
-                id_profesor = str(id_profesor),  # Convierte a string según modelo idForm
+                id_profesor = str(id_profesor_insert),  # Convierte a string según modelo idForm
                 id_registro = inserted_id
             )
 

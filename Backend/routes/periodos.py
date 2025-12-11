@@ -3,12 +3,11 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from core.auth import get_current_user
 from core.database import get_db
-from services.periodo_service import guardar_periodos
-from services.periodo_service import is_solicitudes_abiertas
+from services.periodo_service import guardar_periodos, is_solicitudes_abiertas
 
 router = APIRouter()
 
-@router.post("/periodos/")
+@router.post("/periodos")
 async def configurar_periodo(
     regular_inicio: str = Form(None),
     regular_termino: str = Form(None),

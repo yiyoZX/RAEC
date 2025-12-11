@@ -8,7 +8,7 @@ from datetime import datetime
 router = APIRouter()
 
 
-@router.post("/submit/")
+@router.post("/submit")
 async def submit_form(
     background_tasks: BackgroundTasks,
     rut: str = Form(None),  # Opcional - estudiantes no lo envían
@@ -22,6 +22,7 @@ async def submit_form(
     dato1: str = Form(None),
     dato2: str = Form(None),
     dato3: str = Form(None),
+    id_profesor: str = Form(None),
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -49,7 +50,28 @@ async def submit_form(
         # Validar que fecha_inicio sea anterior a fecha_termino
         if fecha_inicio_dt > fecha_termino_dt:
             raise HTTPException(status_code=422, detail="La fecha de inicio debe ser anterior a la fecha de término")
+
+        profesor_final = None
+
+        if current_user.get("type") == "estudiante":
+            # Para estudiantes, es OBLIGATORIO que venga id_profesor del form
+            if not id_profesor:
+                raise HTTPException(status_code=422, detail="Debes seleccionar un profesor guía")
+            try:
+                profesor_final = id_profesor # Convertimos a int
+            except ValueError:
+                raise HTTPException(status_code=422, detail="ID de profesor inválido")
+        
+        elif current_user.get("type") == "academico":
+            # Para académicos, el profesor responsable son ellos mismos
+            # Buscamos su ID en el token
+            profesor_final = current_user.get("id_rol") # OJO: Verifica si en tu token guardas 'id_profesor' o lo usas como 'id_rol' para el ID de la tabla profesor.
+            # Si tu token tiene id_profesor explicito, usa: current_user.get("id_profesor")
             
+            if not profesor_final:
+                 # Fallback por seguridad
+                 raise HTTPException(status_code=500, detail="No se pudo identificar al profesor académico")    
+                
     except ValueError as e:
         if "time data" in str(e):
             raise HTTPException(status_code=422, detail="Formato de fecha inválido. Use YYYY-MM-DD")
@@ -57,5 +79,5 @@ async def submit_form(
             raise HTTPException(status_code=422, detail="Los campos numéricos deben contener valores válidos")
     
     return await guardar_registro(
-        rut, academica_int, actividad_int, fecha_inicio_dt, fecha_termino_dt, horas_totales_int, about, archivos, dato1, dato2, dato3, db, current_user, background_tasks
+        rut, academica_int, actividad_int, fecha_inicio_dt, fecha_termino_dt, horas_totales_int, about, archivos, dato1, dato2, dato3, profesor_final, db, current_user, background_tasks
     )

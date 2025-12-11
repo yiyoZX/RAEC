@@ -14,7 +14,17 @@ const SolicitudesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [pageSize] = useState(20);
+  const [pageSize] = useState(6);
+
+  // Función para formatear fecha a DD-MM-YY
+  const formatearFecha = (fecha) => {
+    if (!fecha) return '';
+    const date = new Date(fecha);
+    const dia = String(date.getDate()).padStart(2, '0');
+    const mes = String(date.getMonth() + 1).padStart(2, '0');
+    const anio = String(date.getFullYear()).slice(-2);
+    return `${dia}-${mes}-${anio}`;
+  };
 
   // Cargar solicitudes al inicio
   useEffect(() => {
@@ -28,6 +38,7 @@ const SolicitudesPage = () => {
         });
         if (!response.ok) throw new Error('Error al cargar solicitudes');
         const data = await response.json();
+        console.log('Datos recibidos:', data.data);  // Para debug
         setSolicitudes(data.data || []);
         setTotalRecords(data.total || 0);
         setTotalPages(data.total_pages || 0);
@@ -113,22 +124,48 @@ const SolicitudesPage = () => {
           <p className="text-center text-gray-600">No hay solicitudes pendientes.</p>
         ) : (
           <>
-            <ul className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {solicitudes.map((solicitud) => (
-              <li key={solicitud.id_registro} className="bg-white p-4 rounded-lg shadow text-gray-600">  // Cambiado: key usa id_registro
-                <p><strong>RUT Estudiante:</strong> {solicitud.rut_alumno}</p>
-                <p><strong>Actividad:</strong> {solicitud.nombre_actividad}</p>
-                <p><strong>Fechas:</strong> {solicitud.fecha_inicio} a {solicitud.fecha_termino}</p>
-                <p><strong>Horas:</strong> {solicitud.horas_totales}</p>
-                <p><strong>Comentario:</strong> {solicitud.comentario}</p>
-                <p><strong>Archivo:</strong> {solicitud.archivo_nombre || 'Ninguno'}</p>
-                <div className="mt-4 flex gap-2">
-                  <Button variant="primary" onClick={() => handleUpdate(solicitud.id_registro, 1)}>Aprobar</Button>  
-                  <Button variant="secondary" onClick={() => handleUpdate(solicitud.id_registro, 2)}>Rechazar</Button> 
+              <div key={solicitud.id_registro} className="bg-white p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
+                <div className="flex-grow space-y-2">
+                  <div className="border-b pb-2 mb-3">
+                    <p className="text-sm text-gray-500">RUT Estudiante</p>
+                    <p className="font-semibold text-gray-700">{solicitud.id_alumno}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Actividad</p>
+                    <p className="font-semibold text-gray-700">{solicitud.nombre_actividad}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Fechas</p>
+                    <p className="text-gray-700">{formatearFecha(solicitud.fecha_inicio_actividad)} a {formatearFecha(solicitud.fecha_termino_actividad)}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Horas Totales</p>
+                    <p className="font-semibold text-blue-600">{solicitud.horas_totales} hrs</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Comentario</p>
+                    <p className="text-gray-700 text-sm line-clamp-3">{solicitud.comentario}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Archivo</p>
+                    <p className="text-gray-700 text-sm">{solicitud.archivo_nombre || 'Ninguno'}</p>
+                  </div>
                 </div>
-              </li>
+                
+                <div className="mt-4 flex gap-2 pt-3 border-t">
+                  <Button variant="primary" onClick={() => handleUpdate(solicitud.id_registro, 1)} className="flex-1">Aprobar</Button>  
+                  <Button variant="secondary" onClick={() => handleUpdate(solicitud.id_registro, 2)} className="flex-1">Rechazar</Button> 
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
           
           {/* Componente de paginación */}
           {totalPages > 1 && (

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Notificación RAEC: Periodos de Solicitudes</title>
+</head>
+<body>
+  <h2>Atención estudiantes, </h2>
+  <p>Se ha realizado una actualización de fechas de disponibilidad del Periodo de Solicitudes:</p>
+  {% if periodo_type == 1 %}
+    <p>Periodo regular desde <b>{{ regular_inicio }}</b> hasta <b>{{ regular_fin }}</b></p>
+  {% elif periodo_type == 2 %}
+    <p>Periodo extraordinario desde <b>{{ extra_inicio }}</b> hasta <b>{{ extra_fin }}</b></p>
+  {% elif periodo_type == 3 %}
+    <p>Periodo regular desde <b>{{ regular_inicio }}</b> hasta <b>{{ regular_fin }}</b></p>
+    <p>Periodo extraordinario desde <b>{{ extra_inicio }}</b> hasta <b>{{ extra_fin }}</b></p>
+  {% endif %}
+  <p style="font-size:12px;color:gray;">
+    Este correo fue generado automáticamente, por favor no responder.
+  </p>
+</body>
+</html>

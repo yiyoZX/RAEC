@@ -4,11 +4,12 @@ from sqlalchemy.orm import Session
 from core.auth import get_current_user
 from core.database import get_db
 from services.periodo_service import guardar_periodos, is_solicitudes_abiertas
+import asyncio
 
 router = APIRouter()
 
 @router.post("/periodos")
-async def configurar_periodo(
+def configurar_periodo(
     regular_inicio: str = Form(None),
     regular_termino: str = Form(None),
     extra_inicio: str = Form(None),
@@ -48,7 +49,7 @@ async def configurar_periodo(
         if extra_inicio_dt > extra_termino_dt:
             raise HTTPException(status_code=422, detail="La fecha de inicio (extra) debe ser anterior a la fecha de término")
 
-    return await guardar_periodos(
+    return guardar_periodos(
         db, current_user, regular_inicio_dt, regular_termino_dt, extra_inicio_dt, extra_termino_dt
     )
 

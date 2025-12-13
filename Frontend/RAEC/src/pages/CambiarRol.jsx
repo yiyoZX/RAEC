@@ -19,7 +19,7 @@ export default function ChangeUserRole() {
 
     try {
       const res = await authenticatedFetch(
-        'http://localhost:4001/updateRole',
+        '/updateRole',
         {
           method: 'POST',
           body: JSON.stringify({

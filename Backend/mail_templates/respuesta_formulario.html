@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Notificación RAEC: Actualización de registro</title>
+</head>
+<body>
+  <h2>Hola, {{ nombre }}</h2>
+  <p>Se ha actualizado su solicitud de registro de ID <b>{{ id_registro }}</b> al sistema RAEC.</p>
+  <p>Su el estado de su registro es:
+  {% if respuesta == 1 %}
+  <b>Aprobada</b></p>
+  {% else %}
+   <b>Rechazada</b></p>
+  {% endif %}
+  <p style="font-size:12px;color:gray;">
+    Este correo fue generado automáticamente, por favor no responder.
+  </p>
+</body>
+</html>

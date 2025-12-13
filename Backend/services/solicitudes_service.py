@@ -3,6 +3,9 @@ from sqlalchemy import select, desc, update
 from fastapi import HTTPException
 from typing import Dict, Any
 from core.models import registro, alumno, actividad, profesor
+from core.models import registro, alumno, actividad
+from services.mailsend_service import resupuestaSolicitudMail
+import asyncio
 
 def get_solicitudes_pendientes(db: Session, current_user: dict, page: int = 1, page_size: int = 20):
     print("Debug: Rol del user:", current_user.get("id_rol"))
@@ -55,4 +58,12 @@ def update_solicitud_estado(db: Session, id_registro: int, nuevo_estado: int, cu
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
     
+    #Función que envía correo de la respuesta al alumno
+    asyncio.run(resupuestaSolicitudMail(
+        rut_alumno=db.execute(select(registro.c.id_alumno).where(registro.c.id_registro == id_registro)).scalar(),
+        id_registro=id_registro,
+        respuesta = nuevo_estado,
+        db=db
+    ))
+
     return {"message": "Solicitud actualizada"}

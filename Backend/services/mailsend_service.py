@@ -22,9 +22,10 @@ class idForm(BaseModel):
     id_registro: int
 
 class idMailing(BaseModel):
-    rut_alumno: str
-    id_profesor: str
-    fecha_periodo: datetime = None
+    regular_inicio: datetime = None
+    regular_fin: datetime = None
+    extra_inicio: datetime = None
+    extra_fin: datetime = None
     estado: int = None
 
 def extraerDatos(rut_alumno: str, id_profesor: str, db: Session):
@@ -42,17 +43,29 @@ def extraerDatos(rut_alumno: str, id_profesor: str, db: Session):
 
     return lista_datos
 
-# Envío de correos sobre registros de formularios creados
+#Busca todos los estudiantes en la base de datos
+def getEstudiantes(db: Session):
+    query = select(alumno.c.correo)
+    result = db.execute(query).scalars().all()
+    return result
+
+#Envío de correos sobre registros de formularios creados
 async def formularioMail(data: idForm, db: Session, esAcademico: bool):
     lista_datos = extraerDatos(data.rut_alumno, data.id_profesor, db)  # Busca nombres en base a IDs
     fm = FastMail(conf)  # Asigna datos del correo automático para los envíos
 
-    env_key = "FORM_DIR" if esAcademico else "REQ_DIR"
+    if esAcademico:
+        env_key = "FORM_DIR"
+        sub = "RAEC: Registro de Formulario de Actividad"
+    else:
+        env_key = "REQ_DIR"
+        sub = "RAEC: Solicitud de Registro de Actividad"
+
     template_name = os.getenv(env_key)
 
     for d in lista_datos:
         message = MessageSchema(
-            subject="Notificación de Registro",
+            subject=sub,
             recipients=[d.email],
             template_body={
                 "nombre": d.nombre,
@@ -64,4 +77,56 @@ async def formularioMail(data: idForm, db: Session, esAcademico: bool):
         )
 
         await fm.send_message(message, template_name=template_name)  # Mensaje individual por destinatario, mismo template
+    return
+
+#Correo para notificar cambios en periodos de inscripción
+async def periodoMail(data: idMailing, db: Session):
+    fm = FastMail(conf)
+    env_key = "PERIODO_DIR"
+    template_name = os.getenv(env_key)
+
+    correo_estudiantes = getEstudiantes(db)
+    
+    periodo_type = data.estado
+    # Determina qué tipo de período está
+    has_regular = getattr(data, 'regular_inicio', None) is not None or getattr(data, 'regular_fin', None) is not None
+    has_extra = getattr(data, 'extra_inicio', None) is not None or getattr(data, 'extra_fin', None) is not None
+    if periodo_type is None:
+        if has_regular and has_extra:
+            periodo_type = 3
+        elif has_regular:
+            periodo_type = 1
+        elif has_extra:
+            periodo_type = 2
+
+    #Formatea fechas para el mensaje
+    def formato(d):
+        if d is None:
+            return None
+        try:
+            return d.strftime('%d/%m/%Y')
+        except Exception:
+            return str(d)
+
+    template_body = {
+        'periodo_type': periodo_type
+    }
+    if has_regular:
+        if getattr(data, 'regular_inicio', None) is not None:
+            template_body['regular_inicio'] = formato(data.regular_inicio)
+        if getattr(data, 'regular_fin', None) is not None:
+            template_body['regular_fin'] = formato(data.regular_fin)
+    if has_extra:
+        if getattr(data, 'extra_inicio', None) is not None:
+            template_body['extra_inicio'] = formato(data.extra_inicio)
+        if getattr(data, 'extra_fin', None) is not None:
+            template_body['extra_fin'] = formato(data.extra_fin)
+
+    message = MessageSchema(
+        subject="RAEC: Nuevos Periodos de Inscripción",
+        recipients=correo_estudiantes,
+        template_body=template_body,
+        subtype=MessageType.html
+    )
+    await fm.send_message(message, template_name=template_name)
     return

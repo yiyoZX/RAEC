@@ -9,7 +9,8 @@ function RegistroFormularioEstudiante() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [solicitudesAbiertas, setSolicitudesAbiertas] = useState(true);
+  // null => cargando, true => abiertas, false => cerradas
+  const [solicitudesAbiertas, setSolicitudesAbiertas] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -17,11 +18,19 @@ function RegistroFormularioEstudiante() {
     const fetchStatus = async () => {
       try {
         const res = await authenticatedFetch('/periodos/status/');
-        if (!res || !res.ok) {
+        if (!res) {
+          console.warn('authenticatedFetch returned null');
+          if (mounted) setSolicitudesAbiertas(false);
+          return;
+        }
+        if (!res.ok) {
+          const text = await res.text();
+          console.warn('periodos/status returned not-ok:', res.status, text);
           if (mounted) setSolicitudesAbiertas(false);
           return;
         }
         const data = await res.json();
+        console.log('periodos/status ->', data);
         if (mounted) setSolicitudesAbiertas(Boolean(data.open));
       } catch (err) {
         console.error('Error fetching period status', err);

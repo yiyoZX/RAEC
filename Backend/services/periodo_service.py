@@ -3,6 +3,8 @@ from sqlalchemy import func
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from core.models import periodos
+from services.mailsend_service import idMailing, periodoMail
+import asyncio
 
 def get_semester(date: datetime):
     year = date.year
@@ -43,7 +45,7 @@ def insert_period_query(db: Session, inicio, fin, extra: bool, id_profesor:int, 
     db.commit()
         
 
-async def guardar_periodos(
+def guardar_periodos(
     db: Session,
     current_user: dict,
     regular_inicio: datetime = None,
@@ -55,6 +57,8 @@ async def guardar_periodos(
     get_real = 0
     #Establece id del administrador
     id_academico = current_user.get("id_profesor")
+
+    maildata = idMailing() # Incializa estructura de datos para correo
 
     #Inicia proceso de insertar datos de periodo regular si existen
     if regular_inicio is not None and regular_termino is not None:
@@ -94,6 +98,9 @@ async def guardar_periodos(
             exists,
             id_periodo
         )
+        #Agrega los datos a la estructura de correo
+        maildata.regular_inicio = regular_inicio
+        maildata.regular_fin = regular_termino
         get_real = 1
 
     #Inicia proceso de insertar datos de periodo extraordinario si existen
@@ -134,10 +141,17 @@ async def guardar_periodos(
             exists,
             id_periodo
         )
+        #Agrega los datos a la estructura de correo
+        maildata.extra_inicio = extra_inicio
+        maildata.extra_fin = extra_termino
         if get_real == 1:
             get_real = 3
+            maildata.estado = 3
         else:
             get_real = 2
+            maildata.estado = 2
+    
+    asyncio.run(periodoMail(maildata, db))  # Envía correo notificando cambios en periodos de forma asíncrona
     
     match get_real:
         case 0:
@@ -153,7 +167,6 @@ async def guardar_periodos(
 def is_solicitudes_abiertas(db: Session) -> bool:
     from sqlalchemy import cast, Date
     hoy = datetime.now().date()
-
     # Busca cualquier periodo (regular o extraordinario) que incluya hoy
     # Convertimos las columnas datetime a date para comparar correctamente
     periodo_activo = db.query(periodos).filter(

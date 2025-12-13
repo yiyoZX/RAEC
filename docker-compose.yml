@@ -26,9 +26,9 @@ services:
       - MAIL_FROM=${MAIL_FROM}
       - MAIL_PORT=${MAIL_PORT}
       - MAIL_SERVER=${MAIL_SERVER}
-      - TEMPLATE_DIR=${TEMPLATE_DIR}
       - FORM_DIR=${FORM_DIR}
       - REQ_DIR=${REQ_DIR}
+      - PERIODO_DIR=${PERIODO_DIR}
       - FOLDER_DIR=${FOLDER_DIR}
     ports:
       - "4001:4001"

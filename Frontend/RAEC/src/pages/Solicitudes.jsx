@@ -134,6 +134,17 @@ const SolicitudesPage = () => {
                   </div>
                   
                   <div>
+                    <p className="text-sm text-gray-500">Nombre Estudiante</p>
+                    <p className="font-semibold text-gray-700">{solicitud.alumno_nombres} {solicitud.alumno_apellidos}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-gray-500">Nombre profesor</p>
+                    <p className="font-semibold text-gray-700">{solicitud.nombres} {solicitud.apellidos}</p>
+                  </div>
+
+
+                  <div>
                     <p className="text-sm text-gray-500">Actividad</p>
                     <p className="font-semibold text-gray-700">{solicitud.nombre_actividad}</p>
                   </div>

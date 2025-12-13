@@ -44,7 +44,8 @@ def reporte_general(
     # ### CAMBIO 2: Agregamos los nuevos filtros que envía el Frontend
     carrera: Optional[str] = Query(None),
     profesor: Optional[str] = Query(None),
-    
+    fecha_creacion_inicio: Optional[str] = Query(None),
+    fecha_creacion_termino :Optional[str] = Query(None),
     fecha_inicio: Optional[str] = Query(None),
     fecha_fin: Optional[str] = Query(None),
     horas: Optional[int] = Query(None),
@@ -70,6 +71,8 @@ def reporte_general(
         profesor_ids=profesor,      
         horas_min=horas,
         tipo_actividad=tipo_actividad, 
+        fecha_creacion_inicio = fecha_creacion_inicio,
+        fecha_creacion_termino = fecha_creacion_termino,
         fecha_inicio=fecha_inicio,
         fecha_fin=fecha_fin
     )

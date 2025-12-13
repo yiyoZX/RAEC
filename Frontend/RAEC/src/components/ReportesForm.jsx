@@ -121,13 +121,13 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
       if (rut.trim()) params.append('rut', rut.trim());
       if (tipoActividad) params.append('tipo_actividad', tipoActividad);
       if (actividad.length > 0) { params.append('actividad_id', actividad.join(','));}
-      if (fechaInicio) params.append('fecha_inicio', fechaInicio);
-      if (fechaFin) params.append('fecha_fin', fechaFin);
+      if (fechaInicio) params.append('fecha_creacion_inicio', fechaInicio);
+      if (fechaFin) params.append('fecha_creacion_termino', fechaFin);
       if (carrera.length > 0){ params.append('carrera', carrera.join(','));}
       if (horas) params.append('horas', horas);
       if (profesor.length > 0){ params.append('profesor', profesor.join(','));}
-      if (fechaActInicio) params.append('fechaActInicio', fechaActInicio);
-      if (fechaActFin) params.append('fechaActFin', fechaActFin);
+      if (fechaActInicio) params.append('fecha_inicio', fechaActInicio);
+      if (fechaActFin) params.append('fecha_fin', fechaActFin);
     
     // Lógica Estudiante: Filtro único
     } else {

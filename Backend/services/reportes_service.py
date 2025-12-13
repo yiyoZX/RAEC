@@ -43,6 +43,8 @@ def obtener_reporte(
     carrera_ids: Optional[str] = None,   
     profesor_ids: Optional[str] = None,  
     tipo_actividad: Optional[str] = None,
+    fecha_creacion_inicio: Optional[str] = None,
+    fecha_creacion_termino: Optional [str] = None,
     fecha_inicio: Optional[str] = None,
     fecha_fin: Optional[str] = None,
     estado: Optional[str] = None,
@@ -118,6 +120,12 @@ def obtener_reporte(
             stmt = stmt.where(actividad.c.id_actividad.in_(ACADEMIC_IDS))
         elif tipo_actividad == 'no_academica':
             stmt = stmt.where(actividad.c.id_actividad.in_(NON_ACADEMIC_IDS))
+
+    if fecha_creacion_inicio:
+        stmt = stmt.where(registro.c.fecha_creacion >= fecha_creacion_inicio)
+
+    if fecha_creacion_termino:
+        stmt = stmt.where(registro.c.fecha_creacion <= fecha_creacion_termino)
 
     if fecha_inicio:
         stmt = stmt.where(registro.c.fecha_inicio_actividad >= fecha_inicio)

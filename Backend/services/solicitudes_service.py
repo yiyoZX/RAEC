@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, desc, update
 from fastapi import HTTPException
 from typing import Dict, Any
-from core.models import registro, alumno, actividad
+from core.models import registro, alumno, actividad, profesor
 
 def get_solicitudes_pendientes(db: Session, current_user: dict, page: int = 1, page_size: int = 20):
     print("Debug: Rol del user:", current_user.get("id_rol"))
@@ -15,10 +15,13 @@ def get_solicitudes_pendientes(db: Session, current_user: dict, page: int = 1, p
             registro,
             alumno.c.nombres.label("alumno_nombres"),
             alumno.c.apellidos.label("alumno_apellidos"),
-            actividad.c.nombre_actividad
+            actividad.c.nombre_actividad,
+            profesor.c.nombres.label("nombres"),
+            profesor.c.apellidos.label("apellidos")
         )
         .join(alumno, registro.c.id_alumno == alumno.c.rut_alumno)
         .join(actividad, registro.c.id_actividad == actividad.c.id_actividad)
+        .join(profesor, registro.c.id_profesor == profesor.c.id_profesor)
         .where(registro.c.id_estado == 3)  # Pendientes
         .order_by(desc(registro.c.fecha_creacion))
     )

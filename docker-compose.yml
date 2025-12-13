@@ -29,6 +29,7 @@ services:
       - FORM_DIR=${FORM_DIR}
       - REQ_DIR=${REQ_DIR}
       - PERIODO_DIR=${PERIODO_DIR}
+      - RESPUESTA_DIR=${RESPUESTA_DIR}
       - FOLDER_DIR=${FOLDER_DIR}
     ports:
       - "4001:4001"

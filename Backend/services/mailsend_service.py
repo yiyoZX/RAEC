@@ -130,3 +130,30 @@ async def periodoMail(data: idMailing, db: Session):
     )
     await fm.send_message(message, template_name=template_name)
     return
+
+async def resupuestaSolicitudMail(
+    rut_alumno: str,
+    id_registro: int,
+    respuesta: int,
+    db: Session
+):
+    fm = FastMail(conf)
+    env_key = "RESPUESTA_DIR"
+    template_name = os.getenv(env_key)
+
+    query = select(alumno.c.nombres, alumno.c.correo).where(alumno.c.rut_alumno == rut_alumno)
+    result = db.execute(query).first()
+
+    message = MessageSchema(
+        subject="RAEC: Actualización de registro",
+        recipients=[result.correo],
+        template_body={
+            "nombre": result.nombres,
+            "id_registro": id_registro,
+            "respuesta": respuesta
+        },
+        subtype=MessageType.html
+    )
+
+    await fm.send_message(message, template_name=template_name)
+    return

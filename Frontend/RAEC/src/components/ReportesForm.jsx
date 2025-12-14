@@ -201,16 +201,7 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
         });
     }
 
-    if (!filtros.carrera || filtros.carrera.length === 0) {
-        return profesores;
-    }
-
-    return profesores.filter(profe => {
-       if (!profe.carreraIds || !Array.isArray(profe.carreraIds)) return false;
-       return profe.carreraIds.some(idProfe => 
-           filtros.carrera.map(idFiltro => idFiltro.toString()).includes(idProfe.toString())
-       );
-    });
+    return profesores;
   }, [profesores, filtros.carrera, idRolUsuario, idInstitutoUsuario]);
 
 

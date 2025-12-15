@@ -111,37 +111,55 @@ const HeaderLayout = ({
               </button>
 
               {isMenuOpen && (
-                <div className="absolute right-0 mt-3 w-56 bg-white rounded-md shadow-lg py-1 border border-gray-200 animate-fade-in-down origin-top-right">
-                  
-                  {/* Cabecera del menú (Opcional: Repetir rol aquí también si se desea) */}
-                  <div className="px-4 py-2 border-b border-gray-100 md:hidden bg-gray-50">
-                     <span className="text-xs text-gray-500 font-bold uppercase">{getUserRoleLabel()}</span>
-                  </div>
-
-                  {navOptions.map((opt, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        navigate(opt.path);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors"
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-
-                  <div className="border-t border-gray-100 my-1"></div>
-
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 font-medium transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                        Cerrar Sesión
+                <div 
+                  className="absolute right-0 mt-2 w-64 z-50 animate-fade-in-down origin-top-right bg-white shadow-xl rounded-lg overflow-hidden"
+                >
+                  <div className="flex flex-col"> 
+                    
+                    {/* Cabecera Móvil */}
+                    <div className="px-5 py-3 bg-gray-200 md:hidden border-b border-gray-300">
+                      <span className="text-xs text-gray-600 font-bold uppercase tracking-wider">
+                        {getUserRoleLabel()}
+                      </span>
                     </div>
-                  </button>
+
+                
+                    {navOptions.map((opt, index) => (
+                      <button
+                        key={index}
+                        type="button" 
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          navigate(opt.path);
+                        }}
+                        className="block w-full text-left px-5 py-3 transition-colors duration-200 border-b border-blue-400 last:border-0 focus:outline-none !rounded-none !bg-[#4a90e2] hover:!bg-[#357abd] !text-white !font-bold !m-0"
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+
+                    
+                    <button
+                      onClick={handleLogout}
+                      type="button"
+                  
+                      className="block w-full text-left px-5 py-4 transition-colors duration-200 group !rounded-none !bg-gray-300 hover:!bg-gray-400 !text-gray-700 !font-bold !m-0"
+                    >
+                      <div className="flex items-center gap-3">
+                        <svg 
+                         
+                          className="w-5 h-5 text-gray-500 group-hover:text-red-600 transition-colors duration-200" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span className="group-hover:text-red-700 transition-colors">Cerrar Sesión</span>
+                      </div>
+                    </button>
+                    
+                  </div>
                 </div>
               )}
             </div>

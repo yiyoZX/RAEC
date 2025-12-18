@@ -1,270 +1,338 @@
-import { useState } from 'react';
-import Button from '../components/Button';
+import { useState, useEffect, useMemo } from 'react';
 import { useTodasActividades } from '../hooks/useActividades';
+import { useListaOpciones } from '../hooks/useListaOpciones';
 import ReportesGraficos from '../components/ReportesGraficos';
+import ReporteFiltros from '../components/reportesFiltros';
+import ReporteLista from '../components/reporteLista';
+import Paginacion from '../components/Paginacion';
+import { API_BASE } from '../services/api';
 
-function ReporteForm({ tipoUsuario }) {  // Prop: 'academico' o 'estudiante' para ajustar
-  // Cargar actividades dinámicamente desde el backend
-  const { academicas, noAcademicas, loading: loadingActividades } = useTodasActividades();
+function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
   
-  const [tipoReporte, setTipoReporte] = useState('');
-  const [rut, setRut] = useState('');
-  const [tipoActividad, setTipoActividad] = useState('');
-  const [actividad, setActividad] = useState('');
-  const [estado, setEstado] = useState('');  // Nuevo para estudiantes
-  const [expandedIndex, setExpandedIndex] = useState(null);  // Para controlar dropdown
-  const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState([]);
-  const [csvUrl, setCsvUrl] = useState(null);
-  const [mensaje, setMensaje] = useState('Aquí se mostrará una vista previa del informe seleccionado.');
+  const userDataStr = localStorage.getItem('user_data'); // Leemos el texto
+  const userDataObj = userDataStr ? JSON.parse(userDataStr) : {}; // Lo convertimos a objeto
+  const idRolUsuario = userDataObj.id_rol; // Sacamos el 1.
+  const idInstitutoUsuario = userDataObj.id_instituto;
 
-  const resetPreview = (msg = 'Aquí se mostrará una vista previa del informe seleccionado.') => {
-    setItems([]); setCsvUrl(null); setMensaje(msg); setExpandedIndex(null);
+
+  const { academicas, noAcademicas, loading: loadingActividades } = useTodasActividades();
+  const { items: carreras, loading: loadC } = useListaOpciones('/carreras/listar', 'carreras');
+  const { items: profesores, loading: loadP } = useListaOpciones('/profesores/listar', 'profesores');
+
+  // --- ESTADO UNIFICADO DE FILTROS ---
+  // Agrupamos todos los inputs en un solo objeto para pasarlo a ReporteFiltros
+  const [filtros, setFiltros] = useState({
+    rut: '',
+    tipoActividad: '',
+    actividad: [],
+    fechaInicio: '',
+    fechaFin: '',
+    estado: '',
+    carrera:[],
+    horas:'',
+    profesor:[],
+    fechaActInicio:'',
+    fechaActFin:''
+  });
+
+  // --- ESTADOS DE PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pageSize] = useState(10); // 20 registros por página
+
+  // --- ESTADOS UI ---
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [csvUrl, setCsvUrl] = useState(null);
+  const [mensaje, setMensaje] = useState(
+    tipoUsuario === 'academico' 
+      ? 'Configure los filtros y presione Consultar.' 
+      : 'Seleccione un estado para ver sus solicitudes.'
+  );
+
+  const resetPreview = (msg) => {
+    setItems([]); 
+    setCsvUrl(null); 
+    setMensaje(msg || null);
+    setCurrentPage(1);
+    setTotalPages(0);
+    setTotalRecords(0);
   };
 
-  const handleConsultar = async () => {
-    let url = 'http://localhost:4001/reportes';
+ 
+  const handleDownload = (item, e) => {
+    e.stopPropagation();
+    const token = localStorage.getItem('access_token') || '';
+    
+    fetch(`${API_BASE}/reportes/download/${item.id_registro}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(res => { 
+        if(!res.ok) throw new Error('Error en la descarga'); 
+        return res.blob(); 
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = item.archivo_nombre || 'documento_adjunto';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    })
+    .catch(() => alert('No se pudo descargar el archivo.'));
+  };
+
+  const handleDownloadCSV = async () => {
+    const token = localStorage.getItem('access_token') || '';
     const params = new URLSearchParams();
+    
+    // Construir los mismos parámetros que se usan en la consulta
+    const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado, carrera, horas, profesor, fechaActInicio, fechaActFin } = filtros;
+
+    // IMPORTANTE: NO se envían parámetros de paginación (page, page_size)
+    // Esto asegura que el backend retorne TODOS los registros que coincidan con los filtros
+    
     if (tipoUsuario === 'academico') {
-      if (tipoReporte === 'alumno') {
-        if (!rut.trim()) return resetPreview('Ingrese el RUT del alumno.');
-        url += '/alumno';
-        params.append('rut', rut.trim());
-      } else if (tipoReporte === 'actividad') {
-        if (!actividad) return resetPreview('Seleccione una actividad.');
-        url += '/actividad';
-        params.append('actividad_id', actividad);
-      } else if (tipoReporte === 'general') {
-        url += '/general';
-      } else {
-        return resetPreview('Seleccione un tipo de reporte.');
-      }
-    } else if (tipoUsuario === 'estudiante') {
-      if (!estado) return resetPreview('Seleccione un estado.');
-      url += '/estudiante';  // Ruta backend para estudiantes
-      params.append('estado', estado);  // Param para aprobadas/rechazadas/pendientes
+      if (rut.trim()) params.append('rut', rut.trim());
+      if (tipoActividad) params.append('tipo_actividad', tipoActividad);
+      if (actividad.length > 0) params.append('actividad_id', actividad.join(','));
+      if (fechaInicio) params.append('fecha_creacion_inicio', fechaInicio);
+      if (fechaFin) params.append('fecha_creacion_termino', fechaFin);
+      if (carrera.length > 0) params.append('carrera', carrera.join(','));
+      if (horas) params.append('horas', horas);
+      if (profesor.length > 0) params.append('profesor', profesor.join(','));
+      if (fechaActInicio) params.append('fecha_inicio', fechaActInicio);
+      if (fechaActFin) params.append('fecha_fin', fechaActFin);
+    } else {
+      if (estado) params.append('estado', estado);
     }
+
+    const endpoint = tipoUsuario === 'academico' 
+      ? '/reportes/descargar-csv/reporte_general_filtrado'
+      : '/reportes/descargar-csv/reporte_estudiante';
+
+    try {
+      const response = await fetch(`${API_BASE}${endpoint}?${params.toString()}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Error desconocido');
+        console.error('Error en descarga CSV:', errorText);
+        throw new Error(`Error al descargar el CSV: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      
+      // Verificar que el blob tiene contenido
+      if (blob.size === 0) {
+        throw new Error('El archivo descargado está vacío');
+      }
+      
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      // Extraer nombre del archivo del header Content-Disposition
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'reporte.csv';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (filenameMatch) filename = filenameMatch[1];
+      }
+      
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      // Mensaje de éxito
+      console.log(`✅ CSV completo descargado: ${filename} (${blob.size} bytes)`);
+      
+    } catch (error) {
+      console.error('❌ Error al descargar CSV completo:', error);
+      alert(`No se pudo descargar el archivo CSV completo.\n\nError: ${error.message}\n\nVerifica tu conexión e inténtalo nuevamente.`);
+    }
+  };
+
+  // Lógica de Limpieza (Pasa como prop a ReporteFiltros)
+  const handleLimpiar = () => {
+    setFiltros({
+        rut: '',
+        tipoActividad: '',
+        actividad: [],
+        fechaInicio: '',
+        fechaFin: '',
+        estado: '',
+        carrera:[],
+        horas:'',
+        profesor:[],
+        fechaActInicio:'',
+        fechaActFin:''
+
+    });
+    setCurrentPage(1);
+    resetPreview('Filtros limpiados.');
+  };
+
+  // Lógica de Consulta con paginación
+  const fetchReportes = async (page = 1) => {
+    let url = `${API_BASE}/reportes`;
+    const params = new URLSearchParams();
+    // Desestructuramos del estado de objetos
+    const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado, carrera, horas, profesor, fechaActInicio, fechaActFin  } = filtros;
+
+    // Agregar parámetros de paginación
+    params.append('page', page);
+    params.append('page_size', pageSize);
+
+    // Lógica Académico: Filtros simultáneos
+    if (tipoUsuario === 'academico') {
+      url += '/general'; 
+      if (rut.trim()) params.append('rut', rut.trim());
+      if (tipoActividad) params.append('tipo_actividad', tipoActividad);
+      if (actividad.length > 0) { params.append('actividad_id', actividad.join(','));}
+      if (fechaInicio) params.append('fecha_creacion_inicio', fechaInicio);
+      if (fechaFin) params.append('fecha_creacion_termino', fechaFin);
+      if (carrera.length > 0){ params.append('carrera', carrera.join(','));}
+      if (horas) params.append('horas', horas);
+      if (profesor.length > 0){ params.append('profesor', profesor.join(','));}
+      if (fechaActInicio) params.append('fecha_inicio', fechaActInicio);
+      if (fechaActFin) params.append('fecha_fin', fechaActFin);
+    
+    // Lógica Estudiante: Filtro único
+    } else {
+      if (!estado) return resetPreview('Seleccione un estado.');
+      url += '/estudiante';
+      params.append('estado', estado);
+    }
+
     setLoading(true);
-    setMensaje('Cargando...');
+    setMensaje('Buscando registros...');
+
     try {
       const token = localStorage.getItem('access_token') || '';
-      const response = await fetch(url + '?' + params.toString(), {
+      const response = await fetch(`${url}?${params.toString()}`, {
         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
       });
-      if (response.status === 401) return resetPreview('No autorizado.');
-      if (response.status === 403) return resetPreview('Acceso denegado.');
-      if (!response.ok) return resetPreview('Error HTTP ' + response.status);
+
+      if (!response.ok) {
+        if (response.status === 401) return resetPreview('No autorizado.');
+        if (response.status === 403) return resetPreview('Acceso denegado.');
+        return resetPreview('Error al consultar datos.');
+      }
+
       const json = await response.json();
-      const arr = Array.isArray(json) ? json : (json.data || []);
-      setItems(arr);
-      setCsvUrl(json.csv_url ? 'http://localhost:4001' + json.csv_url : null);
-      if (!arr.length) setMensaje('No hay datos para este reporte.'); else setMensaje(null);
+      const data = Array.isArray(json) ? json : (json.data || []);
+
+      setItems(data);
+      setCsvUrl(json.csv_url ? `http://localhost:4001${json.csv_url}` : null);
+      
+      // Actualizar información de paginación
+      if (json.total !== undefined) setTotalRecords(json.total);
+      if (json.total_pages !== undefined) setTotalPages(json.total_pages);
+      if (json.page !== undefined) setCurrentPage(json.page);
+      
+      if (!data.length) setMensaje('No se encontraron resultados.'); 
+      else setMensaje(null);
+
     } catch (e) {
+      console.error(e);
       resetPreview('Error de conexión.');
-    } finally { setLoading(false); }
+    } finally { 
+      setLoading(false); 
+    }
   };
 
-  // Usar actividades cargadas desde el backend
-  const listaActividades = tipoActividad === 'academica' ? academicas : tipoActividad === 'no_academica' ? noAcademicas : [];
+  const handleConsultar = () => {
+    setCurrentPage(1);
+    fetchReportes(1);
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    fetchReportes(newPage);
+    // Scroll al inicio de la lista
+    window.scrollTo({ top: 300, behavior: 'smooth' });
+  };
+
+  // Calculamos la lista dinámica para pasarla a ReporteFiltros
+  const actividadesDisponibles = filtros.tipoActividad === 'academica' 
+      ? academicas 
+      : filtros.tipoActividad === 'no_academica' 
+          ? noAcademicas 
+          : [...academicas, ...noAcademicas];
+
+  const profesoresFiltrados = useMemo(() => {
+    // A. Si soy DIRECTOR (Rol 2), solo muestro profes de MI carrera/instituto
+    if (idRolUsuario === 2) {
+        return profesores.filter(profe => {
+            if (!profe.carreraIds) return false;
+            return profe.carreraIds.some(id => id.toString() === idInstitutoUsuario.toString());
+        });
+    }
+
+    return profesores;
+  }, [profesores, filtros.carrera, idRolUsuario, idInstitutoUsuario]);
+
+
+
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-8 py-12 md:flex-row">
-      {/* Componente de gráficos - arriba de todo */}
-      <ReportesGraficos tipoUsuario={tipoUsuario} />
+    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+      
+      {/* Gráficos solo para académicos (Se mantiene igual) */}
+      {tipoUsuario === 'academico' && (
+        <div className="mb-8">
+          <ReportesGraficos tipoUsuario={tipoUsuario} />
+        </div>
+      )}
 
-      <div className="flex-1 w-full mt-8">
-        <label className="block text-lg font-semibold text-gray-700 mb-2 text-center">Selecciona un tipo de reporte</label>
+      {/* COMPONENTE DE FILTROS */}
+      <ReporteFiltros 
+        tipoUsuario={tipoUsuario}
+        idRol={idRolUsuario}
+        filtros={filtros}
+        setFiltros={setFiltros}
+        loading={loading}
+        onConsultar={handleConsultar}
+        onLimpiar={handleLimpiar}
+        listas={{
+            actividadesDisponibles,
+            loadingActividades,
+            carreras,
+            loadC,
+            profesores: profesoresFiltrados,
+            loadP
+        }}
+      />
 
-        {tipoUsuario === 'academico' ? (
-          <>
-            <select value={tipoReporte} onChange={e=>{setTipoReporte(e.target.value); setRut(''); setTipoActividad(''); setActividad(''); resetPreview();}} className="w-full border border-gray-400 rounded-lg px-4 py-2 shadow">
-              <option value="" disabled>-- Elige una opción --</option>
-              <option value="alumno">Por alumno</option>
-              <option value="actividad">Por actividad</option>
-              <option value="general">General</option>
-            </select>
+      {/* COMPONENTE DE LISTADO */}
+      <ReporteLista 
+        items={items}
+        csvUrl={csvUrl}
+        mensaje={mensaje}
+        onDownload={handleDownload}
+        onDownloadCSV={handleDownloadCSV}
+        totalRecords={totalRecords}
+        currentPage={currentPage}
+        pageSize={pageSize}
+      />
 
-            {tipoReporte === 'alumno' && (
-              <input value={rut} onChange={e=>setRut(e.target.value)} type="text" placeholder="Ingrese RUT del alumno" className="w-full mt-4 border border-gray-400 rounded-lg px-4 py-2 shadow" />
-            )}
+      {/* COMPONENTE DE PAGINACIÓN */}
+      {items.length > 0 && (
+        <Paginacion
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          loading={loading}
+        />
+      )}
 
-            {tipoReporte === 'actividad' && (
-              <>
-                <select value={tipoActividad} onChange={e=>{setTipoActividad(e.target.value); setActividad('');}} className="w-full mt-4 border border-gray-400 rounded-lg px-4 py-2 shadow">
-                  <option value="">Seleccione tipo de actividad</option>
-                  <option value="academica">Académica</option>
-                  <option value="no_academica">No Académica</option>
-                </select>
-                <select value={actividad} onChange={e=>setActividad(e.target.value)} className="w-full mt-4 border border-gray-400 rounded-lg px-4 py-2 shadow" disabled={loadingActividades}>
-                  <option value="">{loadingActividades ? 'Cargando actividades...' : 'Seleccione una actividad'}</option>
-                  {listaActividades.map(a=> <option key={a.value} value={a.value}>{a.label}</option>)}
-                </select>
-              </>
-            )}
-          </>
-        ) : tipoUsuario === 'estudiante' ? (
-          <select value={estado} onChange={e=>{setEstado(e.target.value); resetPreview();}} className="w-full border border-gray-400 rounded-lg px-4 py-2 shadow">
-            <option value="" disabled>-- Elige un estado --</option>
-            <option value="aprobadas">Aprobadas</option>
-            <option value="rechazadas">Rechazadas</option>
-            <option value="pendientes">Pendientes</option>
-          </select>
-        ) : null}
-
-        <Button variant="primary" className="mt-4 w-full" isLoading={loading} onClick={handleConsultar}>
-          {loading ? 'Consultando...' : 'Consultar'}
-        </Button>
-      </div>
-
-      {/* Preview común - con dropdown expandible */}
-      <div className="max-w-2xl mx-auto mt-8 p-6 border border-gray-300 rounded-lg shadow-md text-center" style={{backgroundColor:'#f1e1f1'}}>
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Preview del reporte</h2>
-        {mensaje && <div className="text-gray-600">{mensaje}</div>}
-        {!mensaje && (
-          <ul className="space-y-3">
-            {items.map((item,i)=>{
-              const actividadNombre = item.actividad ?? item.nombre_actividad ?? 'Sin actividad';
-              const fechaISO = item.fecha_creacion ?? item.fecha ?? null;
-              const fechaTxt = fechaISO ? new Date(fechaISO).toLocaleString() : '—';
-              const nombres = (item.nombres || '').trim();
-              const apellidos = (item.apellidos || '').trim();
-              const rutVal = item.rut || '';
-              let titulo='';
-              if (apellidos && nombres) titulo = `${apellidos}, ${nombres}`; else if (nombres) titulo=nombres; else if (apellidos) titulo=apellidos; else titulo=rutVal || 'Registro';
-              
-              const isExpanded = expandedIndex === i;
-              
-              return (
-                <li key={i} className="border rounded-lg bg-white/70 shadow-sm overflow-hidden">
-                  <div 
-                    className="px-4 py-3 cursor-pointer hover:bg-purple-50 transition-colors"
-                    onClick={() => setExpandedIndex(isExpanded ? null : i)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="font-semibold text-gray-800">{titulo}</div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-sm text-gray-600">{fechaTxt}</div>
-                        <svg 
-                          className={`w-5 h-5 text-gray-600 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
-                    {rutVal && <div className="text-sm text-gray-600 mt-1">RUT: {rutVal}</div>}
-                    <div className="mt-2">
-                      <span className="inline-block text-xs px-2 py-1 rounded bg-purple-100 text-purple-800 border border-purple-200">{actividadNombre}</span>
-                    </div>
-                  </div>
-                  
-                  {/* Dropdown expandible con detalles */}
-                  {isExpanded && (
-                    <div className="px-4 py-4 bg-gray-50 border-t border-gray-200 text-left">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                        {item.estado && (
-                          <div>
-                            <span className="font-semibold text-gray-700">Estado:</span>
-                            <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                              item.estado === 'Aprobada' ? 'bg-green-100 text-green-800' :
-                              item.estado === 'Rechazada' ? 'bg-red-100 text-red-800' :
-                              'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {item.estado}
-                            </span>
-                          </div>
-                        )}
-                        {item.carrera && (
-                          <div>
-                            <span className="font-semibold text-gray-700">Carrera:</span>
-                            <span className="ml-2 text-gray-600">{item.carrera}</span>
-                          </div>
-                        )}
-                        {item.fecha_inicio_actividad && (
-                          <div>
-                            <span className="font-semibold text-gray-700">Fecha inicio:</span>
-                            <span className="ml-2 text-gray-600">{new Date(item.fecha_inicio_actividad).toLocaleDateString()}</span>
-                          </div>
-                        )}
-                        {item.fecha_termino_actividad && (
-                          <div>
-                            <span className="font-semibold text-gray-700">Fecha término:</span>
-                            <span className="ml-2 text-gray-600">{new Date(item.fecha_termino_actividad).toLocaleDateString()}</span>
-                          </div>
-                        )}
-                        {item.horas_totales && (
-                          <div>
-                            <span className="font-semibold text-gray-700">Horas totales:</span>
-                            <span className="ml-2 text-gray-600">{item.horas_totales}h</span>
-                          </div>
-                        )}
-                        {(item.profesor_nombres || item.profesor_apellidos) && (
-                          <div>
-                            <span className="font-semibold text-gray-700">Profesor:</span>
-                            <span className="ml-2 text-gray-600">
-                              {item.profesor_apellidos && item.profesor_nombres 
-                                ? `${item.profesor_apellidos}, ${item.profesor_nombres}`
-                                : item.profesor_nombres || item.profesor_apellidos
-                              }
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      {item.comentario && (
-                        <div className="mt-3 pt-3 border-t border-gray-200">
-                          <span className="font-semibold text-gray-700 block mb-1">Comentario:</span>
-                          <p className="text-gray-600 text-sm italic">{item.comentario}</p>
-                        </div>
-                      )}
-                      {item.tiene_archivo && item.id_registro && (
-                        <div className="mt-3 pt-3 border-t border-gray-200">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const token = localStorage.getItem('access_token') || '';
-                              fetch(`http://localhost:4001/reportes/download/${item.id_registro}`, {
-                                headers: { 'Authorization': `Bearer ${token}` }
-                              })
-                              .then(response => {
-                                if (!response.ok) throw new Error('Error al descargar');
-                                return response.blob();
-                              })
-                              .then(blob => {
-                                const url = window.URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = item.archivo_nombre || 'documento';
-                                document.body.appendChild(a);
-                                a.click();
-                                window.URL.revokeObjectURL(url);
-                                document.body.removeChild(a);
-                              })
-                              .catch(err => alert('Error al descargar el archivo'));
-                            }}
-                            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Descargar {item.archivo_nombre || 'documento'}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        {csvUrl && (
-          <div className="mt-4 text-sm">
-            <a href={csvUrl} download className="text-purple-700 underline hover:text-purple-900">Descargar CSV ({csvUrl.split('/').pop()})</a>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

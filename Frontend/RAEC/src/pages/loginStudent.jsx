@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
 import { useAuth } from '../store/AuthContext';
 import Button from '../components/Button';
+import loginEstudianteImg from '../assets/Login_estudiante.jpg';
 
 const LoginStudentPage = () => {
   const { loginStudent } = useAuth();
@@ -18,14 +19,14 @@ const LoginStudentPage = () => {
       const res = await loginStudent(correo, password);
       setLoading(false);
       if (res.success) {
-        navigate('/dashboardStudent');
+        navigate('/dashboard');
       } else {
         setError(res.error || 'Error al iniciar sesión');
       }
     };
   
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center" style={{ backgroundImage: `url(${loginEstudianteImg})` }}>
         <div className="w-full max-w-sm bg-white rounded-xl shadow-lg p-6">
           <h1 className="text-2xl font-bold text-center text-gray-700 mb-2">RAEC</h1>
           <h2 className="text-lg font-semibold text-center text-gray-700 mb-4">Iniciar sesión como estudiante</h2>

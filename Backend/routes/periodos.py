@@ -3,12 +3,12 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from core.auth import get_current_user
 from core.database import get_db
-from services.periodo_service import guardar_periodos
-from services.periodo_service import is_solicitudes_abiertas
+from services.periodo_service import guardar_periodos, is_solicitudes_abiertas
+import asyncio
 
 router = APIRouter()
 
-@router.post("/periodos/")
+@router.post("/periodos")
 async def configurar_periodo(
     regular_inicio: str = Form(None),
     regular_termino: str = Form(None),
@@ -17,17 +17,17 @@ async def configurar_periodo(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    # Validar que solo los administradores (id_rol = 3) puedan establecer periodos de registro
-    if current_user["id_rol"] != 3:
-        raise HTTPException(status_code=403, detail="Solo los directores pueden registrar actividades no académicas")
+    # Validar que solo los administradores (id_rol = 3) y super administradores (id_rol = 4) puedan establecer periodos de registro
+    if current_user["id_rol"] not in [3, 4]:
+        raise HTTPException(status_code=403, detail="Solo administradores y super administradores pueden configurar periodos")
     
-    # Convertir fechas str a datetime
+    # Convertir fechas str a datetime.date() para evitar problemas de zona horaria
     regular_inicio_dt = None
     regular_termino_dt = None
     if regular_inicio is not None and regular_termino is not None:
         try:
-            regular_inicio_dt = datetime.strptime(regular_inicio, "%Y-%m-%d")
-            regular_termino_dt = datetime.strptime(regular_termino, "%Y-%m-%d")
+            regular_inicio_dt = datetime.strptime(regular_inicio, "%Y-%m-%d").date()
+            regular_termino_dt = datetime.strptime(regular_termino, "%Y-%m-%d").date()
         except Exception:
             raise HTTPException(status_code=422, detail="Formato de fecha inválido para período regular. Use YYYY-MM-DD")
 
@@ -35,8 +35,8 @@ async def configurar_periodo(
     extra_termino_dt = None
     if extra_inicio is not None and extra_termino is not None:
         try:
-            extra_inicio_dt = datetime.strptime(extra_inicio, "%Y-%m-%d")
-            extra_termino_dt = datetime.strptime(extra_termino, "%Y-%m-%d")
+            extra_inicio_dt = datetime.strptime(extra_inicio, "%Y-%m-%d").date()
+            extra_termino_dt = datetime.strptime(extra_termino, "%Y-%m-%d").date()
         except Exception:
             raise HTTPException(status_code=422, detail="Formato de fecha inválido para período extra. Use YYYY-MM-DD")
 

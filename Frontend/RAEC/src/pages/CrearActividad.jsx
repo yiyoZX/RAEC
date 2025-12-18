@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../store/AuthContext';
 import HeaderLayout from '../layouts/HeaderLayout';
 import Button from '../components/Button';
+import { API_BASE } from '../services/api';
 
 const NuevaActividadPage = () => {
   const { user } = useAuth();
@@ -54,7 +55,7 @@ const NuevaActividadPage = () => {
       // Construir array con nombres de campos dinámicos
       const camposAdicionales = camposDinamicos.map(campo => campo.nombre);
 
-      const res = await fetch('http://localhost:4001/actividades/nueva', {
+      const res = await fetch(`${API_BASE}/actividades/nueva`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,6 +85,9 @@ const NuevaActividadPage = () => {
       setNombre('');
       setTipo('');
       setCamposDinamicos([]);
+      
+      // Disparar evento para recargar actividades en otros componentes
+      window.dispatchEvent(new CustomEvent('actividadCreada'));
     } catch (error) {
       console.error(error);
       setMensaje('❌ Error de conexión con el backend.');
@@ -93,7 +97,7 @@ const NuevaActividadPage = () => {
   };
 
   return (
-    <HeaderLayout showBack title="Nueva Actividad">
+    <HeaderLayout showBack title="RAEC - Nueva Actividad">
       <div className="w-full max-w-xl mx-auto p-6 mt-8 bg-white rounded-xl shadow-md">
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
           Registrar Nueva Actividad

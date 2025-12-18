@@ -20,4 +20,4 @@ COPY . /app
 EXPOSE 4001
 
 # Esperar a que la base de datos esté lista antes de arrancar Uvicorn
-CMD ["/wait-for-postgres.sh", "db", "uvicorn", "main_backend:app", "--host", "0.0.0.0", "--port", "4001"]
+CMD ["/wait-for-postgres.sh", "raec-db", "uvicorn", "main_backend:app", "--host", "0.0.0.0", "--port", "4001"]

@@ -4,9 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import RouteGuard from './components/RouteGuard';
 import LoginPage from './pages/LoginPage';
 import LoginStudentPage from './pages/loginStudent';
-import DashboardStudentPage from  './pages/dashboardStudent';
-import DashboardPage from './pages/DashboardPage';
-import DashboardAdmin from './pages/DashboardAdmin';
+import Dashboard from './pages/Dashboard';
 import RegistroFormularioAcademico from './pages/RegistroFormularioAcademico';
 import RegistroFormularioEstudiante from './pages/RegistroFormularioEstudiantes';
 import CrearActividad from './pages/CrearActividad';
@@ -14,6 +12,8 @@ import ReportesEstudiantes from './pages/ReportesEstudiantes';
 import ReportesAcademicos from './pages/ReportesAcademicos';
 import SolicitudesPage from './pages/Solicitudes';
 import ConfigurarPeriodos from './pages/ConfigurarPeriodos';
+import ChangeUserRole from './pages/CambiarRol';
+import CargaMasiva from './pages/CargaMasiva';
 
 function App() {
   return (
@@ -31,7 +31,7 @@ function App() {
               path="/dashboardStudent" 
               element={
                 <ProtectedRoute allowedRoles="estudiante">
-                  <DashboardStudentPage />
+                  <Dashboard />
                 </ProtectedRoute>
               } 
             />
@@ -52,19 +52,19 @@ function App() {
               } 
             />
             
-            {/* Rutas protegidas para ACADÉMICOS (profesor/director) */}
+            {/* Rutas protegidas para ACADÉMICOS (profesor/director/admin/super_admin) */}
             <Route 
               path="/dashboard" 
               element={
-                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
-                  <DashboardPage />
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin', 'super_admin']}>
+                  <Dashboard />
                 </ProtectedRoute>
               } 
             />
             <Route 
               path="/crear" 
               element={
-                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin', 'super_admin']}>
                   <CrearActividad />
                 </ProtectedRoute>
               } 
@@ -72,7 +72,7 @@ function App() {
             <Route 
               path="/reportesAcademicos" 
               element={
-                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin', 'super_admin']}>
                   <ReportesAcademicos />
                 </ProtectedRoute>
               } 
@@ -80,25 +80,25 @@ function App() {
             <Route 
               path="/registrar" 
               element={
-                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin', 'super_admin']}>
                   <RegistroFormularioAcademico />
                 </ProtectedRoute>
               } 
             />
             
-            {/* Rutas protegidas para ADMINISTRADORES y DIRECTORES */}
+            {/* Rutas protegidas para ADMINISTRADORES, SUPER ADMIN y DIRECTORES */}
             <Route 
-              path="/dashboardAdmin" 
+              path="/CambiarRol" 
               element={
-                <ProtectedRoute requireAdminOrDirector>
-                  <DashboardAdmin />
+                <ProtectedRoute allowedRoles={['super_admin']}>
+                  <ChangeUserRole />
                 </ProtectedRoute>
               } 
             />
             <Route 
               path="/solicitudes" 
               element={
-                <ProtectedRoute allowedRoles={['academico', 'director', 'admin']}>
+                <ProtectedRoute allowedRoles={['academico', 'director', 'admin', 'super_admin']}>
                   <SolicitudesPage />
                 </ProtectedRoute>
               } 
@@ -106,8 +106,16 @@ function App() {
             <Route 
               path="/periodos" 
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['admin', 'super_admin']}>
                   <ConfigurarPeriodos />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/carga-masiva" 
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'super_admin']}>
+                  <CargaMasiva />
                 </ProtectedRoute>
               } 
             />

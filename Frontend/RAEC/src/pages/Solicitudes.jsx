@@ -2,12 +2,30 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../store/AuthContext';
 import HeaderLayout from '../layouts/HeaderLayout';
 import Button from '../components/Button';
+import Paginacion from '../components/Paginacion';
+import { API_BASE } from '../services/api';
 
 const SolicitudesPage = () => {
   const { user } = useAuth();  // Para rol y token
   const [solicitudes, setSolicitudes] = useState([]);  // Lista de pendientes
   const [loading, setLoading] = useState(true);  // Cargando al inicio
   const [error, setError] = useState(null);  // Errores
+  
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pageSize] = useState(6);
+
+  // Función para formatear fecha a DD-MM-YY
+  const formatearFecha = (fecha) => {
+    if (!fecha) return '';
+    const date = new Date(fecha);
+    const dia = String(date.getDate()).padStart(2, '0');
+    const mes = String(date.getMonth() + 1).padStart(2, '0');
+    const anio = String(date.getFullYear()).slice(-2);
+    return `${dia}-${mes}-${anio}`;
+  };
 
   // Cargar solicitudes al inicio
   useEffect(() => {
@@ -16,28 +34,30 @@ const SolicitudesPage = () => {
       setError(null);
       try {
         const token = localStorage.getItem('access_token') || '';
-        const response = await fetch('http://localhost:4001/solicitudes/pendientes', {
+        const response = await fetch(`${API_BASE}/solicitudes/pendientes?page=${currentPage}&page_size=${pageSize}`, {
           headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         if (!response.ok) throw new Error('Error al cargar solicitudes');
         const data = await response.json();
-        setSolicitudes(data);
+        console.log('Datos recibidos:', data.data);  // Para debug
+        setSolicitudes(data.data || []);
+        setTotalRecords(data.total || 0);
+        setTotalPages(data.total_pages || 0);
       } catch (e) {
-        console.log('Error fetch:', e.message, response ? response.status : 'No response');
+        console.log('Error fetch:', e.message);
         setError('No se pudieron cargar las solicitudes.');
-
       } finally {
         setLoading(false);
       }
     };
 
-    if (user && (user.id_rol === 2 || user.rol === 2)) {  // Cambio: Agrega user && para evitar null.rol error y verificar ambos campos
+    if (user && (user.id_rol === 2 || user.rol === 2 || user.id_rol === 3 || user.rol === 3 || user.id_rol === 4 || user.rol === 4)) {
       fetchSolicitudes();
     } else {
-      setError('Solo directores pueden acceder a esta página.');
+      setError('Solo directores y administradores pueden acceder a esta página.');
       setLoading(false);
     }
-  }, [user]);  // Depend de user - recarga si cambia
+  }, [user, currentPage, pageSize]);  // Depend de user - recarga si cambia
 
   // Función para aprobar/rechazar
   const handleUpdate = async (id, nuevoEstado) => {
@@ -53,7 +73,7 @@ const SolicitudesPage = () => {
       console.log(`Tipo de ID: ${typeof id}`);  // Debe ser 'number' o 'string' que se convierta a número
 
       const token = localStorage.getItem('access_token') || '';
-      const response = await fetch(`http://localhost:4001/solicitudes/${id}/update`, {
+      const response = await fetch(`${API_BASE}/solicitudes/${id}/update`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_estado: nuevoEstado })
@@ -65,40 +85,152 @@ const SolicitudesPage = () => {
         throw new Error(`Error al actualizar: ${response.status} - ${errorText}`);
       }
 
-      setSolicitudes(solicitudes.filter(s => s.id_registro !== id));  // Cambiado: Usa id_registro para filtrar
+      setSolicitudes(solicitudes.filter(s => s.id_registro !== id));
+      
+      // Si la página actual queda vacía, ir a la página anterior
+      if (solicitudes.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+      
       alert('Solicitud actualizada');
     } catch (e) {
-      console.error('Excepción completa:', e);  // Log la excepción completa
+      console.error('Excepción completa:', e);
       alert(`No se pudo actualizar: ${e.message}`);
     }
+  };
+
+  // Manejar cambio de página
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Función para descargar archivo adjunto
+  const handleDownload = (solicitud, e) => {
+    e.stopPropagation();
+    
+    if (!solicitud.archivo_nombre) {
+      alert('Esta solicitud no tiene archivo adjunto.');
+      return;
+    }
+    
+    const token = localStorage.getItem('access_token') || '';
+    
+    fetch(`${API_BASE}/solicitudes/download/${solicitud.id_registro}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(res => { 
+      if (!res.ok) throw new Error('Error en la descarga'); 
+      return res.blob(); 
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = solicitud.archivo_nombre || 'documento_adjunto';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    })
+    .catch(() => alert('No se pudo descargar el archivo.'));
   };
 
   if (loading) return <div>Cargando solicitudes...</div>;
   if (error) return <div>{error}</div>;
 
+  // Calcular rango de registros
+  const startRecord = (currentPage - 1) * pageSize + 1;
+  const endRecord = Math.min(currentPage * pageSize, totalRecords);
+
   return (
     <HeaderLayout showBack title="Solicitudes Pendientes">
       <div className="p-6">
         <h2 className="text-2xl font-bold text-center text-gray-600 mb-4">Solicitudes de Estudiantes Pendientes</h2>
+        {totalRecords > 0 && (
+          <p className="text-center text-gray-600 mb-4">
+            Mostrando {startRecord} - {endRecord} de {totalRecords} solicitudes
+          </p>
+        )}
         {solicitudes.length === 0 ? (
           <p className="text-center text-gray-600">No hay solicitudes pendientes.</p>
         ) : (
-          <ul className="space-y-4">
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {solicitudes.map((solicitud) => (
-              <li key={solicitud.id_registro} className="bg-white p-4 rounded-lg shadow text-gray-600">  // Cambiado: key usa id_registro
-                <p><strong>RUT Estudiante:</strong> {solicitud.rut_alumno}</p>
-                <p><strong>Actividad:</strong> {solicitud.nombre_actividad}</p>
-                <p><strong>Fechas:</strong> {solicitud.fecha_inicio} a {solicitud.fecha_termino}</p>
-                <p><strong>Horas:</strong> {solicitud.horas_totales}</p>
-                <p><strong>Comentario:</strong> {solicitud.comentario}</p>
-                <p><strong>Archivo:</strong> {solicitud.archivo_nombre || 'Ninguno'}</p>
-                <div className="mt-4 flex gap-2">
-                  <Button variant="primary" onClick={() => handleUpdate(solicitud.id_registro, 1)}>Aprobar</Button>  
-                  <Button variant="secondary" onClick={() => handleUpdate(solicitud.id_registro, 2)}>Rechazar</Button> 
+              <div key={solicitud.id_registro} className="bg-white p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
+                <div className="flex-grow space-y-2">
+                  <div className="border-b pb-2 mb-3">
+                    <p className="text-sm text-gray-500">RUT Estudiante</p>
+                    <p className="font-semibold text-gray-700">{solicitud.id_alumno}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Nombre Estudiante</p>
+                    <p className="font-semibold text-gray-700">{solicitud.alumno_nombres} {solicitud.alumno_apellidos}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-gray-500">Nombre profesor</p>
+                    <p className="font-semibold text-gray-700">{solicitud.nombres} {solicitud.apellidos}</p>
+                  </div>
+
+
+                  <div>
+                    <p className="text-sm text-gray-500">Actividad</p>
+                    <p className="font-semibold text-gray-700">{solicitud.nombre_actividad}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Fechas</p>
+                    <p className="text-gray-700">{formatearFecha(solicitud.fecha_inicio_actividad)} a {formatearFecha(solicitud.fecha_termino_actividad)}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Horas Totales</p>
+                    <p className="font-semibold text-blue-600">{solicitud.horas_totales} hrs</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Comentario</p>
+                    <p className="text-gray-700 text-sm line-clamp-3">{solicitud.comentario}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Archivo</p>
+                    {solicitud.archivo_nombre ? (
+                      <button
+                        onClick={(e) => handleDownload(solicitud, e)}
+                        className="text-blue-600 hover:text-blue-800 text-sm underline"
+                      >
+                        📎 {solicitud.archivo_nombre}
+                      </button>
+                    ) : (
+                      <p className="text-gray-400 text-sm">Ninguno</p>
+                    )}
+                  </div>
                 </div>
-              </li>
+                
+                <div className="mt-4 flex gap-2 pt-3 border-t">
+                  <Button variant="primary" onClick={() => handleUpdate(solicitud.id_registro, 1)} className="flex-1">Aprobar</Button>  
+                  <Button variant="secondary" onClick={() => handleUpdate(solicitud.id_registro, 2)} className="flex-1">Rechazar</Button> 
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
+          
+          {/* Componente de paginación */}
+          {totalPages > 1 && (
+            <div className="mt-6">
+              <Paginacion
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                loading={loading}
+              />
+            </div>
+          )}
+          </>
         )}
       </div>
     </HeaderLayout>

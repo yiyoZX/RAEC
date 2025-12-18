@@ -50,5 +50,7 @@ async def autenticar_usuario(
     for campo in campos_extras:
         if campo in db_usuario:
             response[campo] = db_usuario[campo]
+
+    
     
     return response

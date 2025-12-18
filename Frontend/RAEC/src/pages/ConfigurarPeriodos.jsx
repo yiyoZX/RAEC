@@ -23,6 +23,12 @@ function ConfigurarPeriodos() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validar que al menos un período esté activado
+    if (!mostrarRegular && !mostrarExtra) {
+      alert('⚠️ Debe activar al menos un período (Regular o Extraordinario) para guardar cambios');
+      return;
+    }
+
     const formData = new FormData();
     
     if (mostrarRegular) {
@@ -35,7 +41,7 @@ function ConfigurarPeriodos() {
     }
 
     try {
-      const res = await authenticatedFetchFormData('http://localhost:4001/periodos/', formData);
+      const res = await authenticatedFetchFormData('/periodos', {method: 'POST',body : formData});
 
       const text = await res.clone().text();
       console.log('Response body:', text);
@@ -61,21 +67,24 @@ function ConfigurarPeriodos() {
 
           <form onSubmit={handleSubmit} className="space-y-8">
 
-            {/* Botón de período de inscripción regular */}
-            <div className="text-center">
-              <Button
-                type="button"
-                variant="warning"
-                className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition transform hover:scale-105"
-                onClick={() => setMostrarRegular(!mostrarRegular)}
-              >
-                {mostrarRegular ? 'Ocultar Período Regular' : 'Configurar Período Regular'}
-              </Button>
+            {/* Switch para el periodo regular */}
+            <div className="flex items-center justify-start">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-700">Período Regular</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only" checked={mostrarRegular} onChange={() => setMostrarRegular(!mostrarRegular)} />
+                  <div
+                    className="w-11 h-6 rounded-full transition"
+                    // usar el color de la variante `primary` definido en Button.jsx (bg-blue-600)
+                    style={{ backgroundColor: mostrarRegular ? '#2563eb' : '#e5e7eb' }}
+                  />
+                  <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transform transition ${mostrarRegular ? 'translate-x-5' : ''}`} />
+                </label>
+              </div>
             </div>
 
-            {/* Período de inscripción regular */}
-            {mostrarRegular&& (
-              <section className="border-t border-gray-200 pt-6">
+            {/* Período de inscripción regular (kept in DOM but visually collapsed/disabled when off) */}
+            <section className={`border-t border-gray-200 pt-6 transition-all duration-300 overflow-hidden ${mostrarRegular ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-40 pointer-events-none'}`}>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Período Regular</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -104,23 +113,24 @@ function ConfigurarPeriodos() {
                 </div>
               </div>
             </section>
-            )}
-
-            {/* Botón de período de inscripción extraordinarios */}
-            <div className="text-center">
-              <Button
-                type="button"
-                variant="warning"
-                className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition transform hover:scale-105"
-                onClick={() => setMostrarExtra(!mostrarExtra)}
-              >
-                {mostrarExtra ? 'Ocultar Período Extraordinario' : 'Configurar Período Extraordinario'}
-              </Button>
+            {/* Switch para periodo extraordinario */}
+            <div className="flex items-center justify-start">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-700">Período Extraordinario</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only" checked={mostrarExtra} onChange={() => setMostrarExtra(!mostrarExtra)} />
+                  <div
+                    className="w-11 h-6 rounded-full transition"
+                    // usar el color de la variante `primary` definido en Button.jsx (bg-blue-600)
+                    style={{ backgroundColor: mostrarExtra ? '#2563eb' : '#e5e7eb' }}
+                  />
+                  <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transform transition ${mostrarExtra ? 'translate-x-5' : ''}`} />
+                </label>
+              </div>
             </div>
 
             {/* Períodos extraordinarios de inscripción */}
-            {mostrarExtra && (
-              <section className="border-t border-gray-200 pt-6">
+            <section className={`border-t border-gray-200 pt-6 transition-all duration-300 overflow-hidden ${mostrarExtra ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-40 pointer-events-none'}`}>
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Período Extraordinario</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -149,7 +159,6 @@ function ConfigurarPeriodos() {
                   </div>
                 </div>
               </section>
-            )}
 
             {/* Botones */}
             <div className="flex gap-4 pt-6">

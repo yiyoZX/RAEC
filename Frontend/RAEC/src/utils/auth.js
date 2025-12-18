@@ -98,11 +98,11 @@ export const isStudent = () => {
 
 /**
  * Verifica si el usuario es académico (cualquier tipo)
- * Incluye: profesores, directores y administradores
+ * Incluye: profesores, directores, administradores y super administradores
  */
 export const isAcademic = () => {
   const userType = localStorage.getItem('user_type');
-  return userType === 'profesor' || userType === 'academico' || userType === 'director' || userType === 'admin';
+  return userType === 'profesor' || userType === 'academico' || userType === 'director' || userType === 'admin' || userType === 'super_admin';
 };
 
 /**
@@ -115,6 +115,21 @@ export const isAdmin = () => {
     
     const user = JSON.parse(userData);
     return user?.id_rol === 3 || user?.isAdmin === true;
+  } catch (error) {
+    return false;
+  }
+};
+
+/**
+ * Verifica si el usuario es super administrador
+ */
+export const isSuperAdmin = () => {
+  try {
+    const userData = localStorage.getItem('user_data');
+    if (!userData) return false;
+    
+    const user = JSON.parse(userData);
+    return user?.id_rol === 4;
   } catch (error) {
     return false;
   }
@@ -136,10 +151,10 @@ export const isDirector = () => {
 };
 
 /**
- * Verifica si el usuario tiene permisos de administrador O director
+ * Verifica si el usuario tiene permisos de administrador, super administrador O director
  */
 export const hasAdminOrDirectorRole = () => {
-  return isAdmin() || isDirector();
+  return isAdmin() || isSuperAdmin() || isDirector();
 };
 
 /**

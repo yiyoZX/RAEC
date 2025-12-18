@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
-import { isSessionValid, isStudent, isAdmin, isDirector, isAcademic } from '../utils/auth';
+import { isSessionValid, isStudent, isAdmin, isSuperAdmin, isDirector, isAcademic } from '../utils/auth';
 
 /**
  * RouteGuard - Componente que valida permisos en cada cambio de ruta
@@ -42,15 +42,15 @@ export const RouteGuard = ({ children }) => {
       '/registroEstudiantes': { type: 'estudiante' },
       '/reportesEstudiantes': { type: 'estudiante' },
       
-      // Rutas de académicos (profesor, director, admin)
-      '/dashboard': { types: ['profesor', 'academico', 'director', 'admin'] },
-      '/crear': { types: ['profesor', 'academico', 'director', 'admin'] },
-      '/reportesAcademicos': { types: ['profesor', 'academico', 'director', 'admin'] },
-      '/registrar': { types: ['profesor', 'academico', 'director', 'admin'] },  // Todos los académicos pueden registrar
-      '/solicitudes': { types: ['profesor', 'academico', 'director', 'admin'] },  // Todos los académicos pueden ver solicitudes
-      
-      // Rutas de administración (solo admin y director)
-      '/dashboardAdmin': { types: ['director', 'admin'] },
+      // Rutas de académicos (profesor, director, admin, super_admin)
+      '/dashboard': { types: ['profesor', 'director', 'admin', 'super_admin', 'academico'] },
+      '/crear': { types: ['profesor', 'academico', 'director', 'admin', 'super_admin'] },
+      '/reportesAcademicos': { types: ['profesor', 'academico', 'director', 'admin', 'super_admin'] },
+      '/registrar': { types: ['profesor', 'academico', 'director', 'admin', 'super_admin'] },  // Todos los académicos pueden registrar
+      '/solicitudes': { types: ['profesor', 'academico', 'director', 'admin', 'super_admin'] },  // Todos los académicos pueden ver solicitudes
+      '/CambiarRol': { types: ['super_admin'] },  // Solo super admin puede cambiar roles
+      '/periodos': { types: ['admin', 'super_admin'] },  // Admin y super admin
+      '/carga-masiva': { types: ['admin', 'super_admin'] },  // Admin y super admin
     };
 
     const routeConfig = routePermissions[currentPath];
@@ -88,15 +88,17 @@ export const RouteGuard = ({ children }) => {
       case 'estudiante':
         return isStudent();
       case 'profesor':
-        // Profesor normal (rol 1) - no es director ni admin
-        return isAcademic() && !isDirector() && !isAdmin();
+        // Profesor normal (rol 1) - no es director ni admin ni super admin
+        return isAcademic() && !isDirector() && !isAdmin() && !isSuperAdmin();
       case 'academico':
-        // Cualquier académico (profesor, director o admin)
+        // Cualquier académico (profesor, director, admin o super admin)
         return isAcademic();
       case 'director':
         return isDirector();
       case 'admin':
         return isAdmin();
+      case 'super_admin':
+        return isSuperAdmin();
       default:
         return false;
     }
@@ -108,8 +110,8 @@ export const RouteGuard = ({ children }) => {
   const redirectToUserDashboard = () => {
     if (isStudent()) {
       navigate('/dashboardStudent', { replace: true });
-    } else if (isAdmin() || isDirector()) {
-      navigate('/dashboardAdmin', { replace: true });
+    } else if (isAdmin() || isSuperAdmin() || isDirector()) {
+      navigate('/dashboard', { replace: true });
     } else if (isAcademic()) {
       navigate('/dashboard', { replace: true });
     } else {

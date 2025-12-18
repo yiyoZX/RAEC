@@ -15,14 +15,14 @@ def crear_nueva_actividad(
 ):
     """
     Endpoint para crear una nueva actividad.
-    Solo administradores (rol=3) pueden crear actividades.
+    Solo administradores (rol=3) y super administradores (rol=4) pueden crear actividades.
     """
-    # Verificar que sea un profesor/académico
+    # Verificar que sea un administrador o super administrador
     id_rol = current_user.get("id_rol")
-    if id_rol != 3:
+    if id_rol not in [3, 4]:
         raise HTTPException(
             status_code=403,
-            detail="Solo los administradores pueden crear actividades"
+            detail="Solo los administradores y super administradores pueden crear actividades"
         )
     
     # Crear la actividad

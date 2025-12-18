@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { API_BASE } from '../services/api';
 
 const COLORS = ['#9333ea', '#c084fc', '#a855f7', '#d8b4fe', '#e9d5ff', '#f3e8ff', '#7c3aed', '#6b21a8'];
 
@@ -19,7 +20,7 @@ function ReportesGraficos({ tipoUsuario }) {
     try {
       // Cargar estadísticas de carreras (solo para académicos)
       if (tipoUsuario === 'academico') {
-        const responseCarreras = await fetch('http://localhost:4001/reportes/estadisticas/carreras', {
+        const responseCarreras = await fetch(`${API_BASE}/reportes/estadisticas/carreras`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (responseCarreras.ok) {
@@ -28,7 +29,7 @@ function ReportesGraficos({ tipoUsuario }) {
         }
 
         // Cargar estadísticas de actividades
-        const responseActividades = await fetch('http://localhost:4001/reportes/estadisticas/actividades', {
+        const responseActividades = await fetch(`${API_BASE}/reportes/estadisticas/actividades`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (responseActividades.ok) {
@@ -38,7 +39,7 @@ function ReportesGraficos({ tipoUsuario }) {
       }
 
       // Cargar estadísticas de estados (para todos)
-      const responseEstados = await fetch('http://localhost:4001/reportes/estadisticas/estados', {
+      const responseEstados = await fetch(`${API_BASE}/reportes/estadisticas/estados`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (responseEstados.ok) {

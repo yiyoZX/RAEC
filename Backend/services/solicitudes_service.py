@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select, desc, update
+from sqlalchemy import select, desc, update, func
 from fastapi import HTTPException
 from typing import Dict, Any
 from core.models import registro, alumno, actividad, profesor
@@ -9,13 +9,39 @@ import asyncio
 
 def get_solicitudes_pendientes(db: Session, current_user: dict, page: int = 1, page_size: int = 20):
     print("Debug: Rol del user:", current_user.get("id_rol"))
-    if current_user.get("id_rol") not in [2, 3]:  # Directores (2) y Administradores (3)
-        raise HTTPException(status_code=403, detail="Solo directores y administradores")
+    if current_user.get("id_rol") not in [2, 3, 4]:  # Directores (2), Administradores (3) y Super Admin (4)
+        raise HTTPException(status_code=403, detail="Solo directores, administradores y super administradores")
     
-    # Obtener todas las solicitudes primero para contar el total
+    # Primero, contar el total de registros con COUNT (eficiente)
+    count_stmt = (
+        select(func.count())
+        .select_from(registro)
+        .join(alumno, registro.c.id_alumno == alumno.c.rut_alumno)
+        .join(actividad, registro.c.id_actividad == actividad.c.id_actividad)
+        .join(profesor, registro.c.id_profesor == profesor.c.id_profesor)
+        .where(registro.c.id_estado == 3)  # Pendientes
+    )
+    total_records = db.execute(count_stmt).scalar()
+    total_pages = (total_records + page_size - 1) // page_size
+    
+    # Luego, consultar solo la página actual con LIMIT y OFFSET
     stmt = (
         select(
-            registro,
+            registro.c.id_registro,
+            registro.c.id_alumno,
+            registro.c.id_profesor,
+            registro.c.id_actividad,
+            registro.c.id_estado,
+            registro.c.fecha_creacion,
+            registro.c.fecha_emision,
+            registro.c.archivo_nombre,
+            registro.c.comentario,
+            registro.c.fecha_inicio_actividad,
+            registro.c.fecha_termino_actividad,
+            registro.c.horas_totales,
+            registro.c.dato1,
+            registro.c.dato2,
+            registro.c.dato3,
             alumno.c.nombres.label("alumno_nombres"),
             alumno.c.apellidos.label("alumno_apellidos"),
             actividad.c.nombre_actividad,
@@ -27,16 +53,11 @@ def get_solicitudes_pendientes(db: Session, current_user: dict, page: int = 1, p
         .join(profesor, registro.c.id_profesor == profesor.c.id_profesor)
         .where(registro.c.id_estado == 3)  # Pendientes
         .order_by(desc(registro.c.fecha_creacion))
+        .limit(page_size)
+        .offset((page - 1) * page_size)
     )
     
-    all_results = db.execute(stmt).mappings().all()
-    total_records = len(all_results)
-    total_pages = (total_records + page_size - 1) // page_size
-    
-    # Aplicar paginación
-    start_idx = (page - 1) * page_size
-    end_idx = start_idx + page_size
-    paginated_results = all_results[start_idx:end_idx]
+    paginated_results = db.execute(stmt).mappings().all()
     
     return {
         "total": total_records,
@@ -47,9 +68,9 @@ def get_solicitudes_pendientes(db: Session, current_user: dict, page: int = 1, p
     }
 
 # Función para update estado
-def update_solicitud_estado(db: Session, id_registro: int, nuevo_estado: int, current_user: Dict[str, Any]):
-    if current_user.get("id_rol") not in [2, 3]:  # Directores (2) y Administradores (3)
-        raise HTTPException(status_code=403, detail="Solo directores y administradores")
+async def update_solicitud_estado(db: Session, id_registro: int, nuevo_estado: int, current_user: Dict[str, Any]):
+    if current_user.get("id_rol") not in [2, 3, 4]:  # Directores (2), Administradores (3) y Super Admin (4)
+        raise HTTPException(status_code=403, detail="Solo directores, administradores y super administradores")
 
     stmt = update(registro).where(registro.c.id_registro == id_registro).values(id_estado=nuevo_estado)
     result = db.execute(stmt)
@@ -58,8 +79,8 @@ def update_solicitud_estado(db: Session, id_registro: int, nuevo_estado: int, cu
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
     
-    #Función que envía correo de la respuesta al alumno
-    asyncio.run(resupuestaSolicitudMail(
+    # Envía correo en segundo plano sin bloquear la respuesta
+    asyncio.create_task(resupuestaSolicitudMail(
         rut_alumno=db.execute(select(registro.c.id_alumno).where(registro.c.id_registro == id_registro)).scalar(),
         id_registro=id_registro,
         respuesta = nuevo_estado,

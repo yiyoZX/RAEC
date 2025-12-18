@@ -9,7 +9,7 @@ import asyncio
 router = APIRouter()
 
 @router.post("/periodos")
-def configurar_periodo(
+async def configurar_periodo(
     regular_inicio: str = Form(None),
     regular_termino: str = Form(None),
     extra_inicio: str = Form(None),
@@ -17,9 +17,9 @@ def configurar_periodo(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    # Validar que solo los administradores (id_rol = 3) puedan establecer periodos de registro
-    if current_user["id_rol"] != 3:
-        raise HTTPException(status_code=403, detail="Solo los directores pueden registrar actividades no académicas")
+    # Validar que solo los administradores (id_rol = 3) y super administradores (id_rol = 4) puedan establecer periodos de registro
+    if current_user["id_rol"] not in [3, 4]:
+        raise HTTPException(status_code=403, detail="Solo administradores y super administradores pueden configurar periodos")
     
     # Convertir fechas str a datetime.date() para evitar problemas de zona horaria
     regular_inicio_dt = None
@@ -49,7 +49,7 @@ def configurar_periodo(
         if extra_inicio_dt > extra_termino_dt:
             raise HTTPException(status_code=422, detail="La fecha de inicio (extra) debe ser anterior a la fecha de término")
 
-    return guardar_periodos(
+    return await guardar_periodos(
         db, current_user, regular_inicio_dt, regular_termino_dt, extra_inicio_dt, extra_termino_dt
     )
 

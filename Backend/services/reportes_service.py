@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import select, desc, or_
+from sqlalchemy import select, desc, or_, func
 from fastapi import HTTPException
 from core.models import registro, actividad, alumno, profesor, carrera
 from core.models import estado as tabla_estado
@@ -11,7 +11,7 @@ NON_ACADEMIC_IDS = set(range(7, 13))
 
 def _serialize_row(row) -> Dict[str, Any]:
     """Convierte el resultado de la DB en un diccionario limpio para el JSON."""
-    return {
+    result = {
         "rut": row.rut_alumno,
         "nombres": row.nombres,
         "apellidos": row.apellidos,
@@ -29,6 +29,25 @@ def _serialize_row(row) -> Dict[str, Any]:
         "archivo_nombre": getattr(row, 'archivo_nombre', None),
         "tiene_archivo": bool(getattr(row, 'archivo_nombre', None))
     }
+    
+    # Agregar campos extras de la actividad si existen
+    dato1_label = getattr(row, 'dato1', None)
+    dato2_label = getattr(row, 'dato2', None)
+    dato3_label = getattr(row, 'dato3', None)
+    
+    if dato1_label:
+        result["campo_extra_1_label"] = dato1_label
+        result["campo_extra_1_valor"] = getattr(row, 'registro_dato1', None)
+    
+    if dato2_label:
+        result["campo_extra_2_label"] = dato2_label
+        result["campo_extra_2_valor"] = getattr(row, 'registro_dato2', None)
+    
+    if dato3_label:
+        result["campo_extra_3_label"] = dato3_label
+        result["campo_extra_3_valor"] = getattr(row, 'registro_dato3', None)
+    
+    return result
 
 def _actividad_existe(db: Session, actividad_id: int) -> bool:
     stmt = select(actividad.c.id_actividad).where(actividad.c.id_actividad == actividad_id)
@@ -48,7 +67,10 @@ def obtener_reporte(
     fecha_inicio: Optional[str] = None,
     fecha_fin: Optional[str] = None,
     estado: Optional[str] = None,
-    horas_min: Optional[int] = None, # Agregué esto por si acaso (vimos horas en el front)
+    horas_min: Optional[int] = None,
+    # Parámetros de paginación
+    page: Optional[int] = None,
+    page_size: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
 
     # 1. Query Base (Con todos los JOINS necesarios)
@@ -62,6 +84,9 @@ def obtener_reporte(
             alumno.c.id_carrera, # Necesario para filtrar carrera si no estaba antes
             actividad.c.id_actividad,
             actividad.c.nombre_actividad,
+            actividad.c.dato1,
+            actividad.c.dato2,
+            actividad.c.dato3,
             registro.c.fecha_creacion,
             registro.c.fecha_inicio_actividad,
             registro.c.fecha_termino_actividad,
@@ -69,6 +94,9 @@ def obtener_reporte(
             registro.c.comentario,
             registro.c.archivo_nombre,
             registro.c.id_profesor, # Necesario para filtrar profesor
+            registro.c.dato1.label("registro_dato1"),
+            registro.c.dato2.label("registro_dato2"),
+            registro.c.dato3.label("registro_dato3"),
             tabla_estado.c.nombre_estado,
             profesor.c.nombres.label("profesor_nombres"),
             profesor.c.apellidos.label("profesor_apellidos"),
@@ -168,11 +196,11 @@ def obtener_reporte(
                 # (OJO: Esto se suma a los filtros anteriores, es un AND)
                 stmt = stmt.where(profesor.c.id_instituto == current_user.get("id_instituto"))
 
-    # 5. Ejecución
+    # 5. Aplicar paginación si se especificó
+    if page is not None and page_size is not None:
+        stmt = stmt.limit(page_size).offset((page - 1) * page_size)
+    
+    # 6. Ejecución
     result = db.execute(stmt).mappings().all()
     
     return [_serialize_row(r) for r in result]
-
-# Helper (si no lo tenías definido)
-def _serialize_row(row):
-    return dict(row)

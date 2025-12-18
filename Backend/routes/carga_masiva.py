@@ -4,10 +4,10 @@ Endpoint para carga masiva de datos desde archivos CSV
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import JSONResponse
 from core.database import database
-from core.models import alumno, profesor
+from core.models import alumno, profesor, registro
 from sqlalchemy import insert
 from passlib.context import CryptContext
-from services.carga_masiva_service import procesar_csv_alumnos, procesar_csv_profesores
+from services.carga_masiva_service import procesar_csv_alumnos, procesar_csv_profesores, procesar_csv_registros
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -25,7 +25,7 @@ async def carga_masiva(
         raise HTTPException(status_code=400, detail="El archivo debe ser CSV")
     
     # Validar tipo de entidad
-    if tipo_entidad not in ['alumnos', 'profesores']:
+    if tipo_entidad not in ['alumnos', 'profesores', 'registros']:
         raise HTTPException(status_code=400, detail="Tipo de entidad inválido")
     
     try:
@@ -40,6 +40,9 @@ async def carga_masiva(
         elif tipo_entidad == 'profesores':
             datos, errores = procesar_csv_profesores(contenido_str)
             tabla = profesor
+        elif tipo_entidad == 'registros':
+            datos, errores = procesar_csv_registros(contenido_str)
+            tabla = registro
         
         if not datos:
             return JSONResponse(

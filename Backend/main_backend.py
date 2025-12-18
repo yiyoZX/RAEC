@@ -48,10 +48,14 @@ app.mount("/exports", StaticFiles(directory="exports"), name="exports")
 
 # Configurar CORS para permitir solo el frontend
 origins = [
-    "http://localhost:3001",  # Frontend actual
+    "http://localhost:3001",
     "http://127.0.0.1:3001",
-    "http://localhost:5173",  # Vite por defecto
-    "http://127.0.0.1:5173"
+    "http://172.20.0.1:3001",
+    "http://172.20.0.1",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://0.0.0.0:3001",
+        "*"  # Solo para desarrollo
 ]
 
 app.add_middleware(
@@ -62,14 +66,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(login_router)
-app.include_router(formulario_router)
-app.include_router(reportes_router)
-app.include_router(solicitudes_router)
-app.include_router(actividades_router)
-app.include_router(periodos_router)
-app.include_router(roles_router)
-app.include_router(carga_masiva_router)
-app.include_router(carreras_router)
-app.include_router(profesores_router)
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
+# Incluir todos los routers con el prefijo /api para que coincida con la configuración de Caddy
+app.include_router(login_router, prefix="/api")
+app.include_router(formulario_router, prefix="/api")
+app.include_router(reportes_router, prefix="/api")
+app.include_router(solicitudes_router, prefix="/api")
+app.include_router(actividades_router, prefix="/api")
+app.include_router(periodos_router, prefix="/api")
+app.include_router(roles_router, prefix="/api")
+app.include_router(carga_masiva_router, prefix="/api")
+app.include_router(carreras_router, prefix="/api")
+app.include_router(profesores_router, prefix="/api")
 

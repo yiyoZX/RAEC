@@ -29,13 +29,18 @@ const HeaderLayout = ({
     // 1. Caso Estudiante
     if (type === 'estudiante') return 'Estudiante';
 
-    // 2. Caso Admin (por tipo o rol 3)
+    // 2. Caso Super Admin (rol 4)
     const rolId = Number(user.id_rol || user.rol);
+    if (type === 'super_admin' || rolId === 4) {
+      return 'Super Administrador';
+    }
+
+    // 3. Caso Admin (por tipo o rol 3)
     if (type === 'admin' || type === 'administrador' || rolId === 3) {
       return 'Administrador';
     }
 
-    // 3. Casos Académicos Específicos
+    // 4. Casos Académicos Específicos
     if (rolId === 2) return 'Director de Escuela';
     if (rolId === 1) return 'Profesor';
 
@@ -158,7 +163,6 @@ const HeaderLayout = ({
                         <span className="group-hover:text-red-700 transition-colors">Cerrar Sesión</span>
                       </div>
                     </button>
-                    
                   </div>
                 </div>
               )}

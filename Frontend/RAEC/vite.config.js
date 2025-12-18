@@ -11,5 +11,6 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    allowedHosts: ['raec.inf.uach.cl'],
   },
-})
+}) 

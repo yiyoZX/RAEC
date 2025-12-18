@@ -42,6 +42,24 @@ function CargaMasiva() {
         'password (contraseña en texto plano, se encriptará automáticamente)'
       ],
       ejemplo: '98765432-1,María,González López,maria.gonzalez@uach.cl,1,1,password123'
+    },
+    registros: {
+      titulo: 'Carga Masiva de Registros de Actividades',
+      descripcion: 'Sube un archivo CSV con los registros de actividades a importar.',
+      columnas: [
+        'rut_alumno (sin puntos, con guión. Ej: 12345678-9)',
+        'id_profesor (RUT del profesor asignado)',
+        'id_actividad (número de ID de la actividad)',
+        'fecha_inicio_actividad (formato: YYYY-MM-DD)',
+        'fecha_termino_actividad (formato: YYYY-MM-DD)',
+        'horas_totales (número entero de horas)',
+        'id_estado (1=pendiente, 2=aprobado, 3=rechazado - opcional, por defecto 1)',
+        'comentario (texto descriptivo - opcional)',
+        'dato1 (campo adicional 1 - opcional)',
+        'dato2 (campo adicional 2 - opcional)',
+        'dato3 (campo adicional 3 - opcional)'
+      ],
+      ejemplo: '12345678-9,98765432-1,1,2024-01-15,2024-01-20,40,1,Participación en taller de investigación,,,'
     }
   };
 
@@ -64,6 +82,11 @@ function CargaMasiva() {
       csv = 'id_profesor,nombres,apellidos,correo,id_instituto,id_rol,password\n';
       csv += '98765432-1,María,González López,maria.gonzalez@uach.cl,1,1,password123\n';
       csv += '87654321-2,Pedro,Ramírez Torres,pedro.ramirez@uach.cl,2,2,password123\n';
+    } else if (tipoEntidad === 'registros') {
+      csv = 'rut_alumno,id_profesor,id_actividad,fecha_inicio_actividad,fecha_termino_actividad,horas_totales,id_estado,comentario,dato1,dato2,dato3\n';
+      csv += '12345678-9,98765432-1,1,2024-01-15,2024-01-20,40,1,Participación en taller de investigación,,,\n';
+      csv += '23456789-0,98765432-1,2,2024-02-01,2024-02-10,30,1,Asistencia a congreso académico,,,\n';
+      csv += '12345678-9,87654321-2,3,2024-03-05,2024-03-15,50,1,Proyecto de investigación,,,\n';
     }
 
     // Crear elemento para descargar
@@ -176,6 +199,7 @@ function CargaMasiva() {
               <option value="">Selecciona una opción</option>
               <option value="alumnos">Alumnos</option>
               <option value="profesores">Profesores</option>
+              <option value="registros">Registros de Actividades</option>
             </select>
           </div>
 

@@ -1,7 +1,20 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { isTokenExpired, clearSession } from '../utils/auth';
 
-const API_BASE = 'http://localhost:4001'; // Ajusta si cambia el puerto
+// Determina la URL base del API según el entorno/host:
+// - En desarrollo (localhost) apunta directamente al backend en puerto 4001/api
+// - En producción usa /api porque Caddy hace proxy inverso
+const getApiBase = () => {
+  if (typeof window === 'undefined') return 'http://localhost:4001/api';
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return 'http://localhost:4001/api';
+  }
+  // En producción (raec.inf.uach.cl), usar /api porque Caddy hace el proxy
+  return `${window.location.protocol}//${window.location.host}/api`;
+};
+
+const API_BASE = getApiBase();
 
 // Contexto de autenticación centralizado
 const AuthContext = createContext();

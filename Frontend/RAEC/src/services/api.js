@@ -1,6 +1,17 @@
 // Servicio de peticiones autenticadas al backend
 
-const API_BASE_URL = 'http://localhost:4001';
+// Determina API base dinámicamente (coincide con la lógica de AuthContext)
+const getApiBase = () => {
+  if (typeof window === 'undefined') return 'http://localhost:4001/api';
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return 'http://localhost:4001/api';
+  }
+  // En producción (raec.inf.uach.cl), usar /api porque Caddy hace el proxy
+  return `${window.location.protocol}//${window.location.host}/api`;
+};
+
+export const API_BASE = getApiBase();
 
 const getToken = () => localStorage.getItem('access_token');
 
@@ -9,7 +20,7 @@ export const authenticatedFetch = async (url, options = {}) => {
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
   if (token) headers['Authorization'] = `Bearer ${token}`;
   try {
-    const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+    const response = await fetch(`${API_BASE}${url}`, { ...options, headers });
     if (response.status === 401) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_data');
@@ -29,7 +40,7 @@ export const authenticatedFetchFormData = async (url, options = {}) => {
   const headers = { ...(options.headers || {}) }; // No establecer Content-Type manualmente
   if (token) headers['Authorization'] = `Bearer ${token}`;
   try {
-    const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+    const response = await fetch(`${API_BASE}${url}`, { ...options, headers });
     if (response.status === 401) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_data');

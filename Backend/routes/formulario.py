@@ -37,11 +37,11 @@ async def submit_form(
         if horas_totales_int <= 0: 
             raise HTTPException(status_code=422, detail="Las horas totales deben ser un número positivo")
         
-        # Validar que solo los directores (id_rol = 2) puedan registrar actividades no académicas (academica = 2)
+        # Validar que solo los directores (id_rol = 2), admins (id_rol = 3) y super admins (id_rol = 4) puedan registrar actividades no académicas (academica = 2)
         # Los estudiantes (type = "estudiante") SÍ pueden registrar actividades no académicas
         if academica_int == 2:        
-            if current_user.get("type") == "academico" and current_user.get("id_rol") != 2:
-                raise HTTPException(status_code=403, detail="Solo los directores pueden registrar actividades no académicas")
+            if current_user.get("type") == "academico" and current_user.get("id_rol") not in [2, 3, 4]:
+                raise HTTPException(status_code=403, detail="Solo directores, administradores y super administradores pueden registrar actividades no académicas")
 
         # Convertir fechas de string a datetime
         fecha_inicio_dt = datetime.strptime(fecha_inicio, "%Y-%m-%d")
@@ -65,8 +65,7 @@ async def submit_form(
         elif current_user.get("type") == "academico":
             # Para académicos, el profesor responsable son ellos mismos
             # Buscamos su ID en el token
-            profesor_final = current_user.get("id_rol") # OJO: Verifica si en tu token guardas 'id_profesor' o lo usas como 'id_rol' para el ID de la tabla profesor.
-            # Si tu token tiene id_profesor explicito, usa: current_user.get("id_profesor")
+            profesor_final = current_user.get("id_profesor") # Usar id_profesor del token
             
             if not profesor_final:
                  # Fallback por seguridad

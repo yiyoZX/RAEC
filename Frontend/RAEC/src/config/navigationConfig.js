@@ -27,6 +27,18 @@ export const MENUS = {
     { label: 'Reportes', path: '/reportesAcademicos'},
     { label: 'Crear categoria', path: '/crear'},
     { label: 'Activar periodos', path: '/periodos'},
+    { label: 'Carga masiva', path: '/carga-masiva'},
+  ],
+  
+  SUPER_ADMIN: [ // Rol 4
+    { label: 'Panel Super Admin', path: '/dashboard' },
+    { label: 'Registrar', path: '/registrar' },
+    { label: 'Solicitudes', path: '/solicitudes' },
+    { label: 'Reportes', path: '/reportesAcademicos'},
+    { label: 'Crear categoria', path: '/crear'},
+    { label: 'Activar periodos', path: '/periodos'},
+    { label: 'Cambiar Rol', path: '/CambiarRol'},
+    { label: 'Carga masiva', path: '/carga-masiva'},
   ],
 };
 
@@ -49,7 +61,7 @@ export const getMenuForUser = (user, userType) => {
   // --- CASO 2: PERSONAL (Académicos, Admin, Directores, Profesores) ---
   
   // Lista blanca: Si el userType es CUALQUIERA de estos, entramos a la lógica de roles
-  const tiposPermitidos = ['admin', 'profesor', 'director'];
+  const tiposPermitidos = ['admin', 'profesor', 'director', 'super_admin'];
 
   if (tiposPermitidos.includes(tipo)) {
     
@@ -60,10 +72,12 @@ export const getMenuForUser = (user, userType) => {
       case 1: return MENUS.PROFESOR;
       case 2: return MENUS.DIRECTOR;
       case 3: return MENUS.ADMIN;
+      case 4: return MENUS.SUPER_ADMIN;
       
       // FALLBACK INTELIGENTE:
       // Si por alguna razón no viene el ID (rolId es NaN), intentamos deducir por el nombre del tipo
       default: 
+        if (tipo === 'super_admin') return MENUS.SUPER_ADMIN;
         if (tipo === 'admin' || tipo === 'administrador') return MENUS.ADMIN;
         if (tipo === 'director') return MENUS.DIRECTOR;
         // Por defecto para cualquier otro caso ('profesor', 'academico') devolvemos Profesor

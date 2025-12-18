@@ -19,6 +19,7 @@ const Dashboard = () => {
     if (user?.id_rol === 1) return 'profesor';
     if (user?.id_rol === 2) return 'director';
     if (user?.id_rol === 3) return 'admin';
+    if (user?.id_rol === 4) return 'Super Admin';
     return null;
   };
 
@@ -29,31 +30,40 @@ const Dashboard = () => {
     switch (rol) {
       case 'estudiante':
         return [
-          { label: 'Registrar', to: '/registroEstudiantes', icon: registroIcon },
+          { label: 'Registrar actividad extracurricular', to: '/registroEstudiantes', icon: registroIcon },
           { label: 'Historial', to: '/reportesEstudiantes', icon: reportesIcon },
         ];
       
       case 'profesor':
         return [
-          { label: 'Registrar', to: '/registrar', icon: registroIcon },
-          { label: 'Reportes', to: '/reportesAcademicos', icon: reportesIcon },
+          { label: 'Registrar actividad extracurricular', to: '/registrar', icon: registroIcon },
+          { label: 'Reportes de actividades', to: '/reportesAcademicos', icon: reportesIcon },
         ];
       
       case 'director':
         return [
-          { label: 'Registrar', to: '/registrar', icon: registroIcon },
-          { label: 'Solicitudes', to: '/solicitudes', icon: solicitudesIcon },
-          { label: 'Reportes', to: '/reportesAcademicos', icon: reportesIcon },
-          { label: 'Cambiar Rol', to: '/CambiarRol', icon: cambiarRolIcon },
+          { label: 'Registrar actividad extracurricular', to: '/registrar', icon: registroIcon },
+          { label: 'Solicitudes de estudiantes', to: '/solicitudes', icon: solicitudesIcon },
+          { label: 'Reportes de actividades', to: '/reportesAcademicos', icon: reportesIcon },
         ];
       
       case 'admin':
         return [
-          { label: 'Registrar', to: '/registrar', icon: registroIcon },
-          { label: 'Solicitudes', to: '/solicitudes', icon: solicitudesIcon },
-          { label: 'Reportes', to: '/reportesAcademicos', icon: reportesIcon },
-          { label: 'Crear categoría', to: '/crear', icon: crearCategoriaIcon },
-          { label: 'Activar periodos', to: '/periodos', icon: periodosIcon },
+          { label: 'Registrar actividad extracurricular', to: '/registrar', icon: registroIcon },
+          { label: 'Solicitudes de estudiantes', to: '/solicitudes', icon: solicitudesIcon },
+          { label: 'Reportes de actividades', to: '/reportesAcademicos', icon: reportesIcon },
+          { label: 'Crear categoría de actividad', to: '/crear', icon: crearCategoriaIcon },
+          { label: 'Activar periodos de inscripción', to: '/periodos', icon: periodosIcon },
+          { label: 'Carga masiva', to: '/carga-masiva', icon: cargaMasivaIcon },
+        ];
+      
+      case 'Super Admin':
+        return [
+          { label: 'Registrar actividad extracurricular', to: '/registrar', icon: registroIcon },
+          { label: 'Solicitudes de estudiantes', to: '/solicitudes', icon: solicitudesIcon },
+          { label: 'Reportes de actividades', to: '/reportesAcademicos', icon: reportesIcon },
+          { label: 'Crear categoría de actividad', to: '/crear', icon: crearCategoriaIcon },
+          { label: 'Activar periodos de inscripción', to: '/periodos', icon: periodosIcon },
           { label: 'Cambiar Rol', to: '/CambiarRol', icon: cambiarRolIcon },
           { label: 'Carga masiva', to: '/carga-masiva', icon: cargaMasivaIcon },
         ];
@@ -76,6 +86,8 @@ const Dashboard = () => {
         return 'RAEC - Director';
       case 'admin':
         return 'RAEC - Administrador';
+      case 'Super Admin':
+        return 'RAEC - Super Administrador';
       default:
         return 'RAEC';
     }

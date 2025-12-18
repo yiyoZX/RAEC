@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
-import { isSessionValid, isStudent, isAdmin, isDirector, hasAdminOrDirectorRole } from '../utils/auth';
+import { isSessionValid, isStudent, isAdmin, isSuperAdmin, isDirector, hasAdminOrDirectorRole } from '../utils/auth';
 import { useEffect } from 'react';
 
 /**
@@ -79,8 +79,8 @@ function ProtectedRoute({
           if (isStudent()) hasPermission = true;
           break;
         case 'academico':
-          // Académicos incluyen: profesores, directores y admins
-          if (userType === 'profesor' || userType === 'academico' || userType === 'director' || userType === 'admin') {
+          // Académicos incluyen: profesores, directores, admins y super admins
+          if (userType === 'profesor' || userType === 'academico' || userType === 'director' || userType === 'admin' || userType === 'super_admin') {
             hasPermission = true;
           }
           break;
@@ -89,6 +89,9 @@ function ProtectedRoute({
           break;
         case 'admin':
           if (isAdmin()) hasPermission = true;
+          break;
+        case 'super_admin':
+          if (isSuperAdmin()) hasPermission = true;
           break;
         default:
           console.warn(`Rol desconocido: ${role}`);

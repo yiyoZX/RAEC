@@ -3,6 +3,7 @@ import { useAuth } from '../store/AuthContext';
 import HeaderLayout from '../layouts/HeaderLayout';
 import Button from '../components/Button';
 import Paginacion from '../components/Paginacion';
+import { API_BASE } from '../services/api';
 
 const SolicitudesPage = () => {
   const { user } = useAuth();  // Para rol y token
@@ -33,7 +34,7 @@ const SolicitudesPage = () => {
       setError(null);
       try {
         const token = localStorage.getItem('access_token') || '';
-        const response = await fetch(`http://localhost:4001/solicitudes/pendientes?page=${currentPage}&page_size=${pageSize}`, {
+        const response = await fetch(`${API_BASE}/solicitudes/pendientes?page=${currentPage}&page_size=${pageSize}`, {
           headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         if (!response.ok) throw new Error('Error al cargar solicitudes');
@@ -50,7 +51,7 @@ const SolicitudesPage = () => {
       }
     };
 
-    if (user && (user.id_rol === 2 || user.rol === 2 || user.id_rol === 3 || user.rol === 3)) {
+    if (user && (user.id_rol === 2 || user.rol === 2 || user.id_rol === 3 || user.rol === 3 || user.id_rol === 4 || user.rol === 4)) {
       fetchSolicitudes();
     } else {
       setError('Solo directores y administradores pueden acceder a esta página.');
@@ -72,7 +73,7 @@ const SolicitudesPage = () => {
       console.log(`Tipo de ID: ${typeof id}`);  // Debe ser 'number' o 'string' que se convierta a número
 
       const token = localStorage.getItem('access_token') || '';
-      const response = await fetch(`http://localhost:4001/solicitudes/${id}/update`, {
+      const response = await fetch(`${API_BASE}/solicitudes/${id}/update`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_estado: nuevoEstado })
@@ -102,6 +103,37 @@ const SolicitudesPage = () => {
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Función para descargar archivo adjunto
+  const handleDownload = (solicitud, e) => {
+    e.stopPropagation();
+    
+    if (!solicitud.archivo_nombre) {
+      alert('Esta solicitud no tiene archivo adjunto.');
+      return;
+    }
+    
+    const token = localStorage.getItem('access_token') || '';
+    
+    fetch(`${API_BASE}/solicitudes/download/${solicitud.id_registro}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(res => { 
+      if (!res.ok) throw new Error('Error en la descarga'); 
+      return res.blob(); 
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = solicitud.archivo_nombre || 'documento_adjunto';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    })
+    .catch(() => alert('No se pudo descargar el archivo.'));
   };
 
   if (loading) return <div>Cargando solicitudes...</div>;
@@ -166,7 +198,16 @@ const SolicitudesPage = () => {
                   
                   <div>
                     <p className="text-sm text-gray-500">Archivo</p>
-                    <p className="text-gray-700 text-sm">{solicitud.archivo_nombre || 'Ninguno'}</p>
+                    {solicitud.archivo_nombre ? (
+                      <button
+                        onClick={(e) => handleDownload(solicitud, e)}
+                        className="text-blue-600 hover:text-blue-800 text-sm underline"
+                      >
+                        📎 {solicitud.archivo_nombre}
+                      </button>
+                    ) : (
+                      <p className="text-gray-400 text-sm">Ninguno</p>
+                    )}
                   </div>
                 </div>
                 

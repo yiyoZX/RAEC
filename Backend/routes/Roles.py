@@ -20,8 +20,8 @@ async def update_role(
     current_user: dict = Depends(get_current_user)
 ):
 
-    # Solo administrador puede cambiar roles
-    if current_user.get("id_rol") != 3:
+    # Solo administrador (rol 3) y super administrador (rol 4) pueden cambiar roles
+    if current_user.get("id_rol") not in [3, 4]:
         raise HTTPException(status_code=403, detail="No autorizado")
 
     correo = payload.correo
@@ -45,21 +45,22 @@ async def update_role(
     if not rol_row:
         raise HTTPException(status_code=400, detail="El rol especificado no existe")
 
-    #   SI ASIGNAMOS NUEVO ADMINISTRADOR (id_rol = 3)
-    if newRol == 3:
-        admin_row = db.execute(
-            select(profesor).where(profesor.c.id_rol == 3)
+    #   SI ASIGNAMOS NUEVO SUPER ADMINISTRADOR (id_rol = 4)
+    #   Solo puede haber UN super administrador en el sistema
+    if newRol == 4:
+        super_admin_row = db.execute(
+            select(profesor).where(profesor.c.id_rol == 4)
         ).first()
 
-        if admin_row:
-            admin = admin_row._mapping
+        if super_admin_row:
+            super_admin = super_admin_row._mapping
 
             # Evitar auto-downgrade
-            if admin["correo"] != correo:
+            if super_admin["correo"] != correo:
                 db.execute(
                     update(profesor)
-                    .where(profesor.c.id_profesor == admin["id_profesor"])
-                    .values(id_rol=1)  # bajar a profesor
+                    .where(profesor.c.id_profesor == super_admin["id_profesor"])
+                    .values(id_rol=3)  # bajar a administrador
                 )
 
     #   SI ASIGNAMOS NUEVO DIRECTOR (id_rol = 2)

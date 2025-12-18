@@ -13,6 +13,26 @@ export const useTodasActividades = () => {
   const [actividadesCompletas, setActividadesCompletas] = useState([]); // Guardar datos completos
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Función para forzar recarga de actividades
+  const refetch = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
+  useEffect(() => {
+    // Escuchar evento personalizado cuando se crea una nueva actividad
+    const handleActividadCreada = () => {
+      console.log('🔔 Evento detectado: Nueva actividad creada, recargando...');
+      refetch();
+    };
+
+    window.addEventListener('actividadCreada', handleActividadCreada);
+
+    return () => {
+      window.removeEventListener('actividadCreada', handleActividadCreada);
+    };
+  }, []);
 
   useEffect(() => {
     const cargarTodasActividades = async () => {
@@ -37,17 +57,16 @@ export const useTodasActividades = () => {
         // Guardar todas las actividades completas con sus datos adicionales
         setActividadesCompletas(actividades);
         
-        // Separar por tipo (usando el campo "tipo" que viene del backend)
-        // O por id_actividad (1-6 = académicas, 7+ = no académicas)
+        // Separar por tipo usando el campo "tipo" que viene del backend
         const academicasArray = actividades
-          .filter(act => act.id_actividad >= 1 && act.id_actividad <= 6)
+          .filter(act => act.tipo === 'academica')
           .map(act => ({
             value: String(act.id_actividad),
             label: act.nombre_actividad
           }));
         
         const noAcademicasArray = actividades
-          .filter(act => act.id_actividad >= 7 && act.id_actividad <= 12)
+          .filter(act => act.tipo === 'no_academica')
           .map(act => ({
             value: String(act.id_actividad),
             label: act.nombre_actividad
@@ -68,7 +87,7 @@ export const useTodasActividades = () => {
     };
 
     cargarTodasActividades();
-  }, []);
+  }, [refreshKey]);
 
-  return { academicas, noAcademicas, actividadesCompletas, loading, error };
+  return { academicas, noAcademicas, actividadesCompletas, loading, error, refetch };
 };

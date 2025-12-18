@@ -5,6 +5,7 @@ import ReportesGraficos from '../components/ReportesGraficos';
 import ReporteFiltros from '../components/reportesFiltros';
 import ReporteLista from '../components/reporteLista';
 import Paginacion from '../components/Paginacion';
+import { API_BASE } from '../services/api';
 
 function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
   
@@ -64,7 +65,7 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
     e.stopPropagation();
     const token = localStorage.getItem('access_token') || '';
     
-    fetch(`http://localhost:4001/reportes/download/${item.id_registro}`, {
+    fetch(`${API_BASE}/reportes/download/${item.id_registro}`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => { 
@@ -82,6 +83,80 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
         document.body.removeChild(a);
     })
     .catch(() => alert('No se pudo descargar el archivo.'));
+  };
+
+  const handleDownloadCSV = async () => {
+    const token = localStorage.getItem('access_token') || '';
+    const params = new URLSearchParams();
+    
+    // Construir los mismos parámetros que se usan en la consulta
+    const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado, carrera, horas, profesor, fechaActInicio, fechaActFin } = filtros;
+
+    // IMPORTANTE: NO se envían parámetros de paginación (page, page_size)
+    // Esto asegura que el backend retorne TODOS los registros que coincidan con los filtros
+    
+    if (tipoUsuario === 'academico') {
+      if (rut.trim()) params.append('rut', rut.trim());
+      if (tipoActividad) params.append('tipo_actividad', tipoActividad);
+      if (actividad.length > 0) params.append('actividad_id', actividad.join(','));
+      if (fechaInicio) params.append('fecha_creacion_inicio', fechaInicio);
+      if (fechaFin) params.append('fecha_creacion_termino', fechaFin);
+      if (carrera.length > 0) params.append('carrera', carrera.join(','));
+      if (horas) params.append('horas', horas);
+      if (profesor.length > 0) params.append('profesor', profesor.join(','));
+      if (fechaActInicio) params.append('fecha_inicio', fechaActInicio);
+      if (fechaActFin) params.append('fecha_fin', fechaActFin);
+    } else {
+      if (estado) params.append('estado', estado);
+    }
+
+    const endpoint = tipoUsuario === 'academico' 
+      ? '/reportes/descargar-csv/reporte_general_filtrado'
+      : '/reportes/descargar-csv/reporte_estudiante';
+
+    try {
+      const response = await fetch(`${API_BASE}${endpoint}?${params.toString()}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Error desconocido');
+        console.error('Error en descarga CSV:', errorText);
+        throw new Error(`Error al descargar el CSV: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      
+      // Verificar que el blob tiene contenido
+      if (blob.size === 0) {
+        throw new Error('El archivo descargado está vacío');
+      }
+      
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      // Extraer nombre del archivo del header Content-Disposition
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'reporte.csv';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (filenameMatch) filename = filenameMatch[1];
+      }
+      
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      // Mensaje de éxito
+      console.log(`✅ CSV completo descargado: ${filename} (${blob.size} bytes)`);
+      
+    } catch (error) {
+      console.error('❌ Error al descargar CSV completo:', error);
+      alert(`No se pudo descargar el archivo CSV completo.\n\nError: ${error.message}\n\nVerifica tu conexión e inténtalo nuevamente.`);
+    }
   };
 
   // Lógica de Limpieza (Pasa como prop a ReporteFiltros)
@@ -106,7 +181,7 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
 
   // Lógica de Consulta con paginación
   const fetchReportes = async (page = 1) => {
-    let url = 'http://localhost:4001/reportes';
+    let url = `${API_BASE}/reportes`;
     const params = new URLSearchParams();
     // Desestructuramos del estado de objetos
     const { rut, tipoActividad, actividad, fechaInicio, fechaFin, estado, carrera, horas, profesor, fechaActInicio, fechaActFin  } = filtros;
@@ -242,6 +317,7 @@ function ReporteForm({ tipoUsuario }) { // 'academico' o 'estudiante'
         csvUrl={csvUrl}
         mensaje={mensaje}
         onDownload={handleDownload}
+        onDownloadCSV={handleDownloadCSV}
         totalRecords={totalRecords}
         currentPage={currentPage}
         pageSize={pageSize}

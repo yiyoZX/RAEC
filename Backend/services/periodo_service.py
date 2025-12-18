@@ -43,9 +43,9 @@ def insert_period_query(db: Session, inicio, fin, extra: bool, id_profesor:int, 
         )
     result = db.execute(req)
     db.commit()
-        
 
-def guardar_periodos(
+
+async def guardar_periodos(
     db: Session,
     current_user: dict,
     regular_inicio: datetime = None,
@@ -151,7 +151,8 @@ def guardar_periodos(
             get_real = 2
             maildata.estado = 2
     
-    asyncio.run(periodoMail(maildata, db))  # Envía correo notificando cambios en periodos de forma asíncrona
+    # Envía correo en segundo plano sin bloquear la respuesta
+    asyncio.create_task(periodoMail(maildata, db))
     
     match get_real:
         case 0:

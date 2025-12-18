@@ -3,8 +3,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Button from '../components/Button';
 import { useTodasActividades } from '../hooks/useActividades';
-import { authenticatedFetchFormData } from '../services/api';
 import {useListaOpciones} from '../hooks/useListaOpciones';
+import { authenticatedFetchFormData, API_BASE } from '../services/api';
 
 function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol para lógica, onSubmitSuccess para callback después de éxito
   // Cargar actividades dinámicamente desde el backend
@@ -188,7 +188,7 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
     }
   };
 
-  const canNoAcademica = userRol === 2 || userRol === 3 || userRol === 'estudiante';  // Directores (2), Administradores (3) y Estudiantes
+  const canNoAcademica = userRol === 2 || userRol === 3 || userRol === 4 || userRol === 'estudiante';  // Directores (2), Administradores (3), Super Administradores (4) y Estudiantes
 
   // Usar actividades cargadas desde el backend
   const opcionesAcademica = academicas;

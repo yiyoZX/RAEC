@@ -10,6 +10,8 @@ from services.exportador_csv import guardar_csv
 from typing import List, Dict, Any, Optional
 import os
 import io
+import csv
+from datetime import datetime
 
 router = APIRouter(prefix="/reportes", tags=["Reportes"])
 
@@ -26,8 +28,24 @@ def _return_reporte(rows: List[Dict[str, Any]], filename_base: str, page: int = 
         "total_pages": total_pages,
         "csv_file": csv_path,
         "csv_url": f"/exports/{filename}",
+        "csv_download_url": f"/reportes/descargar-csv/{filename_base}",
         "data": rows
     }
+
+def _generate_csv_stream(rows: List[Dict[str, Any]]) -> io.StringIO:
+    """Genera un CSV en memoria para streaming"""
+    output = io.StringIO()
+    if not rows:
+        return output
+    
+    headers = list(rows[0].keys())
+    writer = csv.DictWriter(output, fieldnames=headers, delimiter=';')
+    writer.writeheader()
+    for row in rows:
+        writer.writerow(row)
+    
+    output.seek(0)
+    return output
 
 # --------------------------------------------------------------------------
 # ENDPOINTS DE LISTADO (Utilizan el servicio refactorizado)
@@ -57,34 +75,42 @@ def reporte_general(
     if current_user.get("type") != "academico":
         raise HTTPException(status_code=403, detail="Acceso denegado")
     
-    # ### CAMBIO 3: Pasamos los parámetros con los nombres correctos al servicio
-    # Recuerda que en el paso anterior renombramos los argumentos en 'obtener_reporte'
-    # para que fueran plurales (actividad_ids, carrera_ids, etc.)
-    all_rows = obtener_reporte(
+    # Primero contar total sin paginación
+    total_records = obtener_reporte(
         db, 
         current_user=current_user, 
         rut=rut, 
-        
-        # Conectamos los inputs del endpoint con los argumentos del servicio
         actividad_ids=actividad_id, 
         carrera_ids=carrera,        
         profesor_ids=profesor,      
         horas_min=horas,
         tipo_actividad=tipo_actividad, 
-        fecha_creacion_inicio = fecha_creacion_inicio,
-        fecha_creacion_termino = fecha_creacion_termino,
+        fecha_creacion_inicio=fecha_creacion_inicio,
+        fecha_creacion_termino=fecha_creacion_termino,
         fecha_inicio=fecha_inicio,
         fecha_fin=fecha_fin
     )
+    total_count = len(total_records)
     
-    total_records = len(all_rows)
+    # Luego obtener solo la página actual
+    rows = obtener_reporte(
+        db, 
+        current_user=current_user, 
+        rut=rut, 
+        actividad_ids=actividad_id, 
+        carrera_ids=carrera,        
+        profesor_ids=profesor,      
+        horas_min=horas,
+        tipo_actividad=tipo_actividad, 
+        fecha_creacion_inicio=fecha_creacion_inicio,
+        fecha_creacion_termino=fecha_creacion_termino,
+        fecha_inicio=fecha_inicio,
+        fecha_fin=fecha_fin,
+        page=page,
+        page_size=page_size
+    )
     
-    # Aplicar paginación
-    start_idx = (page - 1) * page_size
-    end_idx = start_idx + page_size
-    rows = all_rows[start_idx:end_idx]
-    
-    return _return_reporte(rows, "reporte_general_filtrado", page, page_size, total_records)
+    return _return_reporte(rows, "reporte_general_filtrado", page, page_size, total_count)
 
 @router.get("/estudiante")
 def reporte_estudiante(
@@ -97,14 +123,12 @@ def reporte_estudiante(
     if current_user.get("type") != "estudiante":
         raise HTTPException(status_code=403, detail="Acceso denegado")
     
-    # Obtener todos los resultados
+    # Contar total
     all_rows = obtener_reporte(db, current_user=current_user, estado=estado)
     total_records = len(all_rows)
     
-    # Aplicar paginación
-    start_idx = (page - 1) * page_size
-    end_idx = start_idx + page_size
-    rows = all_rows[start_idx:end_idx]
+    # Obtener página actual
+    rows = obtener_reporte(db, current_user=current_user, estado=estado, page=page, page_size=page_size)
     
     return _return_reporte(rows, "reporte_estudiante", page, page_size, total_records)
 
@@ -120,7 +144,92 @@ def reporte_por_actividad(actividad_id: int, db: Session = Depends(get_db), curr
     return _return_reporte(obtener_reporte(db, actividad_id=actividad_id, current_user=current_user), f"reporte_actividad_{actividad_id}")
 
 # --------------------------------------------------------------------------
-# ENDPOINT OPTIMIZADO: DESCARGA
+# ENDPOINT OPTIMIZADO: DESCARGA CSV COMPLETO CON STREAMING
+# --------------------------------------------------------------------------
+@router.get("/descargar-csv/reporte_general_filtrado")
+def descargar_csv_general(
+    rut: Optional[str] = Query(None),
+    tipo_actividad: Optional[str] = Query(None),
+    actividad_id: Optional[str] = Query(None), 
+    carrera: Optional[str] = Query(None),
+    profesor: Optional[str] = Query(None),
+    fecha_creacion_inicio: Optional[str] = Query(None),
+    fecha_creacion_termino: Optional[str] = Query(None),
+    fecha_inicio: Optional[str] = Query(None),
+    fecha_fin: Optional[str] = Query(None),
+    horas: Optional[int] = Query(None),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Descarga CSV completo con streaming para reportes de académicos"""
+    if current_user.get("type") != "academico":
+        raise HTTPException(status_code=403, detail="Acceso denegado")
+    
+    # Obtener TODOS los datos (sin paginación)
+    all_rows = obtener_reporte(
+        db, 
+        current_user=current_user, 
+        rut=rut,
+        actividad_ids=actividad_id, 
+        carrera_ids=carrera,        
+        profesor_ids=profesor,      
+        horas_min=horas,
+        tipo_actividad=tipo_actividad, 
+        fecha_creacion_inicio=fecha_creacion_inicio,
+        fecha_creacion_termino=fecha_creacion_termino,
+        fecha_inicio=fecha_inicio,
+        fecha_fin=fecha_fin
+    )
+    
+    # Generar CSV en memoria
+    csv_content = _generate_csv_stream(all_rows)
+    
+    # Nombre del archivo con timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"reporte_general_{timestamp}.csv"
+    
+    # Retornar como streaming response
+    return StreamingResponse(
+        iter([csv_content.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}",
+            "Cache-Control": "no-cache"
+        }
+    )
+
+@router.get("/descargar-csv/reporte_estudiante")
+def descargar_csv_estudiante(
+    estado: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Descarga CSV completo con streaming para reportes de estudiantes"""
+    if current_user.get("type") != "estudiante":
+        raise HTTPException(status_code=403, detail="Acceso denegado")
+    
+    # Obtener TODOS los datos (sin paginación)
+    all_rows = obtener_reporte(db, current_user=current_user, estado=estado)
+    
+    # Generar CSV en memoria
+    csv_content = _generate_csv_stream(all_rows)
+    
+    # Nombre del archivo con timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"reporte_estudiante_{timestamp}.csv"
+    
+    # Retornar como streaming response
+    return StreamingResponse(
+        iter([csv_content.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}",
+            "Cache-Control": "no-cache"
+        }
+    )
+
+# --------------------------------------------------------------------------
+# ENDPOINT OPTIMIZADO: DESCARGA DE ARCHIVOS ADJUNTOS
 # --------------------------------------------------------------------------
 @router.get("/download/{id_registro}")
 def descargar_archivo(

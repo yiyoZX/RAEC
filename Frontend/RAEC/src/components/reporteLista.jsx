@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 import Button from './Button';
 
-function ReporteLista({ items, csvUrl, mensaje, onDownload, totalRecords, currentPage, pageSize }) {
+function ReporteLista({ items, csvUrl, mensaje, onDownload, totalRecords, currentPage, pageSize, onDownloadCSV }) {
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const [downloadingCSV, setDownloadingCSV] = useState(false);
 
   // Calcular rango de registros mostrados
   const startRecord = items.length > 0 ? (currentPage - 1) * pageSize + 1 : 0;
   const endRecord = Math.min((currentPage - 1) * pageSize + items.length, totalRecords || items.length);
+
+  const handleCSVDownload = async (e) => {
+    e.preventDefault();
+    setDownloadingCSV(true);
+    try {
+      await onDownloadCSV();
+    } finally {
+      setDownloadingCSV(false);
+    }
+  };
 
   return (
     <div>
@@ -21,11 +32,16 @@ function ReporteLista({ items, csvUrl, mensaje, onDownload, totalRecords, curren
               </p>
             )}
           </div>
-          {csvUrl && (
-              <a href={csvUrl} download className="text-sm text-green-700 font-bold hover:underline flex items-center gap-1">
+          {csvUrl && onDownloadCSV && (
+              <button 
+                onClick={handleCSVDownload}
+                disabled={downloadingCSV}
+                className="text-sm text-green-700 font-bold hover:underline flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                title={`Descargar archivo CSV con TODOS los ${totalRecords || 0} registros filtrados (no solo la página actual)`}
+              >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                  Descargar CSV Completo
-              </a>
+                  {downloadingCSV ? 'Descargando todos los datos...' : `Descargar CSV Completo (${totalRecords || 0} registros)`}
+              </button>
           )}
       </div>
 
@@ -50,7 +66,12 @@ function ReporteLista({ items, csvUrl, mensaje, onDownload, totalRecords, curren
                   onClick={() => setExpandedIndex(isExpanded ? null : i)}
                 >
                   <div>
-                    <div className="font-bold text-gray-800">{titulo}</div>
+                    <div className="font-bold text-gray-800 flex items-center gap-2">
+                      {titulo}
+                      {item.tiene_archivo && (
+                        <span className="text-blue-600" title="Tiene archivo adjunto">📎</span>
+                      )}
+                    </div>
                     {item.rut && <div className="text-xs text-gray-500 font-mono">{item.rut}</div>}
                   </div>
                   <div className="flex items-center gap-3">
@@ -82,6 +103,24 @@ function ReporteLista({ items, csvUrl, mensaje, onDownload, totalRecords, curren
                        {item.fecha_inicio_actividad && <p><strong className="text-gray-900">Inicio Actividad:</strong> {new Date(item.fecha_inicio_actividad).toLocaleDateString()}</p>}
                     </div>
                     
+                    {/* Campos extras de la actividad (si existen) */}
+                    {(item.campo_extra_1_label || item.campo_extra_2_label || item.campo_extra_3_label) && (
+                      <div className="mb-3 p-3 bg-purple-50 border border-purple-200 rounded">
+                        <p className="text-xs font-semibold text-purple-700 mb-2 uppercase">📋 Información Adicional</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-1 gap-x-4 text-sm">
+                          {item.campo_extra_1_label && item.campo_extra_1_valor && (
+                            <p><strong className="text-purple-900">{item.campo_extra_1_label}:</strong> <span className="text-gray-700">{item.campo_extra_1_valor}</span></p>
+                          )}
+                          {item.campo_extra_2_label && item.campo_extra_2_valor && (
+                            <p><strong className="text-purple-900">{item.campo_extra_2_label}:</strong> <span className="text-gray-700">{item.campo_extra_2_valor}</span></p>
+                          )}
+                          {item.campo_extra_3_label && item.campo_extra_3_valor && (
+                            <p><strong className="text-purple-900">{item.campo_extra_3_label}:</strong> <span className="text-gray-700">{item.campo_extra_3_valor}</span></p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
                     {item.comentario && (
                        <div className="p-3 bg-white border border-gray-200 rounded italic text-gray-600 mb-3 relative">
                           <span className="absolute -top-2 left-2 bg-white px-1 text-xs text-gray-400">Decripcion</span>
@@ -89,13 +128,22 @@ function ReporteLista({ items, csvUrl, mensaje, onDownload, totalRecords, curren
                        </div>
                     )}
 
-                    {item.tiene_archivo && (
-                       <div className="flex justify-end border-t border-gray-200 pt-3">
-                          <Button variant="outline" size="sm" onClick={(e) => onDownload(item, e)}>
-                             Descargar Archivo Adjunto
+                    {/* Mostrar información de archivo adjunto */}
+                    <div className="border-t border-gray-200 pt-3">
+                      {item.tiene_archivo ? (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <span>📎</span>
+                            <span className="font-medium">{item.archivo_nombre || 'Archivo adjunto'}</span>
+                          </div>
+                          <Button variant="primary" size="sm" onClick={(e) => onDownload(item, e)}>
+                             Descargar
                           </Button>
-                       </div>
-                    )}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">Sin archivo adjunto</p>
+                      )}
+                    </div>
                   </div>
                 )}
               </li>

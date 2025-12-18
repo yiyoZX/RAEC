@@ -95,3 +95,69 @@ def procesar_csv_profesores(contenido: str):
             errores.append(f"Fila {idx}: {str(e)}")
     
     return profesores_data, errores
+
+def procesar_csv_registros(contenido: str):
+    """Procesa CSV de registros de actividades"""
+    reader = csv.DictReader(io.StringIO(contenido))
+    registros_data = []
+    errores = []
+    
+    for idx, row in enumerate(reader, start=2):
+        try:
+            # Validaciones
+            rut_alumno = row.get('rut_alumno', '').strip()
+            if not validar_rut(rut_alumno):
+                errores.append(f"Fila {idx}: RUT de alumno inválido")
+                continue
+            
+            # Validar id_profesor (puede ser RUT o número)
+            id_profesor = row.get('id_profesor', '').strip()
+            if not id_profesor:
+                errores.append(f"Fila {idx}: ID de profesor es requerido")
+                continue
+            
+            # Validar id_actividad
+            id_actividad = int(row.get('id_actividad', 0))
+            if id_actividad < 1:
+                errores.append(f"Fila {idx}: ID de actividad inválido")
+                continue
+            
+            # Validar horas_totales
+            horas_totales = int(row.get('horas_totales', 0))
+            if horas_totales < 1:
+                errores.append(f"Fila {idx}: Horas totales debe ser mayor a 0")
+                continue
+            
+            # Validar estado (opcional, por defecto 1 = pendiente)
+            id_estado = int(row.get('id_estado', 1))
+            
+            # Fechas en formato YYYY-MM-DD
+            fecha_inicio = row.get('fecha_inicio_actividad', '').strip()
+            fecha_termino = row.get('fecha_termino_actividad', '').strip()
+            
+            if not fecha_inicio or not fecha_termino:
+                errores.append(f"Fila {idx}: Fechas de inicio y término son requeridas")
+                continue
+            
+            registro_data = {
+                'id_alumno': rut_alumno,
+                'id_profesor': id_profesor,
+                'id_actividad': id_actividad,
+                'id_estado': id_estado,
+                'fecha_inicio_actividad': fecha_inicio,
+                'fecha_termino_actividad': fecha_termino,
+                'horas_totales': horas_totales,
+                'comentario': row.get('comentario', '').strip(),
+                'dato1': row.get('dato1', '').strip() if row.get('dato1') else None,
+                'dato2': row.get('dato2', '').strip() if row.get('dato2') else None,
+                'dato3': row.get('dato3', '').strip() if row.get('dato3') else None
+            }
+            
+            registros_data.append(registro_data)
+            
+        except ValueError as e:
+            errores.append(f"Fila {idx}: Error de conversión de datos - {str(e)}")
+        except Exception as e:
+            errores.append(f"Fila {idx}: {str(e)}")
+    
+    return registros_data, errores

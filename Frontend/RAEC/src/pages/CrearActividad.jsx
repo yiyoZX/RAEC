@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../store/AuthContext';
 import HeaderLayout from '../layouts/HeaderLayout';
 import Button from '../components/Button';
+import { API_BASE } from '../services/api';
 
 const NuevaActividadPage = () => {
   const { user } = useAuth();
@@ -54,7 +55,7 @@ const NuevaActividadPage = () => {
       // Construir array con nombres de campos dinámicos
       const camposAdicionales = camposDinamicos.map(campo => campo.nombre);
 
-      const res = await fetch('http://localhost:4001/actividades/nueva', {
+      const res = await fetch(`${API_BASE}/actividades/nueva`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,6 +85,9 @@ const NuevaActividadPage = () => {
       setNombre('');
       setTipo('');
       setCamposDinamicos([]);
+      
+      // Disparar evento para recargar actividades en otros componentes
+      window.dispatchEvent(new CustomEvent('actividadCreada'));
     } catch (error) {
       console.error(error);
       setMensaje('❌ Error de conexión con el backend.');

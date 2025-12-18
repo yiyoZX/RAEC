@@ -24,17 +24,20 @@ export default function ChangeUserRole() {
           method: 'POST',
           body: JSON.stringify({
             correo,
-            newRol,
+            newRol: parseInt(newRol),
           }),
         }
       );
 
-      if (!res.ok) throw new Error('Error del servidor');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'Error del servidor');
+      }
 
       const data = await res.json();
       setMsg({ type: 'success', text: data.message || 'Rol actualizado correctamente' });
     } catch (error) {
-      setMsg({ type: 'error', text: 'No se pudo actualizar el rol' });
+      setMsg({ type: 'error', text: error.message || 'No se pudo actualizar el rol' });
     } finally {
       setLoading(false);
     }
@@ -80,6 +83,7 @@ export default function ChangeUserRole() {
                 <option value="1">Profesor</option>
                 <option value="2">Director</option>
                 <option value="3">Administrador</option>
+                <option value="4">Super Administrador</option>
               </select>
             </div>
 

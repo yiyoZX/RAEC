@@ -41,14 +41,18 @@ cd RAEC
 
 **Pasos:**
 ```bash
-# Construir las imágenes
-docker-compose build
-
-# Levantar todos los servicios
-docker-compose up
+# Construir las imágenes y levantar los servicios
+servidor:
+   docker-compose build
+   docker-compose up
+local:
+   docker-compose -f docker-compose-local.yml up --build
 
 # O en modo detached (segundo plano)
-docker-compose up -d
+servidor:
+   docker-compose up -d
+Local:
+   docker-compose -f docker-compose-local.yml up --build
 ```
 
 **Acceso:**

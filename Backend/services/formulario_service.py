@@ -8,9 +8,9 @@ from services.mailsend_service import idForm, formularioMail
 
 def verificarDatos(db: Session, rut_alumno: str, id_actividad: int):
     if not db.execute(select(alumno).where(alumno.c.rut_alumno == rut_alumno)).first():
-        raise HTTPException(status_code=400, detail="Alumno no existe")
+        raise HTTPException(status_code=404, detail=f"El estudiante con RUT {rut_alumno} no está registrado en el sistema")
     if not db.execute(select(actividad).where(actividad.c.id_actividad == id_actividad)).first():
-        raise HTTPException(status_code=400, detail="Actividad no existe")
+        raise HTTPException(status_code=404, detail="La actividad seleccionada no existe")
 
 def numeroRegistro(db: Session, id_registro: int):
     result = db.query(func.count(id_registro)).scalar()

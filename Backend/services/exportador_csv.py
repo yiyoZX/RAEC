@@ -14,9 +14,17 @@ def _timestamp() -> str:
 def guardar_csv(base_name: str, rows: List[Dict]) -> str:
     filename = f"{base_name}_{_timestamp()}.csv"
     path = EXPORT_DIR / filename
-    headers: Iterable[str] = rows[0].keys() if rows else DEFAULT_HEADERS
+    
+    # Recolectar TODAS las claves únicas de todos los registros
+    # para manejar campos dinámicos (campo_extra_1_label, etc.)
+    all_keys = set()
+    for row in rows:
+        all_keys.update(row.keys())
+    
+    headers: Iterable[str] = sorted(all_keys) if rows else DEFAULT_HEADERS
+    
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(headers), delimiter=';')
+        writer = csv.DictWriter(f, fieldnames=list(headers), delimiter=';', extrasaction='ignore')
         writer.writeheader()
         for r in rows:
             writer.writerow(r)

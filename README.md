@@ -28,7 +28,7 @@ cd RAEC
 - Crear un archivo `.env` en la raíz del proyecto con las variables necesarias
 - **IMPORTANTE**: No publiques ni subas el `.env` al repositorio
 - Los datos del `.env` serán proporcionados por el equipo
-   
+
 
 ## 3. Despliegue
 
@@ -209,3 +209,11 @@ docker exec -t raec-db pg_dump -U raecuser raecdb > backup_$(date +%Y%m%d_%H%M%S
 # Restaurar
 docker exec -i raec-db psql -U raecuser -d raecdb < backup_file.sql
 ```
+
+## 6. Contribución
+
+- Sigue convenciones de commit (por ejemplo, Conventional Commits).
+- Abre un Pull Request describiendo:
+  - Qué problema resuelve
+  - Consideraciones de seguridad y de migración
+  - Pasos de prueba manuals

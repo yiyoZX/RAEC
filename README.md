@@ -32,12 +32,27 @@ cd RAEC
 
 ## 3. Despliegue
 
+Con el .env proporcionado este debe ser colocado en los siguientes lugares:
+
+```
+RAEC/
+├── Backend/           <-igualmente coloca el .env en la carpeta backend.
+├── Frontend/RAEC/     
+├── Dbase/           
+├── docker-compose.yml
+├── README.md 
+└── .env               <-carpeta raiz del proyecto.
+```
+
 ### Opción A: Docker (Recomendado) 🐳
 
 **Ventajas:**
 - Configuración automática de base de datos
 - Ambiente consistente entre desarrolladores
 - No requiere instalación manual de dependencias
+
+**Error comun**
+revisa si la end line sequence del archivo wait-for-postgres.sh esta en crlf o lf. si esta en crlf cambialo a lf.
 
 **Pasos:**
 ```bash

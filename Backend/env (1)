@@ -1,0 +1,18 @@
+# Configuración de Base de Datos
+DATABASE_URL=postgresql+psycopg2://Login_Admin:RAEC2025@localhost/raecdb
+PASSWORD=RAEC2025
+DB_NAME=raecdb
+DB_USER=Login_Admin
+# Configuración JWT
+JWT_SECRET_KEY=tu_clave_secreta_jwt_muy_segura_cambiala_en_produccion
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+#Configuración de correo automático
+MAIL_USERNAME="teamraec282@gmail.com"
+MAIL_PASSWORD="ufnk dbcq pcki olyz"
+MAIL_FROM="teamraec282@gmail.com"
+MAIL_PORT = 587
+MAIL_SERVER = "smtp.gmail.com"
+FORM_DIR="formulario.html"
+REQ_DIR="solicitud.html"
+FOLDER_DIR="mail_templates"

@@ -177,7 +177,18 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
     
     try {
       const res = await authenticatedFetchFormData('/submit',{method: 'POST', body: formData});
-      if (!res.ok) throw new Error('Error backend');
+      if (!res.ok) {
+        // Intentar obtener el mensaje de error específico del backend
+        let errorMessage = `Error ${res.status}: No se pudo procesar la solicitud`;
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.detail || errorData.message || errorMessage;
+        } catch (jsonError) {
+          // Si no se puede parsear el JSON, usar el mensaje genérico ya asignado
+          console.warn('No se pudo parsear la respuesta de error:', jsonError);
+        }
+        throw new Error(errorMessage);
+      }
       const data = await res.json();
       alert(data.message || 'Formulario enviado ✅');
       ResetFun();  // Resetea local
@@ -201,7 +212,7 @@ function FormularioActividad({ userRol, onSubmitSuccess }) {  // Props: userRol 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* RUT */}
           <div>
-            <label htmlFor="rut" className="block text-sm font-semibold text-gray-700 mb-2">RUT*</label>
+            <label htmlFor="rut" className="block text-sm font-semibold text-gray-700 mb-2">RU del estudiante (sin puntos)*</label>
             <input 
               type="text" 
               id="rut" 

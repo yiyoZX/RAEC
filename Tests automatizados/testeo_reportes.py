@@ -51,7 +51,7 @@ reportes_btn.click()
 time.sleep(3)
 
 # 5. Rellenar formulario
-driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Ej: 12.345.678-9"]').send_keys("21111111-1")
+driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Ej: 12.345.678-9"]').send_keys(os.getenv("RUT_REPORTES"))
 
 time.sleep(3)
 

@@ -1,0 +1,7 @@
+FORMULARIOS_USER="carlos.perez@instituto1.cl"
+REPORTES_USER="diego.fuentes@instituto1.cl"
+CLAVE="clave123"
+RUT_REPORTES="21111111-1"
+RUT_FORMULARIOS="12345678-9"
+HORAS="10"
+TEST_DESC="Actividad automatizada con Selenium"

@@ -51,7 +51,7 @@ reportes_btn.click()
 time.sleep(7)
 
 # 5. Rellenar formulario
-driver.find_element(By.ID, "rut").send_keys("12345678-9")
+driver.find_element(By.ID, "rut").send_keys(os.getenv("RUT_FORMULARIOS"))
 driver.find_element(By.CSS_SELECTOR, "input[name='academica'][value='1']").click()
 
 select = Select(driver.find_element(By.ID, "actividad"))
@@ -59,8 +59,8 @@ select.select_by_index(1)
 
 time.sleep(7)
 
-driver.find_element(By.ID, "horas_totales").send_keys("10")
-driver.find_element(By.ID, "about").send_keys("Actividad automatizada con Selenium")
+driver.find_element(By.ID, "horas_totales").send_keys(os.getenv("HORAS"))
+driver.find_element(By.ID, "about").send_keys(os.getenv("TEST_DESC"))
 
 
 time.sleep(7)

@@ -217,3 +217,20 @@ docker exec -i raec-db psql -U raecuser -d raecdb < backup_file.sql
   - Qué problema resuelve
   - Consideraciones de seguridad y de migración
   - Pasos de prueba manuals
+
+## 7. Testing
+
+Los tests automatizados cubren las historias de usuario H02 y H05, éstos
+utilizan MS Edge por defecto, ó Google Chrome.
+- Para correr los tests, debe instalar seleium y dotenv (para las variables de entorno):
+```bash
+pip install selenium
+pip install python-dotenv
+```
+- Cambiar el nombre de "dotenv.txt" a ".env"
+- También necesita Drivers de cada navegador: 
+MS Edge (por defecto): https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+Chrome (opcional):  https://sites.google.com/chromium.org/driver/
+- Al terminar las instalaciones, puede dejar que utlize MS Edge, o si quiere utilizar Chrome, 
+descomente las líneas de código de chrome en los archivos.
+- Ahora ejecute los tests y van a realizar los tests automáticamente

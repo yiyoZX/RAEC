@@ -8,6 +8,8 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import os
+from dotenv import load_dotenv
 
 # 1. Inicializar navegador
 # --Chrome--
@@ -16,6 +18,8 @@ import time
 edge_path = r"C:\Users\Instituto\Documents\Edge Webdriver\msedgedriver.exe"
 service = EdgeService(executable_path=edge_path)
 driver = webdriver.Edge(service=service)
+
+load_dotenv()
 
 # 2. Ir a la página
 driver.get("http://localhost:3001")  # cambia por tu URL
@@ -26,8 +30,8 @@ time.sleep(2)
 usuario_input = driver.find_element(By.ID, "correo")
 password_input = driver.find_element(By.ID, "password")
 
-usuario_input.send_keys("diego.fuentes@instituto1.cl")
-password_input.send_keys("clave123")
+usuario_input.send_keys(os.getenv("REPORTES_USER"))
+password_input.send_keys(os.getenv("CLAVE"))
 
 # Botón login
 driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()

@@ -1,0 +1,3 @@
+FORMULARIOS_USER="carlos.perez@instituto1.cl"
+REPORTES_USER="diego.fuentes@instituto1.cl"
+CLAVE="clave123"

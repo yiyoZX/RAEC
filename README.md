@@ -217,3 +217,14 @@ docker exec -i raec-db psql -U raecuser -d raecdb < backup_file.sql
   - Qué problema resuelve
   - Consideraciones de seguridad y de migración
   - Pasos de prueba manuals
+
+
+## 7. testing
+
+- Dentro de la carpeta test ejecutar los siguientes comandos:
+   - nmp init -y
+   - npm install --save-dev selenium-webdriver mocha chai
+- Para ejecutar es necesario utilizar el nombre correspondiente a cada programa:
+   - npx mocha tests/specs/actividad.spec.js
+   - npx mocha tests/specs/login.spec.js
+   - npx mocha tests/specs/reportes.spec.js

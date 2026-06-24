@@ -9,7 +9,7 @@ from sqlalchemy import insert
 from passlib.context import CryptContext
 from services.carga_masiva_service import procesar_csv_alumnos, procesar_csv_profesores, procesar_csv_registros
 
-router = APIRouter()
+router = APIRouter(tags=["Carga Masiva"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @router.post("/carga-masiva")

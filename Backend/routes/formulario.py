@@ -5,7 +5,7 @@ from core.database import get_db
 from core.auth import get_current_user
 from datetime import datetime
 
-router = APIRouter()
+router = APIRouter(tags=["Formularios"])
 
 
 @router.post("/submit")

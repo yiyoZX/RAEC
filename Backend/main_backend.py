@@ -43,7 +43,19 @@ async def lifespan(app: FastAPI):
     await database.disconnect()
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title="RAEC API Documentation",
+    description=(
+        "API para la plataforma RAEC (Registro de Actividades y Eventos de la Carrera).\n\n"
+        "Esta documentación interactiva lista todos los endpoints disponibles y permite probar su funcionamiento "
+        "directamente desde el navegador."
+    ),
+    version="1.4.0",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+    redoc_url="/api/redoc",
+    lifespan=lifespan
+)
 app.mount("/exports", StaticFiles(directory="exports"), name="exports")
 
 # Configurar CORS para permitir solo el frontend

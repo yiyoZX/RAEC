@@ -1,0 +1,118 @@
+name: RAEC CI
+
+on:
+  push:
+    branches: [main]
+
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  ci:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      ####################################################
+      # Crear variables de entorno para CI
+      ####################################################
+
+      - name: Create .env
+        run: |
+          cat <<EOF > .env
+          GROUP=ci
+          PROJECT=raec
+
+          DB_IMAGE=postgres:16-alpine
+
+          DB_NAME=test_db
+          DB_USER=postgres
+          PASSWORD=postgres
+
+          BACKEND_PORT=4001
+          FRONTEND_PORT=3001
+          EOF
+
+      ####################################################
+      # ConstrucciÃ³n
+      ####################################################
+
+      - name: Build containers
+        run: docker compose build
+
+      ####################################################
+      # Levantar servicios
+      ####################################################
+
+      - name: Start containers
+        run: docker compose up -d
+
+      ####################################################
+      # Esperar PostgreSQL
+      ####################################################
+
+      - name: Wait for database
+        run: |
+          until docker exec ci_raec_db pg_isready -U postgres -d test_db
+          do
+            sleep 2
+          done
+
+      ####################################################
+      # Esperar Backend
+      ####################################################
+
+      - name: Wait for backend
+        run: |
+          until curl -f http://localhost:4001/health
+          do
+            sleep 2
+          done
+
+      ####################################################
+      # Esperar Frontend
+      ####################################################
+
+      - name: Wait for frontend
+        run: |
+          until curl -f http://localhost:3001
+          do
+            sleep 2
+          done
+
+      ####################################################
+      # Backend lint (opcional)
+      ####################################################
+
+      - name: Backend lint
+        run: |
+          docker exec ci_raec_backend python -m py_compile main_backend.py
+
+      ####################################################
+      # Backend tests
+      ####################################################
+
+      - name: Backend tests
+        run: |
+          docker exec ci_raec_backend pytest
+
+      ####################################################
+      # Frontend tests
+      ####################################################
+
+      - name: Frontend tests
+        run: |
+          docker exec ci_raec_frontend npm test
+
+      ####################################################
+      # Apagar contenedores
+      ####################################################
+
+      - name: Shutdown
+        if: always()
+        run: docker compose down -v

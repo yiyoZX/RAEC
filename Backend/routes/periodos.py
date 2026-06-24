@@ -6,7 +6,7 @@ from core.database import get_db
 from services.periodo_service import guardar_periodos, is_solicitudes_abiertas
 import asyncio
 
-router = APIRouter()
+router = APIRouter(tags=["Periodos"])
 
 @router.post("/periodos")
 async def configurar_periodo(

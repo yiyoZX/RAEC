@@ -6,7 +6,7 @@ from core.database import get_db
 from core.auth import get_current_user
 from core.models import profesor, rol
 
-router = APIRouter()
+router = APIRouter(tags=["Roles"])
 
 class RoleUpdate(BaseModel):
     correo: str

@@ -3,7 +3,7 @@ from controllers.profesores_controller import login_profesor
 from controllers.estudiantes_controller import login_estudiante
 from core.schemas import ProfesorLogin, EstudianteLogin
 
-router = APIRouter()
+router = APIRouter(tags=["Autenticación"])
 
 @router.post("/login")
 async def login(prof: ProfesorLogin):

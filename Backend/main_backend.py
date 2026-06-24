@@ -1,0 +1,84 @@
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from core.database import database, metadata, DATABASE_URL
+from sqlalchemy import create_engine
+from routes.login import router as login_router
+from routes.formulario import router as formulario_router
+from routes.reportes import router as reportes_router
+from routes.solicitudes import router as solicitudes_router
+from routes.actividades import router as actividades_router
+from routes.periodos import router as periodos_router
+from routes.Roles import router as roles_router
+from routes.carga_masiva import router as carga_masiva_router
+from routes.carreras import router as carreras_router
+from routes.profesores import router as profesores_router
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy.orm import Session
+from contextlib import asynccontextmanager
+from core.reparar_secuencias import reparar_secuencias
+
+
+# Crear base de datos y conectar
+engine = create_engine(DATABASE_URL)
+metadata.create_all(engine)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Maneja la conexión y desconexión del sistema al iniciar y cerrar FastAPI."""
+    # 🔹 Conectar base de datos asíncrona
+    await database.connect()
+    
+    # 🔹 Reparar secuencias al iniciar
+    db = Session(bind=engine)  # Crear sesión con el engine
+    try:
+        reparar_secuencias(db)
+    finally:
+        db.close()
+
+    # 🔹 Devolver el control a la app
+    yield
+
+    # 🔹 Desconectar base de datos al apagar
+    await database.disconnect()
+
+
+app = FastAPI(lifespan=lifespan)
+app.mount("/exports", StaticFiles(directory="exports"), name="exports")
+
+# Configurar CORS para permitir solo el frontend
+origins = [
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://172.20.0.1:3001",
+    "http://172.20.0.1",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://0.0.0.0:3001",
+        "*"  # Solo para desarrollo
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
+# Incluir todos los routers con el prefijo /api para que coincida con la configuración de Caddy
+app.include_router(login_router, prefix="/api")
+app.include_router(formulario_router, prefix="/api")
+app.include_router(reportes_router, prefix="/api")
+app.include_router(solicitudes_router, prefix="/api")
+app.include_router(actividades_router, prefix="/api")
+app.include_router(periodos_router, prefix="/api")
+app.include_router(roles_router, prefix="/api")
+app.include_router(carga_masiva_router, prefix="/api")
+app.include_router(carreras_router, prefix="/api")
+app.include_router(profesores_router, prefix="/api")
+

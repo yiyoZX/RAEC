@@ -1,0 +1,123 @@
+services:
+  raec-db:
+    image: ${DB_IMAGE}
+    container_name: ${GROUP}_${PROJECT}_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./Dbase/init-complete.sql:/docker-entrypoint-initdb.d/init-complete.sql:ro
+    restart: unless-stopped
+    networks:
+      - red_taller_software
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}"
+    labels:
+      - "org.uach.group=${GROUP}"
+      - "org.uach.project=${PROJECT}"
+      - "org.uach.service=raec-db"
+      - "logging=promtail" 
+  raec-backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: ${GROUP}_${PROJECT}_backend
+    # Archivos de variables externas y seguras
+    env_file:
+      - .env
+    # Variables de entorno adicionales
+    environment:
+      # Conexión segura a Postgres (sin exponer usuario/clave en texto plano)
+      DATABASE_URL: postgresql://${DB_USER}:${PASSWORD}@raec-db:5432/${DB_NAME}
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 1
+      LOG_LEVEL: info
+    # Dependencias de servicio
+    depends_on:
+      - raec-db
+    # Puerto expuesto para desarrollo/testing
+    ports:
+      - "${BACKEND_PORT}:4001"
+    # Volúmenes internos (aislados y con permisos seguros)
+    volumes:
+      - ./Backend/exports:/app/exports:rw
+      - ./Backend/mail_templates:/app/mail_templates:ro
+    # Políticas de reinicio y salud del servicio
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    # Red interna gestionada por Caddy
+    networks:
+      - red_taller_software
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 700M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}"
+    labels:
+      - "org.uach.group=${GROUP}"
+      - "org.uach.project=${PROJECT}"
+      - "org.uach.service=raec-backend"
+      - "logging=promtail"
+
+  raec-frontend:
+    build:
+      context: ./Frontend/RAEC
+    container_name: ${GROUP}_${PROJECT}_frontend
+    ports:
+      - "${FRONTEND_PORT}:3001"
+    depends_on:
+      - raec-backend
+      - raec-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - red_taller_software
+    deploy:
+      resources:
+        limits:
+          cpus: "0.30"
+          memory: 400M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}"
+    labels:
+      - "org.uach.group=${GROUP}"
+      - "org.uach.project=${PROJECT}"
+      - "org.uach.service=raec-frontend"
+      - "logging=promtail"
+
+volumes:
+  db_data:
+    name: ${GROUP}_${PROJECT}_db_data
+
+networks:
+  red_taller_software:
+    external: true 

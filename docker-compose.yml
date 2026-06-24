@@ -12,8 +12,8 @@ services:
       - db_data:/var/lib/postgresql/data
       - ./Dbase/init-complete.sql:/docker-entrypoint-initdb.d/init-complete.sql:ro
     restart: unless-stopped
-    networks:
-      - red_taller_software
+#    networks:
+#      - red_taller_software
     deploy:
       resources:
         limits:
@@ -64,8 +64,8 @@ services:
       retries: 3
       start_period: 10s
     # Red interna gestionada por Caddy
-    networks:
-      - red_taller_software
+#    networks:
+#      - red_taller_software
     deploy:
       resources:
         limits:
@@ -95,8 +95,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    networks:
-      - red_taller_software
+#    networks:
+#      - red_taller_software
     deploy:
       resources:
         limits:
@@ -118,6 +118,6 @@ volumes:
   db_data:
     name: ${GROUP}_${PROJECT}_db_data
 
-networks:
-  red_taller_software:
-    external: true 
+# networks:
+#   red_taller_software:
+#     external: true 

@@ -36,7 +36,7 @@ const Dashboard = () => {
       
       case 'profesor':
         return [
-          { label: 'Registrar actividad extracurricular', to: '/registrar', icon: registroIcon },
+          { label: 'Registrar gran actividad academica xD', to: '/registrar', icon: registroIcon },
           { label: 'Reportes de actividades', to: '/reportesAcademicos', icon: reportesIcon },
         ];
       

@@ -8,21 +8,57 @@ from datetime import datetime
 router = APIRouter()
 
 
-@router.post("/submit")
+@router.post(
+        "/submit",
+        tags=["Formularios"],
+        summary="Enviar formulario de actividad",
+        description="""
+        Reegistra actividades académicas y no académicas.
+    
+        Incluye:
+        - Asignación de actividades,
+        - Fechas de inicio y término,
+        - Carga de archivos,
+        - Asignación de profesor responsable.
+        """
+        )
 async def submit_form(
     background_tasks: BackgroundTasks,
-    rut: str = Form(None),  # Opcional - estudiantes no lo envían
-    academica: str = Form(...),
-    actividad: str = Form(...),
-    fecha_inicio: str = Form(...),
-    fecha_termino: str = Form(...),
-    horas_totales: str = Form(...),
+    rut: str = Form(None,   # Opcional - estudiantes no lo envían
+        description="RUT del estudiante",
+        example="12.345.678-9"
+    ), 
+    academica: str = Form(...,
+        description="Define si la actividad es Académica o No-Académica"
+    ),
+    actividad: str = Form(...,
+        description="Nombre de la actividad"
+    ),
+    fecha_inicio: str = Form(...,
+        description="Cuándo el estudiante empezó la actividad (YYYY-MM-DD)"
+    ),
+    fecha_termino: str = Form(...,
+        description="Cuándo el estudiante temrinó la actividad (YYYY-MM-DD)"
+    ),
+    horas_totales: str = Form(...,
+        description="Horas utilizadas en la actividad por el estudiante"
+    ),
     about: str = Form(""),
-    archivos: UploadFile = File(None),
-    dato1: str = Form(None),
-    dato2: str = Form(None),
-    dato3: str = Form(None),
-    id_profesor: str = Form(None),
+    archivos: UploadFile = File(None,
+        description="Archivo para probar que se ejerció la actividad"                            
+    ),
+    dato1: str = Form(None,
+        description="Dato extra de la actividad"                            
+    ),
+    dato2: str = Form(None,
+        description="Dato extra de la actividad"                            
+    ),
+    dato3: str = Form(None,
+        description="Dato extra de la actividad"                            
+    ),
+    id_profesor: str = Form(None,
+        description="Identificador del profesor"                            
+    ),
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):

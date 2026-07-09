@@ -43,7 +43,27 @@ async def lifespan(app: FastAPI):
     await database.disconnect()
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan,
+    title="RAEC API",
+    description="""
+    API principal del sistema RAEC.
+
+    Esta API permite:
+    - Registro de actividades
+    - Gestión de estudiantes
+    - Gestión de profesores
+    - Administración académica
+    """,
+    version="1.0.0",
+    swagger_ui_parameters={"syntaxHighlight": {"theme": "obsidian"}},
+    contact={
+        "name": "Equipo RAEC",
+        "email": "teamraec282@gmail.com"
+    },
+    license_info={
+        "name": "WIP"
+    }
+    )
 app.mount("/exports", StaticFiles(directory="exports"), name="exports")
 
 # Configurar CORS para permitir solo el frontend
